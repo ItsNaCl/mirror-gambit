@@ -1,0 +1,55 @@
+{
+  "name": "mirror-gambit",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/copy-stockfish.mjs",
+    "predev": "node scripts/copy-stockfish.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/copy-stockfish.mjs",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint",
+    "openings:data": "node scripts/build-openings.mjs",
+    "openings:check": "node scripts/check-openings.mjs",
+    "icon": "node scripts/make-icon.mjs",
+    "build:main": "node scripts/build-main.mjs",
+    "dev:desktop": "node scripts/dev-desktop.mjs",
+    "build:desktop": "npm run build && npm run build:main && electron-builder --win --x64 --config electron-builder.yml"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "react": "^19.2.8",
+    "react-chessboard": "^5.12.1",
+    "react-dom": "^19.2.8",
+    "stockfish": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.1.2",
+    "oxlint": "^1.81.0",
+    "sharp": "^0.35.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.3"
+  },
+  "allowScripts": {
+    "electron@44.7.0": true,
+    "electron-winstaller@5.4.0": true,
+    "esbuild@0.28.2": true
+  },
+  "description": "Mirror Gambit: a local chess study app for beginners with Stockfish analysis, an opening trainer, puzzles and spaced-repetition review.",
+  "author": "Mirror Gambit",
+  "main": "dist-electron/main.cjs",
+  "productName": "Mirror Gambit"
+}

@@ -1,0 +1,83 @@
+import type { Opening } from './types'
+
+export const scholarsMate: Opening = {
+  id: 'scholars-mate-defense',
+  name: "Scholar's Mate defence (trap line for Black)",
+  lichessName: "King's Pawn Game: Wayward Queen Attack",
+  side: 'black',
+  group: 'trap-line',
+  summary: 'White brings the queen out early hoping for a four-move checkmate on f7. Learn the calm defence and punish the early queen.',
+  mainLine: {
+    name: 'Defending the Wayward Queen (2.Qh5)',
+    moves: [
+      { san: 'e4', comment: 'White takes the centre.' },
+      { san: 'e5', comment: 'Black does the same.' },
+      { san: 'Qh5', comment: 'The Wayward Queen: White threatens Qxe5+ and dreams of Qxf7 mate.' },
+      { san: 'Nc6', comment: 'Defend e5 with a developing move. Do not panic and do not move the f-pawn.' },
+      { san: 'Bc4', comment: 'The bishop joins in: now Qxf7 would be checkmate.' },
+      { san: 'g6', comment: 'Block the queen\'s path to f7 and make it move again, which gains you a free move. (3...Nf6?? allows Qxf7#.)' },
+      { san: 'Qf3', comment: 'White renews the threat on f7 from another square.' },
+      { san: 'Nf6', comment: 'Now it is safe: the knight blocks the queen\'s line to f7 and develops at the same time.' },
+      { san: 'Ne2', comment: 'White develops, avoiding Nf3 because the queen is there.' },
+      { san: 'Bg7', comment: 'Put the bishop on g7. Black has more pieces out already.' },
+      { san: 'Nbc3', comment: 'White develops.' },
+      { san: 'd6', comment: 'Open the c8 bishop and support e5.' },
+      { san: 'd3', comment: 'White supports e4.' },
+      { san: 'O-O', comment: 'Castle. Black is safe and will look to punish the queen with ...Nd4 or ...Bg4.' },
+      { san: 'Bg5', comment: 'White pins the knight.' },
+      { san: 'Be6', comment: 'Develop and offer to trade White\'s active bishop. Black is comfortable and ready for ...Nd4.' },
+    ],
+  },
+  sidelines: [
+    {
+      name: '2.Bc4 first, then Qh5',
+      from: 2,
+      moves: [
+        { san: 'Bc4', comment: 'White starts with the bishop.' },
+        { san: 'Nc6', comment: 'Develop and defend e5 before the queen arrives.' },
+        { san: 'Qh5', comment: 'The threat on f7 appears.' },
+        { san: 'g6', comment: 'Block it and make the queen move yet again.' },
+        { san: 'Qf3', comment: 'White tries again.' },
+        { san: 'Nf6', comment: 'Block and develop.' },
+        { san: 'Ne2', comment: 'White develops.' },
+        { san: 'Bg7', comment: 'Develop a piece toward the centre.' },
+        { san: 'Nbc3', comment: 'White develops.' },
+        { san: 'O-O', comment: 'Castle. Everything is covered.' },
+        { san: 'd3', comment: 'White solidifies.' },
+        { san: 'd6', comment: 'Open the bishop. Black is better developed and can play ...Nd4 to harass the queen.' },
+      ],
+    },
+    {
+      name: '2.Qf3 (Napoleon-style)',
+      from: 2,
+      moves: [
+        { san: 'Qf3', comment: 'White aims at f7 from f3 straight away.' },
+        { san: 'Nf6', comment: 'Develop and block the queen\'s line to f7.' },
+        { san: 'Bc4', comment: 'White adds the bishop.' },
+        { san: 'Nc6', comment: 'Develop; f7 is already covered by the knight on f6.' },
+        { san: 'Ne2', comment: 'White develops around the queen.' },
+        { san: 'Bc5', comment: 'Develop actively, eyeing f2.' },
+        { san: 'd3', comment: 'White supports e4.' },
+        { san: 'd6', comment: 'Open the bishop.' },
+        { san: 'O-O', comment: 'White castles.' },
+        { san: 'O-O', comment: 'Castle. Black has an easy game; ...Nd4 hitting the queen is a nice next idea.' },
+      ],
+    },
+  ],
+  keyIdeas: [
+    'Scholar\'s Mate only works if f7 is left unguarded. Defend with developing moves, never with ...f6 or ...Qf6 in a panic.',
+    'The key sequence against 2.Qh5 is ...Nc6, ...g6 and ...Nf6: every move defends and develops at the same time.',
+    'An early queen is a target: later ...Nd4 or ...Bg4 can chase it around and win more time.',
+    'Once you are castled with a lead in development, play normally: you are already better.',
+  ],
+  trap: {
+    name: 'The four-move checkmate: what happens if you forget f7',
+    from: 5,
+    description:
+      'This is the trap itself. After 2.Qh5 Nc6 3.Bc4, the natural-looking 3...Nf6?? attacks the queen but ignores f7, and White mates on the spot. Always ask "what is attacking f7?" before you move.',
+    moves: [
+      { san: 'Nf6', comment: 'Black attacks the queen and forgets that f7 is attacked twice and defended once.' },
+      { san: 'Qxf7#', comment: 'Checkmate. The queen is protected by the bishop and the king has no escape.' },
+    ],
+  },
+}

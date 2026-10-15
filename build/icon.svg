@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2f3a"/>
+      <stop offset="1" stop-color="#121419"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)" stroke="#5b9cff" stroke-width="6"/>
+  <!-- mirror line -->
+  <line x1="128" y1="40" x2="128" y2="216" stroke="#5b9cff" stroke-width="3" stroke-dasharray="6 8" opacity="0.7"/>
+  <!-- light pawn, left -->
+  <g transform="translate(22 60) scale(1.0)">
+    <path d="M50 12
+  a12 12 0 1 1 -0.01 0
+  M38 30 h24 l-3 7 h-18 z
+  M41 37 h18 c5 12 7 20 12 30 h-42 c5 -10 7 -18 12 -30 z
+  M28 70 h44 l4 10 h-52 z
+  M22 82 h56 v10 h-56 z" fill="#e9e4d6" stroke="#121419" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+  <!-- dark pawn, right (mirrored) -->
+  <g transform="translate(234 60) scale(-1 1)">
+    <path d="M50 12
+  a12 12 0 1 1 -0.01 0
+  M38 30 h24 l-3 7 h-18 z
+  M41 37 h18 c5 12 7 20 12 30 h-42 c5 -10 7 -18 12 -30 z
+  M28 70 h44 l4 10 h-52 z
+  M22 82 h56 v10 h-56 z" fill="#7b8aa0" stroke="#e9e4d6" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+</svg>
