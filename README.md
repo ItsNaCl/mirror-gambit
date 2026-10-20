@@ -205,7 +205,7 @@ itself from this repository's GitHub releases.
 **Install:** download `Mirror-Gambit-Setup-<version>.exe` from the
 [latest release](https://github.com/ItsNaCl/mirror-gambit/releases/latest) and run it.
 It installs for your Windows user only (no admin prompt) into
-`%LOCALAPPDATA%\Programs\mirror-gambit`, with Start menu and desktop shortcuts and an
+`%LOCALAPPDATA%\Programs\Mirror Gambit`, with Start menu and desktop shortcuts and an
 entry in Settings > Apps. Your progress lives in `%APPDATA%\Mirror Gambit` and is kept
 across updates and reinstalls. The installer is not code-signed, so SmartScreen may
 say "Windows protected your PC" the first time: choose **More info > Run anyway**.

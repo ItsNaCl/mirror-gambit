@@ -42,7 +42,7 @@ win:
   #   rfc3161TimeStampServer: http://timestamp.digicert.com
   # -----------------------------------------------------------------------
 
-# Per-user installer with no admin prompt, installed in %LOCALAPPDATA%\Programs\mirror-gambit.
+# Per-user installer with no admin prompt, installed in %LOCALAPPDATA%\Programs\Mirror Gambit.
 # NSIS (not MSI) because electron-updater can only update NSIS installs.
 nsis:
   oneClick: false
