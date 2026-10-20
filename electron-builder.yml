@@ -61,7 +61,7 @@ publish:
   provider: github
   owner: ItsNaCl
   repo: mirror-gambit
-  releaseType: release
+  releaseType: draft
 
 portable:
   artifactName: Mirror-Gambit-${version}-Portable.${ext}

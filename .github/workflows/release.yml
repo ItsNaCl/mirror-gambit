@@ -38,7 +38,22 @@ jobs:
 
       - run: npm run lint
 
-      - name: Build and publish the installer
+      # electron-builder publishes the installer and the portable exe in parallel, and both
+      # would try to create the release. Create it as a draft first; they upload into it.
+      - name: Create the draft release
+        shell: bash
+        run: gh release create "$GITHUB_REF_NAME" --draft --title "Mirror Gambit ${GITHUB_REF_NAME#v}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and upload the installer
         run: npm run release:desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Installed copies only see published releases, so this is the moment the update goes out.
+      - name: Publish the release
+        shell: bash
+        run: gh release edit "$GITHUB_REF_NAME" --draft=false --latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
