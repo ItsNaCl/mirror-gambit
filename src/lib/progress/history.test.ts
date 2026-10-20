@@ -12,8 +12,8 @@ describe('progress history', () => {
   it('builds a game record with per-side and overall accuracy', () => {
     const result: ReviewResult = {
       moves: [
-        { index: 0, san: 'e4', mover: 'w', classification: { cls: 'best', lossCp: 0 }, betterMove: null, evalAfter: { type: 'cp', value: 0 } },
-        { index: 1, san: 'a6', mover: 'b', classification: { cls: 'blunder', lossCp: 400 }, betterMove: 'e5', evalAfter: { type: 'cp', value: 0 } },
+        { index: 0, san: 'e4', mover: 'w', classification: { cls: 'best', lossCp: 0 }, betterMove: null, evalAfter: { type: 'cp', value: 0 }, bestLine: [], replyLine: [] },
+        { index: 1, san: 'a6', mover: 'b', classification: { cls: 'blunder', lossCp: 400 }, betterMove: 'e5', evalAfter: { type: 'cp', value: 0 }, bestLine: [], replyLine: [] },
       ],
       evals: [],
       summary: { w: { ...emptyCounts(), best: 1 }, b: { ...emptyCounts(), blunder: 1 } },

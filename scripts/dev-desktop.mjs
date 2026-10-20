@@ -25,7 +25,7 @@ async function waitForServer(url, timeoutMs = 30000) {
   throw new Error(`Vite dev server did not start on ${url}`)
 }
 
-const main = run(npx, ['esbuild', 'electron/main.ts', '--bundle', '--platform=node', '--format=cjs', '--target=node22', '--external:electron', '--outfile=dist-electron/main.cjs'])
+const main = run('node', ['scripts/build-main.mjs'])
 await new Promise((resolve, reject) => main.on('exit', (code) => (code === 0 ? resolve() : reject(new Error('main build failed')))))
 
 const vite = run(npx, ['vite', '--port', String(PORT), '--strictPort'])

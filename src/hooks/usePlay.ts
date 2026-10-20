@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
-import { isAtEnd, jumpTo, playUci, turnOf, type PromotionPiece } from '../lib/chess/game'
+import { CLASS_LABEL, classifyMove, isProblem, type MoveClass } from '../lib/analysis/classify'
+import { fenAt, isAtEnd, jumpTo, playUci, turnOf, uciToSan, type PromotionPiece } from '../lib/chess/game'
 import { exportPgn } from '../lib/chess/pgn'
 import { levelById, pickMove, type PlayLevel } from '../lib/play/levels'
 import { addSavedGame, loadSavedGames, storeSavedGames, type SavedGame } from '../lib/play/savedGames'
@@ -10,6 +11,17 @@ import type { GameApi } from './useGame'
 /** Short pause before the computer moves, so its reply does not appear instantly. */
 const THINK_DELAY_MS = 450
 const SUSPEND_OWNER = 'play'
+/** Depth for judging the student's move when the live coach is on. */
+const COACH_DEPTH = 12
+
+/** The live coach's warning after one of the student's moves. */
+export interface CoachAlert {
+  moveIndex: number
+  san: string
+  cls: MoveClass
+  better: string | null
+  text: string
+}
 
 export interface PlayResult {
   result: SavedGame['result']
@@ -33,6 +45,8 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
   // Sticky once the game ends, so stepping back through the moves afterwards does not reopen it.
   const [finished, setFinished] = useState<PlayResult | null>(null)
   const [savedGames, setSavedGames] = useState<SavedGame[]>(loadSavedGames)
+  const [liveCoach, setLiveCoach] = useState(false)
+  const [coachAlert, setCoachAlert] = useState<CoachAlert | null>(null)
   // The gameId of the game this mode started, so loading another game (PGN import, reset) ends play mode.
   const [playGameId, setPlayGameId] = useState<number | null>(null)
   const savedFor = useRef<number | null>(null)
@@ -63,8 +77,10 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
   useEffect(() => () => setLiveSuspended(false, SUSPEND_OWNER), [setLiveSuspended])
 
   const start = useCallback(
-    (color: 'w' | 'b', levelId: number) => {
+    (color: 'w' | 'b', levelId: number, coach = false) => {
       requestId.current++
+      setLiveCoach(coach)
+      setCoachAlert(null)
       setUserColor(color)
       setLevel(levelById(levelId))
       setResigned(false)
@@ -94,6 +110,36 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
     setThinking(true)
     const t = window.setTimeout(async () => {
       try {
+        const last = game.ply > 0 ? game.moves[game.ply - 1] : null
+        if (liveCoach && last && last.color === userColor) {
+          // Judge the student's move before replying, so a warning can come with a take-back.
+          const beforeFen = fenAt(game, game.ply - 1)
+          const before = await evaluate(beforeFen, COACH_DEPTH, 1)
+          const after = await evaluate(fenAtRequest, COACH_DEPTH, 1)
+          if (requestId.current !== id) return
+          const b = before.lines[0]?.score
+          const a = after.lines[0]?.score
+          if (b && a) {
+            const uci = last.from + last.to + (last.promotion ?? '')
+            const c = classifyMove({ before: b, after: a, mover: userColor, playedBestMove: before.bestMove === uci })
+            if (isProblem(c.cls)) {
+              const better = before.bestMove && before.bestMove !== uci ? uciToSan(beforeFen, before.bestMove) : null
+              const why =
+                c.reason === 'allowed-mate'
+                  ? 'It lets the computer force checkmate.'
+                  : c.reason === 'missed-mate'
+                    ? 'You had a forced checkmate.'
+                    : `It gives away about ${(c.lossCp / 100).toFixed(1)} pawns.`
+              setCoachAlert({
+                moveIndex: game.ply - 1,
+                san: last.san,
+                cls: c.cls,
+                better,
+                text: `${CLASS_LABEL[c.cls]}: ${last.san}. ${why}${better ? ` Better was ${better}.` : ''}`,
+              })
+            }
+          }
+        }
         const r = await evaluate(fenAtRequest, level.depth, level.candidates)
         if (requestId.current !== id) return
         const legal = new Chess(fenAtRequest).moves({ verbose: true }).map((m) => m.from + m.to + (m.promotion ?? ''))
@@ -110,7 +156,7 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
       clearTimeout(t)
       setThinking(false)
     }
-  }, [playing, result, userToMove, game, fen, level, evaluate, setGame, engine.status])
+  }, [playing, result, userToMove, game, fen, level, evaluate, setGame, engine.status, liveCoach, userColor])
 
   // Save each finished game once.
   useEffect(() => {
@@ -148,7 +194,9 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
   const onBoardMove = useCallback(
     (from: Square, to: Square, promotion?: PromotionPiece): boolean => {
       if (!playing || result || !userToMove || thinking) return false
-      return gameApi.move(from, to, promotion)
+      const ok = gameApi.move(from, to, promotion)
+      if (ok) setCoachAlert(null)
+      return ok
     },
     [playing, result, userToMove, thinking, gameApi],
   )
@@ -158,6 +206,7 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
     if (!playing || result) return
     requestId.current++
     setThinking(false)
+    setCoachAlert(null)
     const back = userToMove ? 2 : 1
     const minPly = userColor === 'b' ? 1 : 0
     const target = Math.max(minPly, game.ply - back)
@@ -194,6 +243,9 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
     error,
     savedGames,
     canTakeBack,
+    liveCoach,
+    coachAlert,
+    dismissCoach: () => setCoachAlert(null),
     orientation: (userColor === 'w' ? 'white' : 'black') as 'white' | 'black',
     start,
     exit,

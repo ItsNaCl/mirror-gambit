@@ -57,6 +57,8 @@ describe('buildReview', () => {
         classification: { cls: 'mistake', lossCp: 230 },
         betterMove: 'Nf3',
         evalAfter: { type: 'cp', value: -100 },
+        bestLine: [],
+        replyLine: [],
       }),
     ).toBe('Mistake (-2.3). Better was Nf3.')
     expect(
@@ -67,6 +69,8 @@ describe('buildReview', () => {
         classification: { cls: 'good', lossCp: 20 },
         betterMove: null,
         evalAfter: { type: 'cp', value: 10 },
+        bestLine: [],
+        replyLine: [],
       }),
     ).toBeNull()
   })

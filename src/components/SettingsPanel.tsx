@@ -1,4 +1,6 @@
 import { DEFAULT_SETTINGS, useSettings, type Settings } from '../hooks/useSettings'
+import type { UpdatesApi } from '../hooks/useUpdates'
+import { UpdateSettings } from './UpdatePanel'
 
 interface SwitchRowProps {
   label: string
@@ -26,7 +28,7 @@ function SwitchRow({ label, desc, value, onChange }: SwitchRowProps) {
   )
 }
 
-export function SettingsPanel({ engineInfo }: { engineInfo?: string }) {
+export function SettingsPanel({ engineInfo, updates }: { engineInfo?: string; updates: UpdatesApi }) {
   const { settings, update } = useSettings()
   const set = <K extends keyof Settings>(key: K) => (value: Settings[K]) => update({ [key]: value } as Partial<Settings>)
   const cores = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 2 : 2
@@ -143,6 +145,9 @@ export function SettingsPanel({ engineInfo }: { engineInfo?: string }) {
           </select>
         </div>
       </div>
+
+      <div className="section-title">Updates</div>
+      <UpdateSettings updates={updates} />
 
       <div className="row" style={{ marginTop: 16 }}>
         <button className="btn small" onClick={() => update(DEFAULT_SETTINGS)}>

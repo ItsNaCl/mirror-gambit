@@ -11,7 +11,11 @@ const isolationHeaders = {
 
 export default defineConfig({
   plugins: [react()],
-  server: { headers: isolationHeaders },
+  server: {
+    headers: isolationHeaders,
+    // Dev only: lets the browser build load chess.com games (the desktop app fetches them in the main process).
+    proxy: { '/chesscom': { target: 'https://www.chess.com', changeOrigin: true, rewrite: (p) => p.replace(/^\/chesscom/, '/callback') } },
+  },
   preview: { headers: isolationHeaders },
   test: {
     environment: 'node',

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Arrow } from 'react-chessboard'
 import { AnalysisPanel } from './components/AnalysisPanel'
+import type { BoardPreview } from './components/CoachPanel'
+import { moveBadgeStyle } from './components/moveBadge'
 import { Board } from './components/Board'
 import { EvalBar } from './components/EvalBar'
 import { MoveList } from './components/MoveList'
@@ -15,6 +17,7 @@ import { SettingsPanel } from './components/SettingsPanel'
 import { SrsPanel } from './components/SrsPanel'
 import { TipsSection } from './components/TipsSection'
 import { ToastStack, useToasts } from './components/Toast'
+import { UpdateBanner } from './components/UpdatePanel'
 import { EngineProvider, useEngine } from './hooks/useEngine'
 import { useGame, type GameApi } from './hooks/useGame'
 import { useSettings } from './hooks/useSettings'
@@ -24,9 +27,12 @@ import { useReview } from './hooks/useReview'
 import { useSrs } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer } from './hooks/useTrainer'
+import { useUpdates } from './hooks/useUpdates'
 import { CLASS_LABEL, CLASS_SYMBOL } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
+import { cleanError, fetchChessComJson } from './lib/desktop'
+import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
 import type { SavedGame } from './lib/play/savedGames'
 import { reviewComment } from './lib/review/review'
 
@@ -57,6 +63,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   const { game, fen, gameOver } = gameApi
   const engine = useEngine()
   const { toasts, notify, dismiss } = useToasts()
+  const updates = useUpdates()
 
   const [tab, setTab] = useState<Tab>('analysis')
   const [manualOrientation, setManualOrientation] = useState<'white' | 'black'>('white')
@@ -64,6 +71,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   const [pgnModal, setPgnModal] = useState<'import' | 'export' | null>(null)
   const [pgnText, setPgnText] = useState('')
   const [pgnError, setPgnError] = useState<string | null>(null)
+  // A coach line or best move shown on the board in place of the game (Review tab only).
+  const [boardPreview, setBoardPreview] = useState<BoardPreview | null>(null)
+  const preview = tab === 'review' ? boardPreview : null
 
   const trainerRaw = useTrainer(gameApi)
   const puzzlesRaw = usePuzzles(gameApi, engine)
@@ -87,7 +97,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     [srsRaw, trainerRaw, puzzlesRaw, playRaw],
   )
   const play = useMemo(
-    () => ({ ...playRaw, start: (c: 'w' | 'b', level: number) => { trainerRaw.exit(); puzzlesRaw.exit(); srsRaw.exit(); playRaw.start(c, level) } }),
+    () => ({ ...playRaw, start: (c: 'w' | 'b', level: number, coach?: boolean) => { trainerRaw.exit(); puzzlesRaw.exit(); srsRaw.exit(); playRaw.start(c, level, coach) } }),
     [playRaw, trainerRaw, puzzlesRaw, srsRaw],
   )
   const srsActive = srs.active
@@ -131,6 +141,11 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
         : 'black'
       : manualOrientation
   const lastMove = lastMoveAt(game)
+  const reviewedMove = tab === 'review' && reviewResult && game.ply > 0 ? reviewResult.moves[game.ply - 1] : null
+  const reviewBadge = useMemo(
+    () => (reviewedMove && lastMove && !preview ? { [lastMove.to]: moveBadgeStyle(reviewedMove.classification.cls) } : undefined),
+    [reviewedMove, lastMove, preview],
+  )
 
   const onMoveAlert = useCallback(
     (alert: MoveAlert) => {
@@ -258,6 +273,24 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     [playRaw, gameApi, review, notify],
   )
 
+  /** Loads a chess.com game from its URL onto the board and starts the review. Throws a readable Error. */
+  const loadChessCom = useCallback(
+    async (url: string) => {
+      const ref = parseChessComUrl(url)
+      if (!ref) throw new Error('That does not look like a chess.com game link.')
+      const loaded = gameFromChessComJson(await fetchChessComJson(ref.kind, ref.id))
+      trainerRaw.exit()
+      puzzlesRaw.exit()
+      srsRaw.exit()
+      playRaw.exit()
+      gameApi.load(loaded.state)
+      setTab('review')
+      notify({ kind: 'good', title: `Loaded ${loaded.white} vs ${loaded.black} (${loaded.result})`, body: loaded.termination || undefined }, 4000)
+      review.start(loaded.state)
+    },
+    [trainerRaw, puzzlesRaw, srsRaw, playRaw, gameApi, review, notify],
+  )
+
   function openExport() {
     setPgnModal('export')
   }
@@ -269,6 +302,12 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   }
 
   function doImport() {
+    if (parseChessComUrl(pgnText)) {
+      loadChessCom(pgnText)
+        .then(() => setPgnModal(null))
+        .catch((e) => setPgnError(cleanError(e)))
+      return
+    }
     try {
       const state = importPgn(pgnText)
       gameApi.load(state)
@@ -342,24 +381,33 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
         engine={engineBadge}
         opening={tips.opening ? `${tips.opening.eco} ${tips.opening.name}` : undefined}
       />
+      <UpdateBanner updates={updates} />
       <main className="layout">
         <section className="left">
           <div className="board-row">
             {settings.showAnalysis && <EvalBar score={evalScore} orientation={orientation} />}
             <Board
-              fen={fen}
+              fen={preview?.fen ?? fen}
               orientation={orientation}
-              interactive={playActive ? playLive && play.userToMove && !play.thinking : srsActive ? !!srs.userToMove : puzzleActive ? puzzles.solverToMove : trainerActive ? trainer.mode === 'drill' && trainer.userToMove : !gameOver}
+              interactive={preview ? false : playActive ? playLive && play.userToMove && !play.thinking : srsActive ? !!srs.userToMove : puzzleActive ? puzzles.solverToMove : trainerActive ? trainer.mode === 'drill' && trainer.userToMove : !gameOver}
               showLegalDots={settings.legalDots}
-              lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
-              arrows={playLive ? [] : srsActive ? srs.arrows : puzzleActive ? puzzles.arrows : trainerActive ? trainer.arrows : arrows}
-              extraSquareStyles={srsActive ? srs.squareStyles : puzzleActive ? puzzles.squareStyles : trainerActive ? trainer.hintSquareStyles : undefined}
+              lastMove={preview ? (preview.lastMove ?? null) : lastMove ? { from: lastMove.from, to: lastMove.to } : null}
+              arrows={preview ? (preview.arrows ?? []) : playLive ? [] : srsActive ? srs.arrows : puzzleActive ? puzzles.arrows : trainerActive ? trainer.arrows : arrows}
+              extraSquareStyles={srsActive ? srs.squareStyles : puzzleActive ? puzzles.squareStyles : trainerActive ? trainer.hintSquareStyles : reviewBadge}
               shakeKey={trainer.shakeKey + puzzles.shakeKey}
               onMove={playActive ? play.onBoardMove : srsActive ? srs.onBoardMove : puzzleActive ? puzzles.onBoardMove : trainerActive ? trainer.onBoardMove : gameApi.move}
             />
           </div>
 
-          {playActive ? (
+          {preview ? (
+            <div className="controls">
+              <span className="small-text">🎓 {preview.label}</span>
+              <span className="spacer" />
+              <button className="btn small" onClick={() => setBoardPreview(null)}>
+                Back to the game
+              </button>
+            </div>
+          ) : playActive ? (
             <div className="controls">
               <span className="small-text muted">
                 Playing {play.userColor === 'w' ? 'White' : 'Black'} vs {play.level.name}
@@ -469,7 +517,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
                 <button className="btn primary" onClick={openReview}>
                   Review game
                 </button>
-                <button className="btn" onClick={() => play.start(play.userColor, play.level.id)}>
+                <button className="btn" onClick={() => play.start(play.userColor, play.level.id, play.liveCoach)}>
                   Play again
                 </button>
               </div>
@@ -545,6 +593,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
                 onJump={gameApi.jump}
                 onExport={openExport}
                 engineReady={engine.status === 'ready'}
+                preview={boardPreview}
+                onPreview={setBoardPreview}
+                onLoadChessCom={loadChessCom}
                 onAddCards={(result) => {
                   const n = srs.addFromReview(game, result)
                   notify({ kind: n ? 'good' : 'info', title: n ? `Added ${n} card${n === 1 ? '' : 's'} to your review deck` : 'Those positions are already in your deck' }, 4000)
@@ -560,13 +611,13 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
                 historyVersion={review.historyVersion}
               />
             )}
-            {tab === 'settings' && <SettingsPanel engineInfo={engine.buildInfo} />}
+            {tab === 'settings' && <SettingsPanel engineInfo={engine.buildInfo} updates={updates} />}
           </div>
         </aside>
       </main>
 
       <Modal open={pgnModal === 'import'} title="Import PGN" onClose={() => setPgnModal(null)}>
-        <p className="small-text muted">Paste a PGN below. The moves will replace the current game.</p>
+        <p className="small-text muted">Paste a PGN or a chess.com game link below. The moves will replace the current game.</p>
         <textarea value={pgnText} onChange={(e) => setPgnText(e.target.value)} placeholder="1. e4 e5 2. Nf3 ..." />
         {pgnError && <div className="error-text">{pgnError}</div>}
         <div className="modal-actions">

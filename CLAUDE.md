@@ -12,7 +12,7 @@ npm run lint            # oxlint (existing warnings are known; do not add errors
 npx tsc -b              # type-check (npm run build does this too)
 npm run build           # tsc -b && vite build -> dist/
 npm run dev:desktop     # Electron + Vite dev server
-npm run build:desktop   # dist/ + dist-electron/ + release/*.msi and portable exe
+npm run build:desktop   # dist/ + dist-electron/ + release/ Setup.exe and portable exe (no publish)
 ```
 
 Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass with no new errors.
@@ -26,7 +26,8 @@ Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass
 - `src/openings/*.ts`: opening content, one file per opening, validated by `openings.test.ts`.
 - `src/data/puzzles/*.json`: puzzle sets (Chess Rocket format: `fen`, `solution_moves` in UCI, optional `solution_san`, `motif`, `explanation`). `from-games.json` exists but is not loaded.
 - `scripts/`: Node scripts. `engine-node.mjs` drives Stockfish from Node (`evaluate`, `analyse` with MultiPV); `extend-puzzles.mjs` lengthens puzzle solutions; `check-openings.mjs` evaluates opening lines.
-- `electron/main.ts`: desktop shell (`app://` scheme with COOP/COEP headers, strict CSP, sandbox).
+- `electron/main.ts`: desktop shell (`app://` scheme with COOP/COEP headers, strict CSP, sandbox). `electron/preload.ts` exposes `window.mirrorGambit` (typed in `src/lib/desktop.ts`): update controls from `electron/updater.ts` and a chess.com game fetch. Keep that surface minimal and validate every IPC argument in the main process.
+- `src/lib/coach/`: the review coach (pure). `src/components/CoachPanel.tsx` drives it and shows lines on the board through a `BoardPreview` held in `App.tsx`.
 
 ## Conventions
 
@@ -53,7 +54,9 @@ Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass
 - Opening names: Lichess chess-openings (CC0), rebuilt with `npm run openings:data`.
 - Puzzle validation runs at load time (`loadPuzzles`): invalid puzzles are dropped and logged, never shown. `puzzles.test.ts` replays every solution.
 
-## Desktop build
+## Desktop build and releases
 
-- `npm run build:desktop` writes to `release/` (gitignored). Bump `version` in `package.json` for a new MSI, and never change `appId` or the MSI `upgradeCode` in `electron-builder.yml`, because upgrades in place depend on them.
+- The installer is NSIS, because electron-updater cannot update an MSI. Never change `appId`, `productName` or the `publish` block in `electron-builder.yml`: installed copies find updates and their data folder through them.
+- Release = bump `version` in `package.json`, commit to `main`, push tag `v<version>`. `.github/workflows/release.yml` checks the tag matches, runs tests and lint, and publishes the installer, portable exe and `latest.yml` to GitHub Releases.
+- The repo is public (GPL-3.0). Never commit secrets, personal emails or local paths. Commits use `NaCl <22365495+ItsNaCl@users.noreply.github.com>`. Merge locally and push instead of merging on GitHub, so no merge commit picks up an account email.
 - Windows paths: the repo must live at a short path. Cloning under a deep folder fails with `'$GIT_DIR' too big`.

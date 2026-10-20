@@ -27,7 +27,7 @@ npmRebuild: false
 win:
   icon: build/icon.ico
   target:
-    - target: msi
+    - target: nsis
       arch: [x64]
     - target: portable
       arch: [x64]
@@ -42,18 +42,27 @@ win:
   #   rfc3161TimeStampServer: http://timestamp.digicert.com
   # -----------------------------------------------------------------------
 
-msi:
-  # Per-user install: no admin prompt, lands in %LOCALAPPDATA%\Programs\Mirror Gambit
-  perMachine: false
+# Per-user installer with no admin prompt, installed in %LOCALAPPDATA%\Programs\mirror-gambit.
+# NSIS (not MSI) because electron-updater can only update NSIS installs.
+nsis:
   oneClick: false
-  runAfterFinish: false
-  createDesktopShortcut: true
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: false
+  createDesktopShortcut: always
   createStartMenuShortcut: true
-  # Fixed upgrade code: a newer version replaces the installed one instead of installing beside it.
-  upgradeCode: 7f2e5b6c-1d3a-4c8e-9b21-5a0f6e4d2c11
-  warningsAsErrors: false
-  artifactName: Mirror Gambit ${version}.msi
+  shortcutName: Mirror Gambit
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  artifactName: Mirror-Gambit-Setup-${version}.${ext}
+
+# In-app updates read latest.yml from the GitHub release of this repo.
+publish:
+  provider: github
+  owner: ItsNaCl
+  repo: mirror-gambit
+  releaseType: release
 
 portable:
-  artifactName: Mirror Gambit ${version} Portable.exe
+  artifactName: Mirror-Gambit-${version}-Portable.${ext}
   requestExecutionLevel: user

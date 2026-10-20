@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
 import type { ReviewApi } from '../hooks/useReview'
-import { CLASS_LABEL, CLASS_SYMBOL, MOVE_CLASSES, isProblem } from '../lib/analysis/classify'
+import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from '../lib/analysis/classify'
 import { moveLabel, type GameState } from '../lib/chess/game'
 import { formatScore, scoreToCp, type Score } from '../lib/engine/uci'
 import { REVIEW_DEPTH, type ReviewResult } from '../lib/review/review'
+import { ChessComImport } from './ChessComImport'
+import { CoachPanel, type BoardPreview } from './CoachPanel'
 
 export interface ReviewPanelProps {
   review: ReviewApi
@@ -13,9 +15,14 @@ export interface ReviewPanelProps {
   engineReady: boolean
   /** Adds every inaccuracy, mistake and blunder to the spaced-repetition deck. */
   onAddCards?: (result: ReviewResult) => void
+  /** Coach lines shown on the board instead of the game. */
+  preview: BoardPreview | null
+  onPreview: (p: BoardPreview | null) => void
+  /** Loads a chess.com game by URL and reviews it. */
+  onLoadChessCom: (url: string) => Promise<void>
 }
 
-export function ReviewPanel({ review, game, onJump, onExport, engineReady, onAddCards }: ReviewPanelProps) {
+export function ReviewPanel({ review, game, onJump, onExport, engineReady, onAddCards, preview, onPreview, onLoadChessCom }: ReviewPanelProps) {
   const { state, start, cancel, matchesCurrentGame } = review
 
   if (state.status === 'running') {
@@ -65,11 +72,26 @@ export function ReviewPanel({ review, game, onJump, onExport, engineReady, onAdd
           game turned. {state.result && !matchesCurrentGame ? 'The game has changed since the last review.' : ''}
         </p>
         {game.moves.length === 0 ? <p className="small-text muted">Play or load a game first.</p> : startButton}
+        <div style={{ marginTop: 14 }}>
+          <ChessComImport onLoad={onLoadChessCom} disabled={!engineReady} />
+        </div>
       </div>
     )
   }
 
-  return <ReviewResults result={state.result} game={game} onJump={onJump} onExport={onExport} onAddCards={onAddCards} startButton={startButton} />
+  return (
+    <ReviewResults
+      result={state.result}
+      game={game}
+      onJump={onJump}
+      onExport={onExport}
+      onAddCards={onAddCards}
+      startButton={startButton}
+      preview={preview}
+      onPreview={onPreview}
+      onLoadChessCom={onLoadChessCom}
+    />
+  )
 }
 
 function ReviewResults({
@@ -79,6 +101,9 @@ function ReviewResults({
   onExport,
   onAddCards,
   startButton,
+  preview,
+  onPreview,
+  onLoadChessCom,
 }: {
   result: ReviewResult
   game: GameState
@@ -86,9 +111,11 @@ function ReviewResults({
   onExport: () => void
   onAddCards?: (result: ReviewResult) => void
   startButton: React.ReactNode
+  preview: BoardPreview | null
+  onPreview: (p: BoardPreview | null) => void
+  onLoadChessCom: (url: string) => Promise<void>
 }) {
   const problems = result.moves.filter((m) => isProblem(m.classification.cls))
-  const current = game.ply > 0 ? result.moves[game.ply - 1] : null
 
   return (
     <div>
@@ -100,41 +127,7 @@ function ReviewResults({
       <div className="section-title">Evaluation over the game (click to jump)</div>
       <EvalGraph evals={result.evals} ply={game.ply} onJump={onJump} />
 
-      {current && (
-        <div className={`card ${current.classification.cls === 'blunder' ? 'bad' : isProblem(current.classification.cls) ? 'warn' : 'good'}`} style={{ marginTop: 10 }}>
-          <h3>
-            {CLASS_SYMBOL[current.classification.cls]} {CLASS_LABEL[current.classification.cls]}: {current.san}
-          </h3>
-          <p className="small-text">
-            Evaluation after the move: {formatScore(current.evalAfter)}.
-            {current.betterMove && ` Better was ${current.betterMove}.`}
-            {current.classification.reason === 'missed-mate' && ' A forced checkmate was missed.'}
-            {current.classification.reason === 'allowed-mate' && ' This allows a forced checkmate.'}
-          </p>
-        </div>
-      )}
-
-      <div className="section-title">Summary</div>
-      <table className="summary-table">
-        <thead>
-          <tr>
-            <th>Move type</th>
-            <th>White</th>
-            <th>Black</th>
-          </tr>
-        </thead>
-        <tbody>
-          {MOVE_CLASSES.map((cls) => (
-            <tr key={cls}>
-              <td>
-                <span className={`cls-${cls}`}>{CLASS_SYMBOL[cls]}</span> {CLASS_LABEL[cls]}
-              </td>
-              <td>{result.summary.w[cls]}</td>
-              <td>{result.summary.b[cls]}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <CoachPanel result={result} game={game} onJump={onJump} preview={preview} onPreview={onPreview} />
 
       <div className="section-title">Moves to learn from</div>
       {problems.length === 0 ? (
@@ -172,6 +165,10 @@ function ReviewResults({
             Add {problems.length} mistake{problems.length === 1 ? '' : 's'} to review deck
           </button>
         )}
+      </div>
+
+      <div style={{ marginTop: 14 }}>
+        <ChessComImport onLoad={onLoadChessCom} />
       </div>
     </div>
   )

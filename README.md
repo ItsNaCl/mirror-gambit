@@ -70,6 +70,10 @@ Stockfish. The level settings live in `src/lib/play/levels.ts`.
 
 - Blunder alerts, hints and live analysis are off during the game.
 - Take back undoes your last move and the computer's reply. Resign asks for confirmation.
+- **Live coach (optional).** Tick "Live coach" before starting and the engine checks
+  each of your moves before the computer replies. After an inaccuracy, mistake or
+  blunder a coach card says what it cost and what was better, with a **Take it back**
+  button. It makes the computer a little slower to reply.
 - When the game ends (checkmate, draw or resignation) a banner offers **Review game**,
   which runs the normal game review on it.
 - Every finished game is saved (the last 50) under **Past games** with the result,
@@ -157,11 +161,35 @@ only 4, used hint level 1 or 2 is 3, used hint level 3 or 4 is 2, gave up 0. The
 Cards are stored in localStorage and can be exported to and imported from a JSON
 file.
 
-**Review tab**
+**Review tab (game review with a coach)**
 
 "Review game" analyses every position at depth 14 with a progress bar, classifies
 each move with the better move where it matters, draws a clickable evaluation graph
 and shows a per-side summary. The review is offered automatically when a game ends.
+
+The coach then goes through the game with you:
+
+- **Move by move.** ⏮ ◀ ▶ ⏭ (or the arrow keys) step through the game, and
+  **Play-by-play** steps by itself, pausing on inaccuracies, mistakes and blunders
+  (switch that off to watch the whole game). The board marks the move just played
+  with its class badge (★ ! ✓ ?! ? ??), and the summary table highlights that class.
+- **Summary table as a navigator.** Click any count to jump to that side's next move
+  of that type, for example Black's blunder.
+- **What the coach says.** For every move: whether it was the top move, how much it
+  cost, what was better, and what the move allowed. It plays the engine's lines a few
+  moves ahead and points out what a beginner should notice: forks, undefended pieces,
+  checkmates, promotions and how much material changes hands.
+- **💡 Show best move** draws the better move on the position before your move.
+- **▶ Play best line** plays the better line up to six moves forward on the board, so
+  a missed fork two or three moves deep is visible. **⚠ Show the danger** does the same
+  for the opponent's best answer to a mistake. Step through either line move by move,
+  pause it, or press **Back to the game**.
+
+**Reviewing chess.com games.** Paste a chess.com game or review link (for example
+`https://www.chess.com/game/live/123456789` or `.../analysis/game/live/123456789/review`)
+into the box in the Review tab or into Import PGN. The app loads the game from
+chess.com's public game data and starts the review. This works in the desktop app;
+the browser version explains how to paste the PGN instead.
 
 **Progress tab**
 
@@ -171,52 +199,48 @@ localStorage.
 
 ## Windows desktop app
 
-Mirror Gambit also ships as a Windows desktop app built with Electron. The same
-build produces two files in `release/`:
+Mirror Gambit also ships as a Windows desktop app built with Electron, and updates
+itself from this repository's GitHub releases.
 
-| File | Size | What it is |
-|---|---|---|
-| `Mirror Gambit 1.1.0.msi` | about 260 MB | Installer. Per-user, no admin prompt. Adds Start menu and desktop shortcuts and an entry in Settings > Apps. A newer version installed over it upgrades in place (fixed upgrade code). Data lives in `%APPDATA%\Mirror Gambit`. |
-| `Mirror Gambit 1.1.0 Portable.exe` | about 231 MB | Single file, no install. All data (progress, cards, window size, log) is kept in a `MirrorGambitData` folder next to the exe, so it travels with the file. The first start takes a few seconds while the exe unpacks itself to a temp folder. |
+**Install:** download `Mirror-Gambit-Setup-<version>.exe` from the
+[latest release](https://github.com/ItsNaCl/mirror-gambit/releases/latest) and run it.
+It installs for your Windows user only (no admin prompt) into
+`%LOCALAPPDATA%\Programs\mirror-gambit`, with Start menu and desktop shortcuts and an
+entry in Settings > Apps. Your progress lives in `%APPDATA%\Mirror Gambit` and is kept
+across updates and reinstalls. The installer is not code-signed, so SmartScreen may
+say "Windows protected your PC" the first time: choose **More info > Run anyway**.
 
-Most of the size is the four Stockfish builds (two 99 MB full-strength
-networks plus the lite ones). Dropping the single-threaded full build from
-`public/stockfish` would roughly halve both files; the app would then fall back to
-the lite engine on machines without `SharedArrayBuffer`.
+**Updates:** the app checks GitHub 10 seconds after it starts and every 6 hours.
+When a newer version exists, a bar under the header offers **Download update**, then
+**Restart and update**. Settings > Updates shows the current version and has
+**Check for updates**. Nothing is downloaded until you click.
 
-**Install (MSI):** double-click the .msi and follow the wizard, or silently:
+**Upgrading from 1.1.0 (the MSI):** uninstall "Mirror Gambit" once in Settings > Apps,
+then run the new Setup.exe. Your progress is kept. From then on updates are in-app.
 
-```powershell
-msiexec /i "Mirror Gambit 1.1.0.msi" /qn
-```
+**Portable:** `Mirror-Gambit-<version>-Portable.exe` is a single file with no install.
+All data is kept in a `MirrorGambitData` folder next to it. It cannot update itself;
+Settings > Updates links to the releases page.
 
-It installs to `%LOCALAPPDATA%\Programs\Mirror Gambit\Mirror Gambit.exe`.
+**Publishing a new version:**
 
-**Upgrade:** run the newer MSI the same way. The appId and the MSI upgrade code
-never change, so it replaces the installed version in place: one entry in
-Settings > Apps, and your data in `%APPDATA%\Mirror Gambit` is kept.
-
-**Uninstall:** Settings > Apps > Mirror Gambit > Uninstall, or silently:
-
-```powershell
-msiexec /x "Mirror Gambit 1.1.0.msi" /qn
-```
-
-**Portable:** copy the exe anywhere (a USB stick works) and run it. Delete the exe
-and the `MirrorGambitData` folder next to it to remove everything.
+1. Bump `"version"` in `package.json` (for example `1.2.1`) and commit it on `main`.
+2. Tag and push: `git tag v1.2.1` then `git push origin v1.2.1`.
+3. GitHub Actions (`.github/workflows/release.yml`) runs the tests and lint, builds the
+   installer and the portable exe, and publishes them with `latest.yml` as a release.
+   Installed copies offer the update within a few hours, or straight away with
+   **Check for updates**.
 
 **Build it yourself:**
 
 ```bash
 npm run icon            # regenerates build/icon.ico (optional, already committed)
 npm run dev:desktop     # Electron with the Vite dev server and hot reload
-npm run build:desktop   # web build + main process + MSI and portable exe into release/
+npm run build:desktop   # web build + main process + Setup.exe and portable exe into release/
 ```
 
-The first `build:desktop` downloads the WiX toolset that electron-builder uses for
-the MSI. The installers are not code-signed yet; `electron-builder.yml` has the
-signing settings ready to uncomment once a certificate is available. SmartScreen may
-warn the first time an unsigned exe is run.
+Most of the size is the four Stockfish builds (two 99 MB full-strength networks plus
+the lite ones), so the installer is about 230 MB.
 
 How the shell works: the built app is served through a privileged `app://`
 scheme whose every response carries the COOP/COEP headers, so the page is
@@ -224,9 +248,11 @@ cross-origin isolated and the multi-threaded Stockfish worker gets
 `SharedArrayBuffer`. The main process logs the isolation check and which engine
 build loaded to `mirror-gambit.log` in the data folder. The window has
 `contextIsolation`, `sandbox` and a strict Content Security Policy, blocks all
-navigation and new windows, and opens external links in the default browser. The
-review-card JSON export uses a save dialog and the import an open dialog, as in
-the browser.
+navigation and new windows, and opens external links in the default browser. A small
+preload script (`electron/preload.ts`) gives the page exactly two things: the update
+controls (`electron/updater.ts`, electron-updater) and a fetch of one chess.com game's
+public JSON by numeric id. The review-card JSON export uses a save dialog and the
+import an open dialog, as in the browser.
 
 ## Engine notes
 
@@ -250,6 +276,8 @@ the browser.
 - move classification thresholds (`src/lib/analysis/classify.test.ts`)
 - practice scoring (Clean, Assisted, Failed), streaks, hint levels, auto-offered hints, SRS grade mapping and alternative-move acceptance (`src/lib/practice/practice.test.ts`)
 - computer opponent levels and move choice (`src/lib/play/levels.test.ts`)
+- the review coach: line expansion, forks, undefended pieces, mates, material and the coach text (`src/lib/coach/coach.test.ts`)
+- chess.com links and the TCN move decoder, checked against a real game (`src/lib/import/chesscom.test.ts`)
 - saved games against the computer (`src/lib/play/savedGames.test.ts`)
 - opening principle checks (`src/lib/tips/principles.test.ts`)
 - engine driver and stale-result handling with a fake worker (`src/lib/engine/engine.test.ts`)
@@ -288,6 +316,10 @@ src/lib/srs/        SM-2 spaced repetition
 src/lib/review/     game review
 src/lib/progress/   review history for the progress page
 src/lib/play/       computer opponent levels and saved games
+src/lib/coach/      review coach: engine lines turned into plain-language lessons
+src/lib/import/     chess.com game links
+electron/           desktop shell: main process, preload bridge, updater
+.github/workflows/  CI on every push, and the release build on version tags
 src/openings/       opening content (one file per opening), trap-puzzle matching, validation tests
 src/data/           bundled Lichess opening names (CC0) and puzzle sets
 ```

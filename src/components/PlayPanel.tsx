@@ -22,11 +22,12 @@ export function PlayPanel({ play, engineReady, onReview, onReviewSaved }: PlayPa
 function PlaySetup({ play, engineReady, onReviewSaved }: { play: PlayApi; engineReady: boolean; onReviewSaved: (g: SavedGame) => void }) {
   const [levelId, setLevelId] = useState(play.level.id)
   const [color, setColor] = useState<'w' | 'b' | 'random'>('w')
+  const [coach, setCoach] = useState(play.liveCoach)
   const records = recordByLevel(play.savedGames)
 
   function begin() {
     const c = color === 'random' ? (Math.random() < 0.5 ? 'w' : 'b') : color
-    play.start(c, levelId)
+    play.start(c, levelId, coach)
   }
 
   return (
@@ -62,6 +63,11 @@ function PlaySetup({ play, engineReady, onReviewSaved }: { play: PlayApi; engine
           </button>
         ))}
       </div>
+
+      <label className="toggle small-text" style={{ marginTop: 12 }} title="Slower: the engine checks each of your moves before replying">
+        <input type="checkbox" checked={coach} onChange={(e) => setCoach(e.target.checked)} />
+        Live coach: warn me right after an inaccuracy, mistake or blunder
+      </label>
 
       <div className="row" style={{ marginTop: 12 }}>
         <button className="btn primary" onClick={begin} disabled={!engineReady} title={engineReady ? '' : 'Waiting for the engine'}>
@@ -121,7 +127,7 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
           <button className="btn primary" onClick={onReview}>
             Review game
           </button>
-          <button className="btn" onClick={() => play.start(play.userColor, play.level.id)}>
+          <button className="btn" onClick={() => play.start(play.userColor, play.level.id, play.liveCoach)}>
             Play again
           </button>
           <button className="btn" onClick={play.exit}>
@@ -148,6 +154,20 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
                 : 'Waiting for the computer…'}
         </p>
       </div>
+      {play.coachAlert && (
+        <div className={'card ' + (play.coachAlert.cls === 'blunder' ? 'bad' : 'warn')}>
+          <h3>🎓 Coach</h3>
+          <p className="small-text">{play.coachAlert.text}</p>
+          <div className="row">
+            <button className="btn small primary" onClick={play.takeBack} disabled={!play.canTakeBack}>
+              ↶ Take it back
+            </button>
+            <button className="btn small" onClick={play.dismissCoach}>
+              Keep playing
+            </button>
+          </div>
+        </div>
+      )}
       <div className="row">
         <button className="btn" onClick={play.takeBack} disabled={!play.canTakeBack} title="Undo your last move and the computer's reply">
           ↶ Take back
@@ -168,8 +188,9 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
         )}
       </div>
       <p className="small-text muted">
-        Blunder alerts and analysis are off during the game so you can think for yourself. Review the game afterwards to see
-        every mistake.
+        {play.liveCoach
+          ? 'The live coach checks each of your moves and warns you about mistakes. Analysis stays hidden.'
+          : 'Blunder alerts and analysis are off during the game so you can think for yourself. Review the game afterwards to see every mistake.'}
       </p>
     </div>
   )

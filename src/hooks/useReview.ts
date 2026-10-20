@@ -76,6 +76,7 @@ export function useReview(gameApi: GameApi, engine: EngineContextValue) {
           score: best?.score ?? { type: 'cp', value: 0 },
           bestMove: r.bestMove ?? best?.pv[0] ?? null,
           depth: r.depth,
+          pv: best?.pv ?? [],
         })
       }
       const result = buildReview(game, evals)

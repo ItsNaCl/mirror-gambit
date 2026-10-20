@@ -10,6 +10,8 @@ export interface PositionEval {
   score: Score
   bestMove: string | null
   depth: number
+  /** Engine's principal variation from this position (UCI), used by the coach. */
+  pv?: string[]
 }
 
 export interface ReviewedMove {
@@ -21,6 +23,10 @@ export interface ReviewedMove {
   betterMove: string | null
   /** Evaluation after the move (White's perspective). */
   evalAfter: Score
+  /** Engine's best line from the position before the move (UCI): what the mover could have played. */
+  bestLine: string[]
+  /** Engine's best line from the position after the move (UCI): how the opponent can answer. */
+  replyLine: string[]
 }
 
 export type SideCounts = Record<MoveClass, number>
@@ -57,7 +63,16 @@ export function buildReview(game: GameState, evals: PositionEval[]): ReviewResul
       playedBestMove: before.bestMove === uci,
     })
     const betterMove = isProblem(classification.cls) && before.bestMove && before.bestMove !== uci ? uciToSan(before.fen, before.bestMove) : null
-    moves.push({ index: i, san: move.san, mover: move.color, classification, betterMove, evalAfter: after.score })
+    moves.push({
+      index: i,
+      san: move.san,
+      mover: move.color,
+      classification,
+      betterMove,
+      evalAfter: after.score,
+      bestLine: before.pv?.length ? before.pv : before.bestMove ? [before.bestMove] : [],
+      replyLine: after.pv ?? (after.bestMove ? [after.bestMove] : []),
+    })
     summary[move.color][classification.cls]++
   }
   return { moves, evals: evals.map((e) => e.score), summary }

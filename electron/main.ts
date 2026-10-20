@@ -1,7 +1,8 @@
-import { app, BrowserWindow, Menu, protocol, screen, session, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, net, protocol, screen, session, shell } from 'electron'
 import { appendFileSync, createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Readable } from 'node:stream'
+import { setupUpdater } from './updater'
 
 /**
  * Mirror Gambit desktop shell.
@@ -203,6 +204,7 @@ function createWindow() {
       webSecurity: true,
       allowRunningInsecureContent: false,
       spellcheck: false,
+      preload: path.join(__dirname, 'preload.cjs'),
     },
   })
   if (state.maximized) win.maximize()
@@ -260,6 +262,19 @@ function createWindow() {
   return win
 }
 
+// ---------- chess.com game import ----------
+
+// The page cannot call chess.com itself (CORS and the strict CSP), so the main process
+// fetches exactly one kind of URL for it: a game's public JSON by numeric id.
+function setupChessComImport() {
+  ipcMain.handle('chesscom:fetch', async (_e, kind: unknown, id: unknown) => {
+    if ((kind !== 'live' && kind !== 'daily') || typeof id !== 'string' || !/^\d{1,15}$/.test(id)) throw new Error('Invalid chess.com game')
+    const res = await net.fetch(`https://www.chess.com/callback/${kind}/game/${id}`, { headers: { Accept: 'application/json' } })
+    if (!res.ok) throw new Error(res.status === 404 ? 'chess.com could not find that game.' : `chess.com answered ${res.status}.`)
+    return res.text()
+  })
+}
+
 // ---------- app lifecycle ----------
 
 if (!app.requestSingleInstanceLock()) {
@@ -303,6 +318,8 @@ if (!app.requestSingleInstanceLock()) {
       contents.on('will-attach-webview', (e) => e.preventDefault())
     })
 
+    setupUpdater({ isDev, isPortable: !!portableDir, log })
+    setupChessComImport()
     createWindow()
 
     app.on('activate', () => {
