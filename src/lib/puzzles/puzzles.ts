@@ -3,15 +3,17 @@ import backRank from '../../data/puzzles/back-rank.json'
 import endgames from '../../data/puzzles/beginner-endgames.json'
 import checkmates from '../../data/puzzles/checkmate-patterns.json'
 import forks from '../../data/puzzles/forks.json'
+import lichessLonger from '../../data/puzzles/lichess-longer.json'
 import openingMoves from '../../data/puzzles/opening-moves.json'
 import openingTraps from '../../data/puzzles/opening-traps.json'
 import pins from '../../data/puzzles/pins.json'
 import skewers from '../../data/puzzles/skewers.json'
 
 /**
- * Puzzle sets ported from Chess Rocket (GPL-3.0, see README credits).
- * The JSON files are copied as-is into src/data/puzzles; this module validates
- * them with chess.js and drops anything that is not playable.
+ * Puzzle sets ported from Chess Rocket (GPL-3.0, see README credits), plus multi-move
+ * puzzles from the Lichess puzzle database (CC0, scripts/import-lichess-puzzles.mjs).
+ * The JSON files live in src/data/puzzles; this module validates them with chess.js
+ * and drops anything that is not playable.
  */
 
 export type PuzzleSetId =
@@ -23,6 +25,7 @@ export type PuzzleSetId =
   | 'endgames'
   | 'opening-moves'
   | 'opening-traps'
+  | 'longer'
 
 export type PuzzleChoice = PuzzleSetId | 'mixed'
 
@@ -68,6 +71,7 @@ export const PUZZLE_SETS: { id: PuzzleSetId; label: string; motifKey: string }[]
   { id: 'endgames', label: 'Endgames', motifKey: 'endgame' },
   { id: 'opening-moves', label: 'Opening moves', motifKey: 'opening' },
   { id: 'opening-traps', label: 'Opening traps', motifKey: 'opening_trap' },
+  { id: 'longer', label: 'Longer puzzles', motifKey: 'tactics' },
 ]
 
 const RAW: Record<PuzzleSetId, RawPuzzle[]> = {
@@ -79,6 +83,7 @@ const RAW: Record<PuzzleSetId, RawPuzzle[]> = {
   endgames: endgames as RawPuzzle[],
   'opening-moves': openingMoves as RawPuzzle[],
   'opening-traps': openingTraps as RawPuzzle[],
+  longer: lichessLonger as RawPuzzle[],
 }
 
 /** Beginner explanations of each motif, written from Chess Rocket's tactical-patterns reference. */
