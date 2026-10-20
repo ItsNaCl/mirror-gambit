@@ -889,3 +889,41 @@ abbr.gloss {
     box-shadow: 0 0 0 6px rgba(242, 185, 66, 0);
   }
 }
+
+/* ---------- play vs computer ---------- */
+.opening-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.saved-games {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saved-game {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.outcome {
+  font-weight: 600;
+}
+
+.outcome-win {
+  color: var(--good);
+}
+
+.outcome-loss {
+  color: var(--bad);
+}
+
+.outcome-draw {
+  color: var(--text-muted);
+}

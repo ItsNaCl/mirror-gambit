@@ -388,16 +388,21 @@
   {
     "fen": "r3r1k1/p1p2p1p/b1P3p1/2p5/3b1B2/2N2R2/PPP2nPP/R3Q2K w - - 9 18",
     "solution_moves": [
-      "e1f2"
+      "e1f2",
+      "d4f2",
+      "f3f2"
     ],
     "solution_san": [
-      "Qxf2"
+      "Qxf2",
+      "Bxf2",
+      "Rxf2"
     ],
     "motif": "skewer",
     "difficulty": "advanced",
     "difficulty_rating": 1100,
     "explanation": "Qxf2 creates a skewer - the front piece must move, exposing the piece behind.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 1
   },
   {
     "fen": "r1bqk2r/1p1p1p2/p1nbpnp1/7p/2B1P2P/5N2/PP3PP1/R1BQ1RK1 w kq - 0 11",

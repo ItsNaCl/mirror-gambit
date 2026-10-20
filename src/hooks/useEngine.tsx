@@ -36,9 +36,10 @@ export interface EngineContextValue {
   getCached: (fen: string) => CachedEval | undefined
   /** Increments whenever the cache changes, so effects can watch it. */
   evalVersion: number
-  /** One-shot evaluation (used by game review). Live analysis should be suspended while reviewing. */
+  /** One-shot evaluation (review, play, puzzles). Suspend live analysis first: a new live search would replace it. */
   evaluate: (fen: string, depth: number, multiPv?: number) => Promise<AnalysisResult>
-  setLiveSuspended: (suspended: boolean) => void
+  /** Live analysis pauses while any owner holds a suspension, so one mode cannot release another's. */
+  setLiveSuspended: (suspended: boolean, owner?: string) => void
 }
 
 const EngineContext = createContext<EngineContextValue | null>(null)
@@ -52,7 +53,17 @@ export function EngineProvider({ fen, children }: { fen: string; children: React
   const [buildInfo, setBuildInfo] = useState('')
   const [errorText, setErrorText] = useState<string | null>(null)
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null)
-  const [liveSuspended, setLiveSuspended] = useState(false)
+  const [suspendedBy, setSuspendedBy] = useState<ReadonlySet<string>>(() => new Set())
+  const liveSuspended = suspendedBy.size > 0
+  const setLiveSuspended = useCallback((suspended: boolean, owner = 'review') => {
+    setSuspendedBy((prev) => {
+      if (prev.has(owner) === suspended) return prev
+      const next = new Set(prev)
+      if (suspended) next.add(owner)
+      else next.delete(owner)
+      return next
+    })
+  }, [])
   const [evalVersion, setEvalVersion] = useState(0)
   const cache = useRef(new Map<string, CachedEval>())
   const searchId = useRef(0)
@@ -120,11 +131,9 @@ export function EngineProvider({ fen, children }: { fen: string; children: React
 
   // Live analysis: restart the search on every position change.
   useEffect(() => {
-    if (!engine || status !== 'ready') return
-    if (liveSuspended) {
-      engine.stop()
-      return
-    }
+    // No stop() while suspended: it would drop an evaluate() queued by the suspending mode,
+    // and that mode's own search preempts the live one anyway.
+    if (!engine || status !== 'ready' || liveSuspended) return
     const id = ++searchId.current
     setAnalysis(null)
     engine.analyze({ id, fen, depth: settings.depth, multiPv: LIVE_MULTI_PV }, (result) => {
@@ -172,7 +181,7 @@ export function EngineProvider({ fen, children }: { fen: string; children: React
       evaluate,
       setLiveSuspended,
     }),
-    [status, statusText, buildInfo, analysis, fen, getCached, evalVersion, evaluate],
+    [status, statusText, buildInfo, analysis, fen, getCached, evalVersion, evaluate, setLiveSuspended],
   )
 
   return <EngineContext.Provider value={value}>{children}</EngineContext.Provider>

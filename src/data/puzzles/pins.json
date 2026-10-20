@@ -422,17 +422,22 @@
     "solution_moves": [
       "d1a4",
       "b8c6",
-      "b4b5"
+      "b4b5",
+      "c6b4",
+      "b5b6"
     ],
     "solution_san": [
       "Qa4+",
       "Nc6",
-      "b5"
+      "b5",
+      "Nb4",
+      "b6+"
     ],
     "motif": "pin",
     "difficulty": "advanced",
     "difficulty_rating": 1250,
     "explanation": "Qa4+ pins an enemy piece to a more valuable piece behind it.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 3
   }
 ]

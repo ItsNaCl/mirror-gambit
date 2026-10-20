@@ -1,7 +1,8 @@
 # Mirror Gambit
 
-A local chess study app for beginners. You play both sides yourself, with Stockfish
-running in the background for analysis, blunder alerts, hints, an opening trainer
+A local chess study app for beginners. You play both sides yourself or a full game
+against the computer at six difficulty levels, with Stockfish running in the
+background for analysis, blunder alerts, hints, an opening trainer
 with plain-language commentary, tactical puzzles, spaced-repetition review of your
 own mistakes, a full game review and a progress page.
 
@@ -32,6 +33,7 @@ Other commands:
 | `npm test` | Run all unit and validation tests |
 | `npm run openings:check` | Evaluate every opening line with Stockfish at depth 18 and write `scripts/opening-eval-report.md` |
 | `npm run openings:data` | Rebuild `src/data/lichess-openings.json` from the Lichess TSV files in `scripts/` |
+| `npm run puzzles:extend` | Lengthen short puzzles with Stockfish-verified follow-up moves (rewrites `src/data/puzzles/*.json`) |
 
 ## What is in the app
 
@@ -54,6 +56,24 @@ Other commands:
   - Opening detection with ECO code and name from the Lichess chess-openings dataset.
   - Opening principle reminders during the first 12 moves (piece moved twice, queen out early, not castled by move 10, undeveloped minor pieces, no central pawn), each shown once per game with one habit to practise.
   - A Hint button that reveals a tactic in three steps, only when you ask.
+
+**Play tab (play against the computer)**
+
+A full game against Stockfish at one of six levels: Beginner, Novice, Casual, Club,
+Advanced and Master. Pick White, Black or random. Stockfish's own strength limit
+starts around 1320 Elo, which is far too strong for beginners, so the lower levels
+ask the engine for several candidate moves at a shallow depth and choose among them
+with some randomness: the worse a move, the less likely it is to be played. The
+Beginner level also makes the occasional random move. Master is full-strength
+Stockfish. The level settings live in `src/lib/play/levels.ts`.
+
+- Blunder alerts, hints and live analysis are off during the game.
+- Take back undoes your last move and the computer's reply. Resign asks for confirmation.
+- When the game ends (checkmate, draw or resignation) a banner offers **Review game**,
+  which runs the normal game review on it.
+- Every finished game is saved (the last 50) under **Past games** with the result,
+  level and date, and each one has a **Review** button that loads it onto the board
+  and reviews it. The tab also shows your wins, losses and draws per level.
 
 **Move classification**
 
@@ -88,6 +108,19 @@ All opening content lives in `src/openings/*.ts`, separate from the UI.
 endgames, opening moves, opening traps) or a mixed set. The board turns to face the
 side to move; you find the moves and the app plays the replies.
 
+- **Longer puzzles.** `npm run puzzles:extend` plays each short puzzle on with
+  Stockfish at depth 16 and keeps adding the opponent's best reply and your answer
+  (up to four of your moves), as long as your move is clearly the right one: you stay
+  winning (a mate, or at least +2) and the move is a mate or at least 1.5 pawns better
+  than the second choice. All endgame puzzles are now four moves long, and several
+  tactics got their natural follow-up (for example `Nxc7+ Kd8 Nxa8`). Mate-in-one
+  puzzles, and puzzles whose position is not clearly winning after the first move,
+  stay as they were. Extended puzzles carry `extended_from` with their original length.
+- **Alternative moves count.** If you play a different move than the stored answer,
+  Stockfish checks it. If it is rated Best or Great on the usual scale (at most 30
+  centipawns worse, or any mate when a mate was available), it counts as correct
+  ("That works too!"). From then on the engine plays the replies and judges your
+  moves, since the stored line no longer applies. Any checkmate is always accepted.
 - **Unlimited attempts.** A wrong move snaps back with "Not quite, try again" and you
   stay on the same move; a mistake on move 3 never sends you back to move 1. An
   attempt counter shows the wrong tries on the current move.
@@ -209,7 +242,9 @@ the browser.
 `npm test` runs Vitest:
 
 - move classification thresholds (`src/lib/analysis/classify.test.ts`)
-- practice scoring (Clean, Assisted, Failed), streaks, hint levels, auto-offered hints and SRS grade mapping (`src/lib/practice/practice.test.ts`)
+- practice scoring (Clean, Assisted, Failed), streaks, hint levels, auto-offered hints, SRS grade mapping and alternative-move acceptance (`src/lib/practice/practice.test.ts`)
+- computer opponent levels and move choice (`src/lib/play/levels.test.ts`)
+- saved games against the computer (`src/lib/play/savedGames.test.ts`)
 - opening principle checks (`src/lib/tips/principles.test.ts`)
 - engine driver and stale-result handling with a fake worker (`src/lib/engine/engine.test.ts`)
 - UCI parsing and score formatting (`src/lib/engine/uci.test.ts`)
@@ -237,7 +272,7 @@ lopsided on purpose.
 ```
 scripts/            engine helpers, opening data build and evaluation scripts
 src/components/     board, panels, move list, modals, glossary
-src/hooks/          game state, engine, tips, trainer, puzzles, cards (SRS), review, settings
+src/hooks/          game state, engine, tips, trainer, puzzles, cards (SRS), play vs computer, review, settings
 src/lib/chess/      rules helpers, PGN, FEN validation, game-over messages
 src/lib/engine/     Stockfish worker driver and UCI parsing
 src/lib/analysis/   move classification
@@ -246,6 +281,7 @@ src/lib/puzzles/    puzzle loading, validation and motif explanations
 src/lib/srs/        SM-2 spaced repetition
 src/lib/review/     game review
 src/lib/progress/   review history for the progress page
+src/lib/play/       computer opponent levels and saved games
 src/openings/       opening content (one file per opening), trap-puzzle matching, validation tests
 src/data/           bundled Lichess opening names (CC0) and puzzle sets
 ```

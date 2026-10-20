@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  acceptsAlternative,
   emptyStats,
   hintView,
   movesMatch,
@@ -106,5 +107,27 @@ describe('move helpers', () => {
     const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     expect(themeForMove(start, 'e2e4')).toMatch(/develops|centre/)
     expect(themeForMove('r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4', 'h5f7')).toMatch(/checkmate/)
+  })
+})
+
+describe('alternative moves', () => {
+  const cp = (value: number) => ({ type: 'cp' as const, value })
+  const mate = (value: number) => ({ type: 'mate' as const, value })
+
+  it('accepts a move within 30 centipawns of the best one', () => {
+    expect(acceptsAlternative(cp(500), cp(480), 'w')).toBe(true)
+    expect(acceptsAlternative(cp(-500), cp(-475), 'b')).toBe(true)
+  })
+
+  it('rejects a move that throws away a real part of the advantage', () => {
+    expect(acceptsAlternative(cp(500), cp(400), 'w')).toBe(false)
+    expect(acceptsAlternative(cp(-500), cp(-300), 'b')).toBe(false)
+  })
+
+  it('accepts any mate when a mate was available, but not a non-mating move', () => {
+    expect(acceptsAlternative(mate(2), mate(3), 'w')).toBe(true)
+    expect(acceptsAlternative(mate(2), mate(0), 'w')).toBe(true)
+    expect(acceptsAlternative(mate(-2), mate(-4), 'b')).toBe(true)
+    expect(acceptsAlternative(mate(2), cp(900), 'w')).toBe(false)
   })
 })
