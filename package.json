@@ -16,6 +16,7 @@
     "openings:data": "node scripts/build-openings.mjs",
     "openings:check": "node scripts/check-openings.mjs",
     "puzzles:extend": "node scripts/extend-puzzles.mjs",
+    "puzzles:lichess": "node scripts/import-lichess-puzzles.mjs",
     "icon": "node scripts/make-icon.mjs",
     "build:main": "node scripts/build-main.mjs",
     "dev:desktop": "node scripts/dev-desktop.mjs",

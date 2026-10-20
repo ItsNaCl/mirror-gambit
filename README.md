@@ -34,6 +34,7 @@ Other commands:
 | `npm run openings:check` | Evaluate every opening line with Stockfish at depth 18 and write `scripts/opening-eval-report.md` |
 | `npm run openings:data` | Rebuild `src/data/lichess-openings.json` from the Lichess TSV files in `scripts/` |
 | `npm run puzzles:extend` | Lengthen short puzzles with Stockfish-verified follow-up moves (rewrites `src/data/puzzles/*.json`) |
+| `npm run puzzles:lichess -- <file>` | Rebuild `src/data/puzzles/lichess-longer.json` from a downloaded `lichess_db_puzzle.csv.zst` |
 
 ## What is in the app
 
@@ -104,9 +105,9 @@ All opening content lives in `src/openings/*.ts`, separate from the UI.
 
 **Puzzles tab**
 
-238 puzzles in eight sets (forks, pins, skewers, back rank, checkmate patterns,
-endgames, opening moves, opening traps) or a mixed set. The board turns to face the
-side to move; you find the moves and the app plays the replies.
+478 puzzles in nine sets (forks, pins, skewers, back rank, checkmate patterns,
+endgames, opening moves, opening traps, longer puzzles) or a mixed set. The board
+turns to face the side to move; you find the moves and the app plays the replies.
 
 - **Longer puzzles.** `npm run puzzles:extend` plays each short puzzle on with
   Stockfish at depth 16 and keeps adding the opponent's best reply and your answer
@@ -116,6 +117,11 @@ side to move; you find the moves and the app plays the replies.
   tactics got their natural follow-up (for example `Nxc7+ Kd8 Nxa8`). Mate-in-one
   puzzles, and puzzles whose position is not clearly winning after the first move,
   stay as they were. Extended puzzles carry `extended_from` with their original length.
+- **Longer puzzles set.** 240 puzzles from real Lichess games, 40 each for forks,
+  pins, skewers, back-rank mates, checkmates and endgames. Every one takes at least
+  three of your moves, is rated 800 to 1600 on Lichess and is among the most played
+  and best liked in its rating band. `npm run puzzles:lichess -- <file>` rebuilds the
+  set from the downloaded database.
 - **Alternative moves count.** If you play a different move than the stored answer,
   Stockfish checks it. If it is rated Best or Great on the usual scale (at most 30
   centipawns worse, or any mate when a mate was available), it counts as correct
@@ -291,6 +297,9 @@ src/data/           bundled Lichess opening names (CC0) and puzzle sets
 - [Stockfish](https://stockfishchess.org/) via [stockfish.js](https://github.com/nmrugg/stockfish.js) (GPL-3.0)
 - [chess.js](https://github.com/jhlywa/chess.js) and [react-chessboard](https://github.com/Clariity/react-chessboard)
 - Opening names from the [Lichess chess-openings](https://github.com/lichess-org/chess-openings) dataset (CC0)
+- The "Longer puzzles" set (`src/data/puzzles/lichess-longer.json`) is selected from the
+  [Lichess puzzle database](https://database.lichess.org/#puzzles) (CC0) by `scripts/import-lichess-puzzles.mjs`.
+  Each puzzle keeps its Lichess id in `source`.
 - [Chess Rocket](https://github.com/suvojit-0x55aa/chess_rocket) by suvojit-0x55aa, licensed under the
   GNU General Public License v3.0. Mirror Gambit used it as reference material and ported, in TypeScript,
   its six-level move classification scale, the SM-2 spaced-repetition scheduling (same intervals and ease
