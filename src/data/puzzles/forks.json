@@ -278,16 +278,21 @@
   {
     "fen": "rnb1kb1r/pp2p2p/1n1q1pp1/6N1/3p4/1BP5/PP3PPP/RNBQK2R w KQkq - 0 10",
     "solution_moves": [
-      "g5f7"
+      "g5f7",
+      "d6c6",
+      "e1g1"
     ],
     "solution_san": [
-      "Nf7"
+      "Nf7",
+      "Qc6",
+      "O-O"
     ],
     "motif": "fork",
     "difficulty": "advanced",
     "difficulty_rating": 1000,
     "explanation": "Nf7 creates a fork, attacking multiple valuable pieces simultaneously.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 1
   },
   {
     "fen": "r3k1nr/2q1bpnp/pp6/2p5/3pb3/1P3Q2/PBPPNPP1/R3K1NR w KQkq - 0 16",
@@ -310,30 +315,40 @@
   {
     "fen": "r3k1nr/2p1q1p1/bp1p3p/pN1Pp3/P1P3Pb/R2B1Q1P/1P3P2/2B2K1R w kq - 2 17",
     "solution_moves": [
-      "b5c7"
+      "b5c7",
+      "e8d8",
+      "c7a8"
     ],
     "solution_san": [
-      "Nxc7+"
+      "Nxc7+",
+      "Kd8",
+      "Nxa8"
     ],
     "motif": "fork",
     "difficulty": "advanced",
     "difficulty_rating": 1000,
     "explanation": "Nxc7+ creates a fork, attacking multiple valuable pieces simultaneously.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 1
   },
   {
     "fen": "r1b1k2r/pp3ppp/1qn1pn2/3p4/3P3P/B3P3/4NPP1/1R1QKBNR b Kkq - 0 11",
     "solution_moves": [
-      "b6a5"
+      "b6a5",
+      "d1d2",
+      "a5a3"
     ],
     "solution_san": [
-      "Qa5+"
+      "Qa5+",
+      "Qd2",
+      "Qxa3"
     ],
     "motif": "fork",
     "difficulty": "advanced",
     "difficulty_rating": 900,
     "explanation": "Qa5+ creates a fork, attacking multiple valuable pieces simultaneously.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 1
   },
   {
     "fen": "rnbqk1nr/ppp2ppp/8/2bPp3/2B5/2P5/PP1P1PPP/RNBQK1NR b KQkq - 0 4",
@@ -384,16 +399,29 @@
   {
     "fen": "r1bqk2r/pp3ppp/n2p4/4p3/2P3n1/6P1/PP1NP1BP/RNBQK2R b kq - 2 9",
     "solution_moves": [
-      "g4e3"
+      "g4e3",
+      "d1b3",
+      "e3g2",
+      "e1f2",
+      "a6c5",
+      "b3f3",
+      "c8h3"
     ],
     "solution_san": [
-      "Ne3"
+      "Ne3",
+      "Qb3",
+      "Nxg2+",
+      "Kf2",
+      "Nc5",
+      "Qf3",
+      "Bh3"
     ],
     "motif": "fork",
     "difficulty": "advanced",
     "difficulty_rating": 1000,
     "explanation": "Ne3 creates a fork, attacking multiple valuable pieces simultaneously.",
-    "source": "generated"
+    "source": "generated",
+    "extended_from": 1
   },
   {
     "fen": "r1b1kbnr/pp3ppp/2N5/8/2pqp3/2N5/PP3PPP/R1BQKB1R b KQkq - 0 9",

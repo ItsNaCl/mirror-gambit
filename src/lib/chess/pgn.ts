@@ -5,6 +5,8 @@ import { newGame, type GameState } from './game'
 export interface PgnOptions {
   /** Comment to attach after move i (0-based index into state.moves). */
   comments?: Record<number, string>
+  /** Extra or replacement PGN headers (e.g. player names, a resignation result). */
+  headers?: Record<string, string>
 }
 
 export function exportPgn(state: GameState, options: PgnOptions = {}): string {
@@ -23,6 +25,7 @@ export function exportPgn(state: GameState, options: PgnOptions = {}): string {
   }
   const over = getGameOver(chess)
   chess.setHeader('Result', over?.result ?? '*')
+  for (const [k, v] of Object.entries(options.headers ?? {})) chess.setHeader(k, v)
   return chess.pgn()
 }
 

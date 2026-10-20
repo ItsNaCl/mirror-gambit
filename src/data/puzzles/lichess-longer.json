@@ -1,0 +1,5570 @@
+[
+  {
+    "fen": "2r2rk1/p4q1p/b1nNR1p1/P2Q4/1P6/2P5/5PPP/R5K1 b - - 2 25",
+    "solution_moves": [
+      "f7f2",
+      "g1h1",
+      "f2f1",
+      "a1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 828,
+    "explanation": "Qxf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle IXqrY).",
+    "source": "lichess:IXqrY"
+  },
+  {
+    "fen": "2rr2k1/5ppp/p4b2/8/4QB2/1P6/1P3PPP/2R3K1 b - - 0 24",
+    "solution_moves": [
+      "c8c1",
+      "f4c1",
+      "d8d1",
+      "e4e1",
+      "d1e1"
+    ],
+    "solution_san": [
+      "Rxc1+",
+      "Bxc1",
+      "Rd1+",
+      "Qe1",
+      "Rxe1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 857,
+    "explanation": "Rxc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle UvzD4).",
+    "source": "lichess:UvzD4"
+  },
+  {
+    "fen": "n1r3k1/4qpp1/4r2p/3Q4/p2P4/2B3P1/PP5P/K3RR2 b - - 1 28",
+    "solution_moves": [
+      "e6e1",
+      "f1e1",
+      "e7e1",
+      "c3e1",
+      "c8c1"
+    ],
+    "solution_san": [
+      "Rxe1+",
+      "Rxe1",
+      "Qxe1+",
+      "Bxe1",
+      "Rc1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 883,
+    "explanation": "Rxe1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle RJfte).",
+    "source": "lichess:RJfte"
+  },
+  {
+    "fen": "3r2k1/ppQ2ppp/8/8/1PP5/P2r3q/2R5/5RK1 w - - 0 31",
+    "solution_moves": [
+      "c7f7",
+      "g8h8",
+      "f7f8",
+      "d8f8",
+      "f1f8"
+    ],
+    "solution_san": [
+      "Qxf7+",
+      "Kh8",
+      "Qf8+",
+      "Rxf8",
+      "Rxf8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 895,
+    "explanation": "Qxf7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle bdY9n).",
+    "source": "lichess:bdY9n"
+  },
+  {
+    "fen": "r4rk1/2p3pp/p3p3/1pq1p2N/4R1Qb/3P4/PPP2PPP/R5K1 b - - 5 18",
+    "solution_moves": [
+      "c5f2",
+      "g1h1",
+      "f2f1",
+      "a1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 896,
+    "explanation": "Qxf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle JcCKE).",
+    "source": "lichess:JcCKE"
+  },
+  {
+    "fen": "2r3k1/1b5p/p5p1/1p1p1p2/3Ppq2/PQR5/1P3PPP/2R3K1 b - - 3 28",
+    "solution_moves": [
+      "f4c1",
+      "c3c1",
+      "c8c1",
+      "b3d1",
+      "c1d1"
+    ],
+    "solution_san": [
+      "Qxc1+",
+      "Rxc1",
+      "Rxc1+",
+      "Qd1",
+      "Rxd1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 910,
+    "explanation": "Qxc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle k4mSR).",
+    "source": "lichess:k4mSR"
+  },
+  {
+    "fen": "r4r1k/p5pp/3Q4/5q2/1P1R4/4P3/PB3PPP/R5K1 b - - 2 20",
+    "solution_moves": [
+      "f5f2",
+      "g1h1",
+      "f2f1",
+      "a1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 917,
+    "explanation": "Qxf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle nGAst).",
+    "source": "lichess:nGAst"
+  },
+  {
+    "fen": "3r2r1/1p1RR1pk/1p6/5p1q/8/1N4Q1/PPP2PPP/6K1 b - - 0 28",
+    "solution_moves": [
+      "h5d1",
+      "d7d1",
+      "d8d1",
+      "e7e1",
+      "d1e1"
+    ],
+    "solution_san": [
+      "Qd1+",
+      "Rxd1",
+      "Rxd1+",
+      "Re1",
+      "Rxe1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 950,
+    "explanation": "Qd1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle MoYZF).",
+    "source": "lichess:MoYZF"
+  },
+  {
+    "fen": "r5k1/Q4ppp/1p2p3/3bP1q1/3P4/2R3P1/1P2B1P1/6K1 w - - 3 25",
+    "solution_moves": [
+      "a7a8",
+      "d5a8",
+      "c3c8",
+      "g5d8",
+      "c8d8"
+    ],
+    "solution_san": [
+      "Qxa8+",
+      "Bxa8",
+      "Rc8+",
+      "Qd8",
+      "Rxd8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 955,
+    "explanation": "Qxa8+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle Kbklm).",
+    "source": "lichess:Kbklm"
+  },
+  {
+    "fen": "b4rk1/2p2qp1/7p/3pp3/3NP3/RQ1P4/2P2PPP/R5K1 b - - 0 22",
+    "solution_moves": [
+      "f7f2",
+      "g1h1",
+      "f2f1",
+      "a1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 969,
+    "explanation": "Qxf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle HTaZv).",
+    "source": "lichess:HTaZv"
+  },
+  {
+    "fen": "2r3k1/3q1pp1/1P2p1p1/Q7/1n6/4P1B1/P2r1PPP/1RR3K1 b - - 0 23",
+    "solution_moves": [
+      "c8c1",
+      "b1c1",
+      "d2d1",
+      "c1d1",
+      "d7d1"
+    ],
+    "solution_san": [
+      "Rxc1+",
+      "Rxc1",
+      "Rd1+",
+      "Rxd1",
+      "Qxd1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1016,
+    "explanation": "Rxc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle 19keZ).",
+    "source": "lichess:19keZ"
+  },
+  {
+    "fen": "3rkb1N/pQp3pp/5n2/4p1B1/2P3b1/8/PPP2RPP/RN4K1 b - - 0 14",
+    "solution_moves": [
+      "d8d1",
+      "f2f1",
+      "f8c5",
+      "g5e3",
+      "c5e3",
+      "g1h1",
+      "d1f1"
+    ],
+    "solution_san": [
+      "Rd1+",
+      "Rf1",
+      "Bc5+",
+      "Be3",
+      "Bxe3+",
+      "Kh1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1030,
+    "explanation": "Rd1+ starts a 4-move combination built on a back-rank mate. From a real game on Lichess (puzzle dZk1E).",
+    "source": "lichess:dZk1E"
+  },
+  {
+    "fen": "5rk1/6p1/p2p1q1p/2pP2b1/PpP1Q3/8/1PB3PP/4R1K1 b - - 2 30",
+    "solution_moves": [
+      "f6f2",
+      "g1h1",
+      "f2f1",
+      "e1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1032,
+    "explanation": "Qf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle hfBE3).",
+    "source": "lichess:hfBE3"
+  },
+  {
+    "fen": "3r1r1k/pp6/3p2Q1/6Rp/4B1b1/2P5/Pq3PPP/3R2K1 b - - 2 27",
+    "solution_moves": [
+      "b2f2",
+      "g1h1",
+      "f2f1",
+      "d1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1061,
+    "explanation": "Qxf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle SU9YJ).",
+    "source": "lichess:SU9YJ"
+  },
+  {
+    "fen": "2k2b1r/ppp2R1p/7p/4p2Q/2q1P3/8/PPn3PP/3N3K w - - 0 16",
+    "solution_moves": [
+      "h5f5",
+      "c8b8",
+      "f7f8",
+      "h8f8",
+      "f5f8"
+    ],
+    "solution_san": [
+      "Qf5+",
+      "Kb8",
+      "Rxf8+",
+      "Rxf8",
+      "Qxf8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1066,
+    "explanation": "Qf5+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle w4v8W).",
+    "source": "lichess:w4v8W"
+  },
+  {
+    "fen": "6k1/pp3r1p/2p3p1/3pQ3/P7/8/2q3PP/4RBK1 b - - 9 34",
+    "solution_moves": [
+      "c2f2",
+      "g1h1",
+      "f2f1",
+      "e1f1",
+      "f7f1"
+    ],
+    "solution_san": [
+      "Qf2+",
+      "Kh1",
+      "Qxf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1128,
+    "explanation": "Qf2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle QiQab).",
+    "source": "lichess:QiQab"
+  },
+  {
+    "fen": "4r1k1/2p4p/1p1p2p1/p7/1qP5/1P1Q1P2/P3R1PP/7K b - - 0 31",
+    "solution_moves": [
+      "b4e1",
+      "e2e1",
+      "e8e1",
+      "d3f1",
+      "e1f1"
+    ],
+    "solution_san": [
+      "Qe1+",
+      "Rxe1",
+      "Rxe1+",
+      "Qf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1138,
+    "explanation": "Qe1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle Nhgrw).",
+    "source": "lichess:Nhgrw"
+  },
+  {
+    "fen": "4r1k1/2r1R2p/5Rp1/p2pQ3/1p6/8/PP3PPP/6K1 b - - 0 29",
+    "solution_moves": [
+      "c7c1",
+      "e5e1",
+      "c1e1",
+      "e7e1",
+      "e8e1"
+    ],
+    "solution_san": [
+      "Rc1+",
+      "Qe1",
+      "Rxe1+",
+      "Rxe1",
+      "Rxe1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1148,
+    "explanation": "Rc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle sFzwY).",
+    "source": "lichess:sFzwY"
+  },
+  {
+    "fen": "2k4r/ppp2Q2/2r1P3/8/5p2/2P2nPq/PP2RK2/3R4 w - - 0 25",
+    "solution_moves": [
+      "f7d7",
+      "c8b8",
+      "d7d8",
+      "h8d8",
+      "d1d8"
+    ],
+    "solution_san": [
+      "Qd7+",
+      "Kb8",
+      "Qd8+",
+      "Rxd8",
+      "Rxd8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1168,
+    "explanation": "Qd7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle VLNa2).",
+    "source": "lichess:VLNa2"
+  },
+  {
+    "fen": "r3k2r/p3ppbp/1p4p1/4q3/8/2N5/PPPQb1PP/2KR3R w kq - 0 16",
+    "solution_moves": [
+      "d2d7",
+      "e8f8",
+      "d7d8",
+      "a8d8",
+      "d1d8"
+    ],
+    "solution_san": [
+      "Qd7+",
+      "Kf8",
+      "Qd8+",
+      "Rxd8",
+      "Rxd8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1186,
+    "explanation": "Qd7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle to8yH).",
+    "source": "lichess:to8yH"
+  },
+  {
+    "fen": "4Rbk1/ppp2ppp/8/3PN3/2P2n1P/8/PPq3P1/4R2K w - - 4 26",
+    "solution_moves": [
+      "e8f8",
+      "g8f8",
+      "e5d7",
+      "f8g8",
+      "e1e8"
+    ],
+    "solution_san": [
+      "Rxf8+",
+      "Kxf8",
+      "Nd7+",
+      "Kg8",
+      "Re8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1247,
+    "explanation": "Rxf8+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle LuQMD).",
+    "source": "lichess:LuQMD"
+  },
+  {
+    "fen": "1r4k1/p1qb2pp/2p5/2Np4/3b4/1P1PrQ2/P1P3PP/4RRK1 w - - 0 22",
+    "solution_moves": [
+      "f3f7",
+      "g8h8",
+      "f7f8",
+      "b8f8",
+      "f1f8"
+    ],
+    "solution_san": [
+      "Qf7+",
+      "Kh8",
+      "Qf8+",
+      "Rxf8",
+      "Rxf8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1247,
+    "explanation": "Qf7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle Mm8W4).",
+    "source": "lichess:Mm8W4"
+  },
+  {
+    "fen": "4Qrk1/5ppp/8/8/8/5Pnq/P1r5/R1B1R1K1 w - - 4 30",
+    "solution_moves": [
+      "e8f8",
+      "g8f8",
+      "c1a3",
+      "c2c5",
+      "a3c5",
+      "f8g8",
+      "e1e8"
+    ],
+    "solution_san": [
+      "Qxf8+",
+      "Kxf8",
+      "Ba3+",
+      "Rc5",
+      "Bxc5+",
+      "Kg8",
+      "Re8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1253,
+    "explanation": "Qxf8+ starts a 4-move combination built on a back-rank mate. From a real game on Lichess (puzzle XzRRZ).",
+    "source": "lichess:XzRRZ"
+  },
+  {
+    "fen": "r1b2k1r/1pbp1ppp/p2P1n2/2p5/5q2/5B2/PPP1QPPP/R3R1K1 w - - 0 16",
+    "solution_moves": [
+      "e2e7",
+      "f8g8",
+      "e7e8",
+      "f6e8",
+      "e1e8"
+    ],
+    "solution_san": [
+      "Qe7+",
+      "Kg8",
+      "Qe8+",
+      "Nxe8",
+      "Rxe8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1257,
+    "explanation": "Qe7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle P9ij5).",
+    "source": "lichess:P9ij5"
+  },
+  {
+    "fen": "2k1r3/ppp2Q1p/7p/5p2/8/7P/PPP2qPK/3Rr3 w - - 0 28",
+    "solution_moves": [
+      "f7d7",
+      "c8b8",
+      "d7d8",
+      "e8d8",
+      "d1d8"
+    ],
+    "solution_san": [
+      "Qd7+",
+      "Kb8",
+      "Qd8+",
+      "Rxd8",
+      "Rxd8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1270,
+    "explanation": "Qd7+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle qOcfU).",
+    "source": "lichess:qOcfU"
+  },
+  {
+    "fen": "1Q6/5ppk/3r3p/P3p3/2q5/8/3r1PPP/R1R3K1 b - - 4 36",
+    "solution_moves": [
+      "c4c1",
+      "a1c1",
+      "d2d1",
+      "c1d1",
+      "d6d1"
+    ],
+    "solution_san": [
+      "Qxc1+",
+      "Rxc1",
+      "Rd1+",
+      "Rxd1",
+      "Rxd1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1353,
+    "explanation": "Qxc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle 41IdL).",
+    "source": "lichess:41IdL"
+  },
+  {
+    "fen": "3r3r/1p2R1pk/p2q3p/2n5/2Q4N/8/PPP2PPP/2K1R3 b - - 0 23",
+    "solution_moves": [
+      "d6d2",
+      "c1b1",
+      "d2d1",
+      "e1d1",
+      "d8d1"
+    ],
+    "solution_san": [
+      "Qd2+",
+      "Kb1",
+      "Qd1+",
+      "Rxd1",
+      "Rxd1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1355,
+    "explanation": "Qd2+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle 8nKmS).",
+    "source": "lichess:8nKmS"
+  },
+  {
+    "fen": "r5k1/5ppp/1q6/2p5/1p6/r3NQP1/5P1P/R5K1 w - - 0 32",
+    "solution_moves": [
+      "f3a8",
+      "a3a8",
+      "a1a8",
+      "b6b8",
+      "a8b8"
+    ],
+    "solution_san": [
+      "Qxa8+",
+      "Rxa8",
+      "Rxa8+",
+      "Qb8",
+      "Rxb8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1356,
+    "explanation": "Qxa8+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle VIPJe).",
+    "source": "lichess:VIPJe"
+  },
+  {
+    "fen": "r3r1k1/ppp3pp/8/2Q5/2P1b3/3q4/PP1P1PPP/R1B2RK1 b - - 0 17",
+    "solution_moves": [
+      "d3f1",
+      "g1f1",
+      "e4d3",
+      "f1g1",
+      "e8e1"
+    ],
+    "solution_san": [
+      "Qxf1+",
+      "Kxf1",
+      "Bd3+",
+      "Kg1",
+      "Re1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1369,
+    "explanation": "Qxf1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle wMcfr).",
+    "source": "lichess:wMcfr"
+  },
+  {
+    "fen": "4rr1k/pp5p/3b4/2p5/2P3Q1/PP1P2P1/5qNP/3RR2K b - - 2 29",
+    "solution_moves": [
+      "e8e1",
+      "d1e1",
+      "f2f1",
+      "e1f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Rxe1+",
+      "Rxe1",
+      "Qf1+",
+      "Rxf1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1378,
+    "explanation": "Rxe1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle pRl5X).",
+    "source": "lichess:pRl5X"
+  },
+  {
+    "fen": "3B2k1/p2p1pbp/1p4p1/3R4/2r1r3/5Q2/PP3PPP/2R3K1 b - - 0 19",
+    "solution_moves": [
+      "c4c1",
+      "d5d1",
+      "e4e1",
+      "d1e1",
+      "c1e1"
+    ],
+    "solution_san": [
+      "Rxc1+",
+      "Rd1",
+      "Re1+",
+      "Rxe1",
+      "Rxe1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1447,
+    "explanation": "Rxc1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle 3dCJS).",
+    "source": "lichess:3dCJS"
+  },
+  {
+    "fen": "5rk1/1p3ppp/1p3n2/4NN2/8/8/4r1PP/3R2K1 w - - 2 23",
+    "solution_moves": [
+      "f5e7",
+      "g8h8",
+      "e5f7",
+      "f8f7",
+      "d1d8",
+      "f6e8",
+      "d8e8",
+      "f7f8",
+      "e8f8"
+    ],
+    "solution_san": [
+      "Ne7+",
+      "Kh8",
+      "Nxf7+",
+      "Rxf7",
+      "Rd8+",
+      "Ne8",
+      "Rxe8+",
+      "Rf8",
+      "Rxf8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1448,
+    "explanation": "Ne7+ starts a 5-move combination built on a back-rank mate. From a real game on Lichess (puzzle yWq9J).",
+    "source": "lichess:yWq9J"
+  },
+  {
+    "fen": "k3rR2/pp6/3Qq2p/2P5/P3r2P/4p3/1P6/1K6 w - - 4 38",
+    "solution_moves": [
+      "d6d8",
+      "e8d8",
+      "f8d8",
+      "e6c8",
+      "d8c8"
+    ],
+    "solution_san": [
+      "Qd8+",
+      "Rxd8",
+      "Rxd8+",
+      "Qc8",
+      "Rxc8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1489,
+    "explanation": "Qd8+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle mha53).",
+    "source": "lichess:mha53"
+  },
+  {
+    "fen": "2R5/p1Rr1kpp/5p2/8/8/r3P3/5PPP/6K1 b - - 5 30",
+    "solution_moves": [
+      "a3a1",
+      "c7c1",
+      "d7d1",
+      "c1d1",
+      "a1d1"
+    ],
+    "solution_san": [
+      "Ra1+",
+      "Rc1",
+      "Rd1+",
+      "Rxd1",
+      "Rxd1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1492,
+    "explanation": "Ra1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle xAtQk).",
+    "source": "lichess:xAtQk"
+  },
+  {
+    "fen": "4Rb2/p2Q1pkp/1p4p1/2qP4/8/1P6/P1r2PPP/5RK1 b - - 8 30",
+    "solution_moves": [
+      "c5f2",
+      "f1f2",
+      "c2c1",
+      "f2f1",
+      "f8c5",
+      "e8e3",
+      "c5e3",
+      "g1h1",
+      "c1f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Rxf2",
+      "Rc1+",
+      "Rf1",
+      "Bc5+",
+      "Re3",
+      "Bxe3+",
+      "Kh1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1499,
+    "explanation": "Qxf2+ starts a 5-move combination built on a back-rank mate. From a real game on Lichess (puzzle Ay91v).",
+    "source": "lichess:Ay91v"
+  },
+  {
+    "fen": "r2r2k1/pp2R1pp/2p5/8/6Q1/2q5/P4PPP/4R1K1 w - - 2 23",
+    "solution_moves": [
+      "g4e6",
+      "g8h8",
+      "e7e8",
+      "d8e8",
+      "e6e8",
+      "a8e8",
+      "e1e8"
+    ],
+    "solution_san": [
+      "Qe6+",
+      "Kh8",
+      "Re8+",
+      "Rxe8",
+      "Qxe8+",
+      "Rxe8",
+      "Rxe8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1500,
+    "explanation": "Qe6+ starts a 4-move combination built on a back-rank mate. From a real game on Lichess (puzzle j7Ix8).",
+    "source": "lichess:j7Ix8"
+  },
+  {
+    "fen": "2k5/pp5R/2p1pB2/3p4/8/KP1q3B/8/8 w - - 0 40",
+    "solution_moves": [
+      "h3e6",
+      "c8b8",
+      "f6e5",
+      "b8a8",
+      "h7h8"
+    ],
+    "solution_san": [
+      "Bxe6+",
+      "Kb8",
+      "Be5+",
+      "Ka8",
+      "Rh8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1507,
+    "explanation": "Bxe6+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle HALlH).",
+    "source": "lichess:HALlH"
+  },
+  {
+    "fen": "r5k1/p4ppp/1nQ5/4qpB1/8/8/P4KPP/3R4 w - - 1 26",
+    "solution_moves": [
+      "c6a8",
+      "b6a8",
+      "d1d8",
+      "e5e8",
+      "d8e8"
+    ],
+    "solution_san": [
+      "Qxa8+",
+      "Nxa8",
+      "Rd8+",
+      "Qe8",
+      "Rxe8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1540,
+    "explanation": "Qxa8+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle 4IQns).",
+    "source": "lichess:4IQns"
+  },
+  {
+    "fen": "4kr2/R5pp/8/3PN3/2Pn4/8/5rPP/R4BK1 b - - 0 29",
+    "solution_moves": [
+      "f2f1",
+      "a1f1",
+      "d4e2",
+      "g1h1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Rxf1+",
+      "Rxf1",
+      "Ne2+",
+      "Kh1",
+      "Rxf1#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1552,
+    "explanation": "Rxf1+ starts a 3-move combination built on a back-rank mate. From a real game on Lichess (puzzle maFHC).",
+    "source": "lichess:maFHC"
+  },
+  {
+    "fen": "r4k1r/1pp2ppp/1b1n4/pP6/P1BP1Pb1/6Pq/1B2Q2P/RN2R1K1 w - - 2 19",
+    "solution_moves": [
+      "e2e7",
+      "f8g8",
+      "c4f7",
+      "d6f7",
+      "e7e8",
+      "a8e8",
+      "e1e8"
+    ],
+    "solution_san": [
+      "Qe7+",
+      "Kg8",
+      "Bxf7+",
+      "Nxf7",
+      "Qe8+",
+      "Rxe8",
+      "Rxe8#"
+    ],
+    "motif": "back_rank_mate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1558,
+    "explanation": "Qe7+ starts a 4-move combination built on a back-rank mate. From a real game on Lichess (puzzle JJdZl).",
+    "source": "lichess:JJdZl"
+  },
+  {
+    "fen": "1r6/p4p2/3N1k1p/6p1/2P1p1P1/4P3/4KPP1/7R b - - 2 31",
+    "solution_moves": [
+      "b8b2",
+      "e2d1",
+      "b2b1",
+      "d1c2",
+      "b1h1"
+    ],
+    "solution_san": [
+      "Rb2+",
+      "Kd1",
+      "Rb1+",
+      "Kc2",
+      "Rxh1"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 835,
+    "explanation": "Rb2+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle e8oRD).",
+    "source": "lichess:e8oRD"
+  },
+  {
+    "fen": "2R5/8/2p3p1/1p1k1p1p/2pP1P2/2P2KP1/7P/4r3 w - - 8 38",
+    "solution_moves": [
+      "c8d8",
+      "d5e6",
+      "d8e8",
+      "e6d6",
+      "e8e1"
+    ],
+    "solution_san": [
+      "Rd8+",
+      "Ke6",
+      "Re8+",
+      "Kd6",
+      "Rxe1"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 874,
+    "explanation": "Rd8+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 8gMiE).",
+    "source": "lichess:8gMiE"
+  },
+  {
+    "fen": "1r6/p1k2Npp/b1p1p3/8/P1pP1P2/2b3P1/4Q2P/3K4 b - - 1 22",
+    "solution_moves": [
+      "b8b1",
+      "d1c2",
+      "b1b2",
+      "c2c3",
+      "b2e2"
+    ],
+    "solution_san": [
+      "Rb1+",
+      "Kc2",
+      "Rb2+",
+      "Kxc3",
+      "Rxe2"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 888,
+    "explanation": "Rb1+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle PtETn).",
+    "source": "lichess:PtETn"
+  },
+  {
+    "fen": "1r4k1/6p1/p2pP2p/3P4/4Q3/1nqB4/K1P2r2/3R3R w - - 2 29",
+    "solution_moves": [
+      "e4h7",
+      "g8f8",
+      "h7h8",
+      "f8e7",
+      "h8b8"
+    ],
+    "solution_san": [
+      "Qh7+",
+      "Kf8",
+      "Qh8+",
+      "Ke7",
+      "Qxb8"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 890,
+    "explanation": "Qh7+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle W3RHA).",
+    "source": "lichess:W3RHA"
+  },
+  {
+    "fen": "4rk1r/2R2p2/p6p/1p6/3P2P1/2P2n2/PPK1R3/8 w - - 1 29",
+    "solution_moves": [
+      "e2e8",
+      "f8e8",
+      "c7c8",
+      "e8e7",
+      "c8h8"
+    ],
+    "solution_san": [
+      "Rxe8+",
+      "Kxe8",
+      "Rc8+",
+      "Ke7",
+      "Rxh8"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 897,
+    "explanation": "Rxe8+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle p296A).",
+    "source": "lichess:p296A"
+  },
+  {
+    "fen": "3r3k/1pb1Q1p1/p1p4p/2P2p2/1P3q2/P2P1B2/5PPP/R5K1 b - - 2 26",
+    "solution_moves": [
+      "f4h2",
+      "g1f1",
+      "h2h1",
+      "f1e2",
+      "h1a1"
+    ],
+    "solution_san": [
+      "Qxh2+",
+      "Kf1",
+      "Qh1+",
+      "Ke2",
+      "Qxa1"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 922,
+    "explanation": "Qxh2+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 8IU7Q).",
+    "source": "lichess:8IU7Q"
+  },
+  {
+    "fen": "8/p6p/p7/5kr1/2P2P2/8/P2QK3/8 b - - 0 32",
+    "solution_moves": [
+      "g5g2",
+      "e2e1",
+      "g2d2",
+      "e1d2",
+      "f5f4"
+    ],
+    "solution_san": [
+      "Rg2+",
+      "Ke1",
+      "Rxd2",
+      "Kxd2",
+      "Kxf4"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 934,
+    "explanation": "Rg2+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle lukk4).",
+    "source": "lichess:lukk4"
+  },
+  {
+    "fen": "r7/p2pkpr1/bp1Np3/4P1p1/7p/2P2R2/PP4P1/2K2R2 w - - 2 28",
+    "solution_moves": [
+      "f3f7",
+      "g7f7",
+      "f1f7",
+      "e7d8",
+      "f7f8",
+      "d8c7",
+      "f8a8"
+    ],
+    "solution_san": [
+      "Rxf7+",
+      "Rxf7",
+      "Rxf7+",
+      "Kd8",
+      "Rf8+",
+      "Kc7",
+      "Rxa8"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 955,
+    "explanation": "Rxf7+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle t9XET).",
+    "source": "lichess:t9XET"
+  },
+  {
+    "fen": "7r/3k1p2/R2p4/1p1Pp1p1/1P1pPbP1/P2P1Q1B/6K1/4q3 w - - 1 33",
+    "solution_moves": [
+      "a6a7",
+      "d7c8",
+      "a7a8",
+      "c8b7",
+      "a8h8"
+    ],
+    "solution_san": [
+      "Ra7+",
+      "Kc8",
+      "Ra8+",
+      "Kb7",
+      "Rxh8"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 976,
+    "explanation": "Ra7+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle wkVKF).",
+    "source": "lichess:wkVKF"
+  },
+  {
+    "fen": "5rk1/R2r3p/4p3/1p6/5p2/1P1Ppb2/1BP1K2P/3R4 w - - 0 27",
+    "solution_moves": [
+      "e2f3",
+      "d7a7",
+      "d1g1",
+      "g8f7",
+      "g1g7",
+      "f7e8",
+      "g7a7"
+    ],
+    "solution_san": [
+      "Kxf3",
+      "Rxa7",
+      "Rg1+",
+      "Kf7",
+      "Rg7+",
+      "Ke8",
+      "Rxa7"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 977,
+    "explanation": "Kxf3 starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle u09c4).",
+    "source": "lichess:u09c4"
+  },
+  {
+    "fen": "8/7r/3k4/4p3/2K5/8/R7/8 w - - 0 56",
+    "solution_moves": [
+      "a2a6",
+      "d6d7",
+      "a6a7",
+      "d7e6",
+      "a7h7"
+    ],
+    "solution_san": [
+      "Ra6+",
+      "Kd7",
+      "Ra7+",
+      "Ke6",
+      "Rxh7"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 1074,
+    "explanation": "Ra6+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle ZGF9O).",
+    "source": "lichess:ZGF9O"
+  },
+  {
+    "fen": "7r/1ppkq3/4p2p/1P2P3/2p3p1/2P4P/1P3PP1/R4RK1 w - - 0 26",
+    "solution_moves": [
+      "f1d1",
+      "d7e8",
+      "a1a8",
+      "e8f7",
+      "a8h8"
+    ],
+    "solution_san": [
+      "Rfd1+",
+      "Ke8",
+      "Ra8+",
+      "Kf7",
+      "Rxh8"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 1077,
+    "explanation": "Rfd1+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle oa1Qs).",
+    "source": "lichess:oa1Qs"
+  },
+  {
+    "fen": "2r5/1k1r1ppp/p7/4p3/1b2p3/4B3/PP2NPPP/2R2K1R b - - 5 18",
+    "solution_moves": [
+      "c8c1",
+      "e2c1",
+      "d7d1",
+      "f1e2",
+      "d1h1"
+    ],
+    "solution_san": [
+      "Rxc1+",
+      "Nxc1",
+      "Rd1+",
+      "Ke2",
+      "Rxh1"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 1086,
+    "explanation": "Rxc1+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle W7Llh).",
+    "source": "lichess:W7Llh"
+  },
+  {
+    "fen": "6k1/1R5p/p1pn2pB/4b3/PP6/6PK/5r1P/8 w - - 1 45",
+    "solution_moves": [
+      "b7b8",
+      "g8f7",
+      "b8f8",
+      "f7e6",
+      "f8f2"
+    ],
+    "solution_san": [
+      "Rb8+",
+      "Kf7",
+      "Rf8+",
+      "Ke6",
+      "Rxf2"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 1098,
+    "explanation": "Rb8+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 0TL5l).",
+    "source": "lichess:0TL5l"
+  },
+  {
+    "fen": "2kr3r/ppq2pQ1/3p4/4pP2/PP2P3/2P3R1/6P1/R5K1 b - - 0 23",
+    "solution_moves": [
+      "c7b6",
+      "g1f1",
+      "h8h1",
+      "f1e2",
+      "h1a1"
+    ],
+    "solution_san": [
+      "Qb6+",
+      "Kf1",
+      "Rh1+",
+      "Ke2",
+      "Rxa1"
+    ],
+    "motif": "skewer",
+    "difficulty": "beginner",
+    "difficulty_rating": 1099,
+    "explanation": "Qb6+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 0FlSr).",
+    "source": "lichess:0FlSr"
+  },
+  {
+    "fen": "1n5r/r1qk2pp/p2p4/8/1Q1b4/8/PPP3PP/R4R1K w - - 0 27",
+    "solution_moves": [
+      "f1f7",
+      "d7c8",
+      "f7c7",
+      "a7c7",
+      "b4d4"
+    ],
+    "solution_san": [
+      "Rf7+",
+      "Kc8",
+      "Rxc7+",
+      "Rxc7",
+      "Qxd4"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1118,
+    "explanation": "Rf7+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle oWAiv).",
+    "source": "lichess:oWAiv"
+  },
+  {
+    "fen": "3k4/1pNn1Rb1/4R2p/3p4/3P4/2P5/rP1n2PP/6K1 b - - 2 25",
+    "solution_moves": [
+      "a2a1",
+      "g1f2",
+      "a1f1",
+      "f2e2",
+      "f1f7"
+    ],
+    "solution_san": [
+      "Ra1+",
+      "Kf2",
+      "Rf1+",
+      "Ke2",
+      "Rxf7"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1121,
+    "explanation": "Ra1+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle b0uvo).",
+    "source": "lichess:b0uvo"
+  },
+  {
+    "fen": "3r4/2p3pp/p3b3/4q3/kP1R4/2K5/5PP1/3R4 w - - 0 33",
+    "solution_moves": [
+      "d1a1",
+      "a4b5",
+      "a1a5",
+      "b5c6",
+      "a5e5"
+    ],
+    "solution_san": [
+      "Ra1+",
+      "Kb5",
+      "Ra5+",
+      "Kc6",
+      "Rxe5"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1160,
+    "explanation": "Ra1+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle ied6V).",
+    "source": "lichess:ied6V"
+  },
+  {
+    "fen": "8/5pk1/3p4/p1b5/Pp5P/8/1qP3P1/3Q1K1R b - - 1 38",
+    "solution_moves": [
+      "b2f6",
+      "d1f3",
+      "f6a1",
+      "f1e2",
+      "a1h1"
+    ],
+    "solution_san": [
+      "Qf6+",
+      "Qf3",
+      "Qa1+",
+      "Ke2",
+      "Qxh1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1183,
+    "explanation": "Qf6+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle gnBy3).",
+    "source": "lichess:gnBy3"
+  },
+  {
+    "fen": "r2k4/2bP1p2/p1P3pp/1p6/8/5K2/6PP/3R4 w - - 13 42",
+    "solution_moves": [
+      "d1e1",
+      "c7b6",
+      "e1e8",
+      "d8c7",
+      "e8a8"
+    ],
+    "solution_san": [
+      "Re1",
+      "Bb6",
+      "Re8+",
+      "Kc7",
+      "Rxa8"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1191,
+    "explanation": "Re1 starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 3HVuT).",
+    "source": "lichess:3HVuT"
+  },
+  {
+    "fen": "3R2R1/5p2/5p1k/2p2P1p/2Pb4/3p1KP1/8/4r3 w - - 7 46",
+    "solution_moves": [
+      "g8h8",
+      "h6g5",
+      "d8g8",
+      "g5f5",
+      "h8h5",
+      "f5e6",
+      "g8e8",
+      "e6d7",
+      "e8e1"
+    ],
+    "solution_san": [
+      "Rh8+",
+      "Kg5",
+      "Rdg8+",
+      "Kxf5",
+      "Rxh5+",
+      "Ke6",
+      "Re8+",
+      "Kd7",
+      "Rxe1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1212,
+    "explanation": "Rh8+ starts a 5-move combination built on a skewer. From a real game on Lichess (puzzle xBGsr).",
+    "source": "lichess:xBGsr"
+  },
+  {
+    "fen": "1r4k1/p4p1p/6p1/8/2bPq3/2P1P3/2Q2P1P/2R1K1R1 b - - 13 29",
+    "solution_moves": [
+      "e4c2",
+      "c1c2",
+      "b8b1",
+      "e1d2",
+      "b1g1"
+    ],
+    "solution_san": [
+      "Qxc2",
+      "Rxc2",
+      "Rb1+",
+      "Kd2",
+      "Rxg1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1231,
+    "explanation": "Qxc2 starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle wLxBd).",
+    "source": "lichess:wLxBd"
+  },
+  {
+    "fen": "8/6R1/2p2Bp1/3p1kP1/b1pP4/5K2/5PP1/4r3 w - - 8 47",
+    "solution_moves": [
+      "g2g4",
+      "f5e6",
+      "g7e7",
+      "e6d6",
+      "e7e1"
+    ],
+    "solution_san": [
+      "g4+",
+      "Ke6",
+      "Re7+",
+      "Kd6",
+      "Rxe1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1238,
+    "explanation": "g4+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle pWaUw).",
+    "source": "lichess:pWaUw"
+  },
+  {
+    "fen": "3r1k2/7R/p3K1p1/P1p2p2/4nP2/6P1/3p2BP/8 w - - 0 40",
+    "solution_moves": [
+      "h7h8",
+      "f8g7",
+      "h8d8",
+      "d2d1q",
+      "d8d1"
+    ],
+    "solution_san": [
+      "Rh8+",
+      "Kg7",
+      "Rxd8",
+      "d1=Q",
+      "Rxd1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1252,
+    "explanation": "Rh8+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle PwI9r).",
+    "source": "lichess:PwI9r"
+  },
+  {
+    "fen": "4RQ2/6pk/8/2p1p3/1p5p/3q2bK/1P6/8 w - - 6 38",
+    "solution_moves": [
+      "f8h8",
+      "h7g6",
+      "e8e6",
+      "g6f5",
+      "h8h7",
+      "f5e6",
+      "h7d3"
+    ],
+    "solution_san": [
+      "Qh8+",
+      "Kg6",
+      "Re6+",
+      "Kf5",
+      "Qh7+",
+      "Kxe6",
+      "Qxd3"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1274,
+    "explanation": "Qh8+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle UIaSv).",
+    "source": "lichess:UIaSv"
+  },
+  {
+    "fen": "r7/pp5r/4p1k1/3p1p2/3P2Pb/8/PP4QP/6K1 w - - 0 30",
+    "solution_moves": [
+      "g4f5",
+      "g6f5",
+      "g2c2",
+      "f5f6",
+      "c2h7"
+    ],
+    "solution_san": [
+      "gxf5+",
+      "Kxf5",
+      "Qc2+",
+      "Kf6",
+      "Qxh7"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1346,
+    "explanation": "gxf5+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle HWxIA).",
+    "source": "lichess:HWxIA"
+  },
+  {
+    "fen": "7r/5kp1/1p1p3q/pP1Pp3/P2pPp2/3P1P2/1Q4R1/4B1K1 b - - 2 38",
+    "solution_moves": [
+      "h6h1",
+      "g1f2",
+      "h8h2",
+      "g2h2",
+      "h1h2",
+      "f2f1",
+      "h2b2"
+    ],
+    "solution_san": [
+      "Qh1+",
+      "Kf2",
+      "Rh2",
+      "Rxh2",
+      "Qxh2+",
+      "Kf1",
+      "Qxb2"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1349,
+    "explanation": "Qh1+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle In3uI).",
+    "source": "lichess:In3uI"
+  },
+  {
+    "fen": "8/8/8/8/5p2/4p2R/r3k3/6K1 w - - 2 70",
+    "solution_moves": [
+      "h3h2",
+      "e2d1",
+      "h2a2",
+      "e3e2",
+      "a2a1",
+      "d1d2",
+      "g1f2"
+    ],
+    "solution_san": [
+      "Rh2+",
+      "Kd1",
+      "Rxa2",
+      "e2",
+      "Ra1+",
+      "Kd2",
+      "Kf2"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1357,
+    "explanation": "Rh2+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle sFvTu).",
+    "source": "lichess:sFvTu"
+  },
+  {
+    "fen": "r4k2/7R/5pp1/1r6/5P2/P5PK/7P/8 w - - 0 45",
+    "solution_moves": [
+      "h7h8",
+      "f8f7",
+      "h8a8",
+      "b5h5",
+      "h3g2"
+    ],
+    "solution_san": [
+      "Rh8+",
+      "Kf7",
+      "Rxa8",
+      "Rh5+",
+      "Kg2"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1367,
+    "explanation": "Rh8+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle L8x0j).",
+    "source": "lichess:L8x0j"
+  },
+  {
+    "fen": "r3k1r1/3bbp2/8/q5pp/3NP3/P6P/3Q1PPN/R3K2R b KQq - 2 26",
+    "solution_moves": [
+      "e7b4",
+      "d2b4",
+      "a5b4",
+      "a3b4",
+      "a8a1",
+      "e1d2",
+      "a1h1"
+    ],
+    "solution_san": [
+      "Bb4",
+      "Qxb4",
+      "Qxb4+",
+      "axb4",
+      "Rxa1+",
+      "Kd2",
+      "Rxh1"
+    ],
+    "motif": "skewer",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1388,
+    "explanation": "Bb4 starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle alf8c).",
+    "source": "lichess:alf8c"
+  },
+  {
+    "fen": "5rk1/pb1n3p/1p1p4/2p2pB1/2PP2P1/P1P5/2Q1R3/R4KNq b - - 1 22",
+    "solution_moves": [
+      "f5g4",
+      "f1e1",
+      "h1g1",
+      "e1d2",
+      "g1a1"
+    ],
+    "solution_san": [
+      "fxg4+",
+      "Ke1",
+      "Qxg1+",
+      "Kd2",
+      "Qxa1"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1415,
+    "explanation": "fxg4+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle ZeGBV).",
+    "source": "lichess:ZeGBV"
+  },
+  {
+    "fen": "8/1k3Bpp/p1p5/8/P7/5p1P/1P1rRP2/5K1R b - - 0 28",
+    "solution_moves": [
+      "f3e2",
+      "f1e1",
+      "d2d1",
+      "e1e2",
+      "d1h1"
+    ],
+    "solution_san": [
+      "fxe2+",
+      "Ke1",
+      "Rd1+",
+      "Kxe2",
+      "Rxh1"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1419,
+    "explanation": "fxe2+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle lEHhR).",
+    "source": "lichess:lEHhR"
+  },
+  {
+    "fen": "3r2r1/1ppk2p1/1bn4p/PN1q1p2/3Pp3/P1Q1P3/2PB2PP/R4R1K b - - 0 25",
+    "solution_moves": [
+      "b6a5",
+      "c3b2",
+      "a5d2",
+      "c2c4",
+      "d5c4",
+      "b2d2",
+      "c4b5"
+    ],
+    "solution_san": [
+      "Bxa5",
+      "Qb2",
+      "Bxd2",
+      "c4",
+      "Qxc4",
+      "Qxd2",
+      "Qxb5"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1441,
+    "explanation": "Bxa5 starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle N7rwW).",
+    "source": "lichess:N7rwW"
+  },
+  {
+    "fen": "rn2kb1r/ppp2ppp/4p3/3P1b2/2PP2Pq/8/PP2K2P/RNBQ1BNR b kq - 2 8",
+    "solution_moves": [
+      "f5g4",
+      "g1f3",
+      "g4f3",
+      "e2f3",
+      "h4h5",
+      "f3f2",
+      "h5d1"
+    ],
+    "solution_san": [
+      "Bxg4+",
+      "Nf3",
+      "Bxf3+",
+      "Kxf3",
+      "Qh5+",
+      "Kf2",
+      "Qxd1"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1450,
+    "explanation": "Bxg4+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle nteXl).",
+    "source": "lichess:nteXl"
+  },
+  {
+    "fen": "2rn3r/5pp1/4k2p/p2pP3/1b1P4/1Pp1B2P/4BPP1/R2R2K1 w - - 2 25",
+    "solution_moves": [
+      "e2g4",
+      "f7f5",
+      "e5f6",
+      "e6f6",
+      "g4c8"
+    ],
+    "solution_san": [
+      "Bg4+",
+      "f5",
+      "exf6+",
+      "Kxf6",
+      "Bxc8"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1493,
+    "explanation": "Bg4+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle WiPkU).",
+    "source": "lichess:WiPkU"
+  },
+  {
+    "fen": "2k2rr1/2p3q1/ppP5/5p2/P7/N3P3/4Q1PP/n1R3K1 w - - 0 32",
+    "solution_moves": [
+      "e2a6",
+      "c8d8",
+      "c1d1",
+      "d8e7",
+      "d1d7",
+      "e7f6",
+      "d7g7"
+    ],
+    "solution_san": [
+      "Qxa6+",
+      "Kd8",
+      "Rd1+",
+      "Ke7",
+      "Rd7+",
+      "Kf6",
+      "Rxg7"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1511,
+    "explanation": "Qxa6+ starts a 4-move combination built on a skewer. From a real game on Lichess (puzzle FRlPi).",
+    "source": "lichess:FRlPi"
+  },
+  {
+    "fen": "Q7/pp1k4/2p5/4nP2/4P3/7P/P4qPK/8 w - - 1 33",
+    "solution_moves": [
+      "a8b7",
+      "d7d6",
+      "b7b8",
+      "d6e7",
+      "b8e5"
+    ],
+    "solution_san": [
+      "Qxb7+",
+      "Kd6",
+      "Qb8+",
+      "Ke7",
+      "Qxe5+"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1537,
+    "explanation": "Qxb7+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle gVfPj).",
+    "source": "lichess:gVfPj"
+  },
+  {
+    "fen": "1r6/k7/pp6/2q5/3Q1P2/1P6/P5PP/3R2K1 b - - 2 32",
+    "solution_moves": [
+      "b8d8",
+      "d4c5",
+      "d8d1",
+      "g1f2",
+      "b6c5"
+    ],
+    "solution_san": [
+      "Rd8",
+      "Qxc5",
+      "Rxd1+",
+      "Kf2",
+      "bxc5"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1543,
+    "explanation": "Rd8 starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle H9REL).",
+    "source": "lichess:H9REL"
+  },
+  {
+    "fen": "r3k2r/ppp1qppN/2n5/1N1p1b2/3Pn3/2PQP1P1/PP3PP1/R3K2R w KQkq - 1 14",
+    "solution_moves": [
+      "h7f6",
+      "e7f6",
+      "h1h8",
+      "e8d7",
+      "h8a8"
+    ],
+    "solution_san": [
+      "Nf6+",
+      "Qxf6",
+      "Rxh8+",
+      "Kd7",
+      "Rxa8"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1558,
+    "explanation": "Nf6+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle WN44v).",
+    "source": "lichess:WN44v"
+  },
+  {
+    "fen": "1Q6/2R5/1K3k2/1Nr3p1/8/8/2r5/8 b - - 1 54",
+    "solution_moves": [
+      "c5b5",
+      "b6b5",
+      "c2b2",
+      "b5c4",
+      "b2b8"
+    ],
+    "solution_san": [
+      "Rxb5+",
+      "Kxb5",
+      "Rb2+",
+      "Kc4",
+      "Rxb8"
+    ],
+    "motif": "skewer",
+    "difficulty": "advanced",
+    "difficulty_rating": 1587,
+    "explanation": "Rxb5+ starts a 3-move combination built on a skewer. From a real game on Lichess (puzzle 2A5xJ).",
+    "source": "lichess:2A5xJ"
+  },
+  {
+    "fen": "8/1k1r3q/pp1P3p/2p1N1p1/8/1P4BP/P3R1PK/8 w - - 17 53",
+    "solution_moves": [
+      "e5d7",
+      "h7d7",
+      "e2e7",
+      "b7c8",
+      "e7d7"
+    ],
+    "solution_san": [
+      "Nxd7",
+      "Qxd7",
+      "Re7",
+      "Kc8",
+      "Rxd7"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 853,
+    "explanation": "Nxd7 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle VE4JJ).",
+    "source": "lichess:VE4JJ"
+  },
+  {
+    "fen": "3Qq1rk/b3P1pp/p7/8/2p5/8/P5PP/3R3K w - - 4 33",
+    "solution_moves": [
+      "d8e8",
+      "g8e8",
+      "d1d8",
+      "h8g8",
+      "d8e8"
+    ],
+    "solution_san": [
+      "Qxe8",
+      "Rxe8",
+      "Rd8",
+      "Kg8",
+      "Rxe8+"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 865,
+    "explanation": "Qxe8 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle hYxMF).",
+    "source": "lichess:hYxMF"
+  },
+  {
+    "fen": "2r3k1/5pb1/p1Q3pp/5q2/3p4/P3P1Pb/5P1P/1RR3K1 w - - 2 31",
+    "solution_moves": [
+      "c6c8",
+      "f5c8",
+      "c1c8",
+      "h3c8",
+      "b1b8",
+      "g7f8",
+      "b8c8"
+    ],
+    "solution_san": [
+      "Qxc8+",
+      "Qxc8",
+      "Rxc8+",
+      "Bxc8",
+      "Rb8",
+      "Bf8",
+      "Rxc8"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 875,
+    "explanation": "Qxc8+ starts a 4-move combination built on a pin. From a real game on Lichess (puzzle xeBRP).",
+    "source": "lichess:xeBRP"
+  },
+  {
+    "fen": "2r3k1/pb2b1pp/8/8/P7/2B1R1P1/P1R1P2P/6K1 b - - 2 29",
+    "solution_moves": [
+      "e7c5",
+      "c3d2",
+      "c5e3",
+      "d2e3",
+      "c8c2"
+    ],
+    "solution_san": [
+      "Bc5",
+      "Bd2",
+      "Bxe3+",
+      "Bxe3",
+      "Rxc2"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 889,
+    "explanation": "Bc5 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle NKqQL).",
+    "source": "lichess:NKqQL"
+  },
+  {
+    "fen": "1r4k1/4qppp/1p1P4/p7/8/5P2/1P4PP/3R2K1 w - - 0 31",
+    "solution_moves": [
+      "d6e7",
+      "b8e8",
+      "d1d8",
+      "f7f6",
+      "d8e8"
+    ],
+    "solution_san": [
+      "dxe7",
+      "Re8",
+      "Rd8",
+      "f6",
+      "Rxe8+"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 899,
+    "explanation": "dxe7 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle EJGj5).",
+    "source": "lichess:EJGj5"
+  },
+  {
+    "fen": "8/6B1/3r1PK1/8/1k6/2p5/8/8 w - - 0 55",
+    "solution_moves": [
+      "g7f8",
+      "b4c5",
+      "f8d6",
+      "c5d6",
+      "f6f7"
+    ],
+    "solution_san": [
+      "Bf8",
+      "Kc5",
+      "Bxd6+",
+      "Kxd6",
+      "f7"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 952,
+    "explanation": "Bf8 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle bkCZV).",
+    "source": "lichess:bkCZV"
+  },
+  {
+    "fen": "r2q1b1k/p2n1r1p/2p3p1/2B1Pp2/2pQ1P2/2N2B2/PP4PP/3R1RK1 b - - 2 26",
+    "solution_moves": [
+      "f8c5",
+      "d4c5",
+      "d7c5",
+      "d1d8",
+      "a8d8"
+    ],
+    "solution_san": [
+      "Bxc5",
+      "Qxc5",
+      "Nxc5",
+      "Rxd8+",
+      "Rxd8"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 972,
+    "explanation": "Bxc5 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle 3DJyk).",
+    "source": "lichess:3DJyk"
+  },
+  {
+    "fen": "2q5/Rr3kp1/8/2Bp1p1p/1P2p2P/4P1P1/5PK1/R7 w - - 6 40",
+    "solution_moves": [
+      "a7b7",
+      "c8b7",
+      "a1a7",
+      "b7a7",
+      "c5a7"
+    ],
+    "solution_san": [
+      "Rxb7+",
+      "Qxb7",
+      "Ra7",
+      "Qxa7",
+      "Bxa7"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 976,
+    "explanation": "Rxb7+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle bb94V).",
+    "source": "lichess:bb94V"
+  },
+  {
+    "fen": "8/R5pk/7p/7P/4NPK1/6P1/pr3P2/r7 w - - 4 49",
+    "solution_moves": [
+      "e4f6",
+      "h7h8",
+      "a7a8",
+      "b2b8",
+      "a8b8"
+    ],
+    "solution_san": [
+      "Nf6+",
+      "Kh8",
+      "Ra8+",
+      "Rb8",
+      "Rxb8#"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 989,
+    "explanation": "Nf6+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle SFYLd).",
+    "source": "lichess:SFYLd"
+  },
+  {
+    "fen": "1r4k1/6p1/3P3p/2R1p3/3p4/7P/3K2P1/8 w - - 1 33",
+    "solution_moves": [
+      "d6d7",
+      "b8d8",
+      "c5c8",
+      "g8f8",
+      "c8d8"
+    ],
+    "solution_san": [
+      "d7",
+      "Rd8",
+      "Rc8",
+      "Kf8",
+      "Rxd8+"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 995,
+    "explanation": "d7 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle FLIUh).",
+    "source": "lichess:FLIUh"
+  },
+  {
+    "fen": "8/6qk/1P5p/r2p1p2/5N2/4P2P/5PP1/rR3QK1 b - - 0 42",
+    "solution_moves": [
+      "a1b1",
+      "f1b1",
+      "a5a1",
+      "b1a1",
+      "g7a1"
+    ],
+    "solution_san": [
+      "Rxb1",
+      "Qxb1",
+      "Ra1",
+      "Qxa1",
+      "Qxa1+"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 1036,
+    "explanation": "Rxb1 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle ky60f).",
+    "source": "lichess:ky60f"
+  },
+  {
+    "fen": "5k1r/pp2p3/5b2/3B1P2/2P3R1/1P5n/P6R/7K b - - 0 39",
+    "solution_moves": [
+      "h3f2",
+      "h1g1",
+      "f2g4",
+      "h2h8",
+      "f6h8"
+    ],
+    "solution_san": [
+      "Nf2+",
+      "Kg1",
+      "Nxg4",
+      "Rxh8+",
+      "Bxh8"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 1050,
+    "explanation": "Nf2+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle ncEKc).",
+    "source": "lichess:ncEKc"
+  },
+  {
+    "fen": "8/4pp1p/2pp1kp1/8/4P3/2PR1P2/br3RPP/6K1 b - - 0 28",
+    "solution_moves": [
+      "b2b1",
+      "f2f1",
+      "b1f1",
+      "g1f1",
+      "a2c4"
+    ],
+    "solution_san": [
+      "Rb1+",
+      "Rf1",
+      "Rxf1+",
+      "Kxf1",
+      "Bc4"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 1088,
+    "explanation": "Rb1+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle sIQaW).",
+    "source": "lichess:sIQaW"
+  },
+  {
+    "fen": "r2q1b1k/5pp1/p5rp/1p2B2R/2p1Q3/7R/PPPp1PPP/6K1 w - - 0 28",
+    "solution_moves": [
+      "h5h6",
+      "g6h6",
+      "h3h6",
+      "h8g8",
+      "e4h7"
+    ],
+    "solution_san": [
+      "Rxh6+",
+      "Rxh6",
+      "Rxh6+",
+      "Kg8",
+      "Qh7#"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 1097,
+    "explanation": "Rxh6+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle kLUfy).",
+    "source": "lichess:kLUfy"
+  },
+  {
+    "fen": "8/pp3p2/2p1bp1k/4p2r/4P3/P2r3P/1P4R1/2R2B1K w - - 2 31",
+    "solution_moves": [
+      "f1d3",
+      "h5h3",
+      "g2h2",
+      "h3h2",
+      "h1h2"
+    ],
+    "solution_san": [
+      "Bxd3",
+      "Rxh3+",
+      "Rh2",
+      "Rxh2+",
+      "Kxh2"
+    ],
+    "motif": "pin",
+    "difficulty": "beginner",
+    "difficulty_rating": 1098,
+    "explanation": "Bxd3 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle hLq6k).",
+    "source": "lichess:hLq6k"
+  },
+  {
+    "fen": "6r1/2q1kp1p/Bp2pn1r/2P5/3p1P2/6N1/PP4PP/R3QnK1 w - - 0 28",
+    "solution_moves": [
+      "g3f5",
+      "e7f8",
+      "f5h6",
+      "f1e3",
+      "h6g8"
+    ],
+    "solution_san": [
+      "Nf5+",
+      "Kf8",
+      "Nxh6",
+      "Ne3",
+      "Nxg8"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1162,
+    "explanation": "Nf5+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle 9SXyP).",
+    "source": "lichess:9SXyP"
+  },
+  {
+    "fen": "5rk1/p1p3p1/1p4qr/4P3/2PpN3/P2PnR1P/1P3QPK/4R3 b - - 0 31",
+    "solution_moves": [
+      "e3g4",
+      "h2g1",
+      "g4f2",
+      "f3f8",
+      "g8f8"
+    ],
+    "solution_san": [
+      "Ng4+",
+      "Kg1",
+      "Nxf2",
+      "Rxf8+",
+      "Kxf8"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1165,
+    "explanation": "Ng4+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle 5wqry).",
+    "source": "lichess:5wqry"
+  },
+  {
+    "fen": "r1q1k1r1/1pp5/p2p2PQ/3Pp1b1/P1B3b1/2N3P1/1PP4K/R1B2RN1 b q - 0 20",
+    "solution_moves": [
+      "g5h6",
+      "c1h6",
+      "g8h8",
+      "h2g2",
+      "h8h6"
+    ],
+    "solution_san": [
+      "Bxh6",
+      "Bxh6",
+      "Rh8",
+      "Kg2",
+      "Rxh6"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1173,
+    "explanation": "Bxh6 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle wBr1v).",
+    "source": "lichess:wBr1v"
+  },
+  {
+    "fen": "8/1pk2ppp/4p3/1PbrP3/P4P2/3bN2P/6PK/n1R5 w - - 0 29",
+    "solution_moves": [
+      "e3d5",
+      "e6d5",
+      "c1c5",
+      "c7b6",
+      "c5d5"
+    ],
+    "solution_san": [
+      "Nxd5+",
+      "exd5",
+      "Rxc5+",
+      "Kb6",
+      "Rxd5"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1185,
+    "explanation": "Nxd5+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle HP5Qk).",
+    "source": "lichess:HP5Qk"
+  },
+  {
+    "fen": "r5k1/p3q1p1/5n1p/3p4/8/3BP1B1/2R1KPPP/2R5 w - - 5 29",
+    "solution_moves": [
+      "c2c8",
+      "a8c8",
+      "c1c8",
+      "g8f7",
+      "c8c7"
+    ],
+    "solution_san": [
+      "Rc8+",
+      "Rxc8",
+      "Rxc8+",
+      "Kf7",
+      "Rc7"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1189,
+    "explanation": "Rc8+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle 4y9Un).",
+    "source": "lichess:4y9Un"
+  },
+  {
+    "fen": "r4r1k/pp2Np1p/3P2pQ/8/3n2b1/3B2P1/PPP3qP/1K3R2 w - - 6 22",
+    "solution_moves": [
+      "e7g6",
+      "f7g6",
+      "f1f8",
+      "a8f8",
+      "h6f8"
+    ],
+    "solution_san": [
+      "Nxg6+",
+      "fxg6",
+      "Rxf8+",
+      "Rxf8",
+      "Qxf8#"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1256,
+    "explanation": "Nxg6+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle d3CvZ).",
+    "source": "lichess:d3CvZ"
+  },
+  {
+    "fen": "8/6p1/4p1k1/2P1Qb1p/2P2K2/3q1P2/P5PP/2R5 b - - 2 40",
+    "solution_moves": [
+      "d3d2",
+      "e5e3",
+      "e6e5",
+      "f4e5",
+      "d2e3"
+    ],
+    "solution_san": [
+      "Qd2+",
+      "Qe3",
+      "e5+",
+      "Kxe5",
+      "Qxe3+"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1266,
+    "explanation": "Qd2+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle KSaZx).",
+    "source": "lichess:KSaZx"
+  },
+  {
+    "fen": "3R4/p4pbk/1p4pp/q4r2/2r5/6PN/PQ3PP1/1K5R w - - 2 29",
+    "solution_moves": [
+      "h3g5",
+      "f5g5",
+      "h1h6",
+      "h7h6",
+      "d8h8",
+      "g7h8",
+      "b2h8"
+    ],
+    "solution_san": [
+      "Ng5+",
+      "Rxg5",
+      "Rxh6+",
+      "Kxh6",
+      "Rh8+",
+      "Bxh8",
+      "Qxh8#"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1273,
+    "explanation": "Ng5+ starts a 4-move combination built on a pin. From a real game on Lichess (puzzle dYWY0).",
+    "source": "lichess:dYWY0"
+  },
+  {
+    "fen": "8/2pr2k1/5p1p/8/1P3Pq1/4R1P1/4Q2P/3rR1K1 b - - 8 36",
+    "solution_moves": [
+      "d1e1",
+      "e2e1",
+      "d7d1",
+      "g1f2",
+      "d1e1"
+    ],
+    "solution_san": [
+      "Rxe1+",
+      "Qxe1",
+      "Rd1",
+      "Kf2",
+      "Rxe1"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1279,
+    "explanation": "Rxe1+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle I9CWy).",
+    "source": "lichess:I9CWy"
+  },
+  {
+    "fen": "2r1br2/pp4pk/1q2p1np/1P2P3/3N1PQ1/2PB4/6PP/2R2RK1 b - - 4 24",
+    "solution_moves": [
+      "c8c3",
+      "c1c3",
+      "b6d4",
+      "g1h1",
+      "d4c3"
+    ],
+    "solution_san": [
+      "Rxc3",
+      "Rxc3",
+      "Qxd4+",
+      "Kh1",
+      "Qxc3"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1293,
+    "explanation": "Rxc3 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle X0hPb).",
+    "source": "lichess:X0hPb"
+  },
+  {
+    "fen": "1kr5/1p1b4/p7/3NRp2/3P1P2/P4P2/1PP5/2KQ3q b - - 6 34",
+    "solution_moves": [
+      "c8c2",
+      "c1c2",
+      "d7a4",
+      "b2b3",
+      "a4b3",
+      "c2b3",
+      "h1d1"
+    ],
+    "solution_san": [
+      "Rxc2+",
+      "Kxc2",
+      "Ba4+",
+      "b3",
+      "Bxb3+",
+      "Kxb3",
+      "Qxd1+"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1313,
+    "explanation": "Rxc2+ starts a 4-move combination built on a pin. From a real game on Lichess (puzzle i8tPz).",
+    "source": "lichess:i8tPz"
+  },
+  {
+    "fen": "r4r1k/pQp2Ppp/3p4/6q1/2Bn1P2/2N2R2/PP4PP/R5K1 b - - 0 17",
+    "solution_moves": [
+      "d4f3",
+      "b7f3",
+      "g5c5",
+      "f3f2",
+      "c5c4"
+    ],
+    "solution_san": [
+      "Nxf3+",
+      "Qxf3",
+      "Qc5+",
+      "Qf2",
+      "Qxc4"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1345,
+    "explanation": "Nxf3+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle D7O4j).",
+    "source": "lichess:D7O4j"
+  },
+  {
+    "fen": "r1b2k2/ppp1q1b1/5nQ1/3p2N1/2r5/7P/PPP3P1/5RK1 w - - 2 21",
+    "solution_moves": [
+      "g5h7",
+      "f8g8",
+      "h7f6",
+      "e7f6",
+      "f1f6"
+    ],
+    "solution_san": [
+      "Nh7+",
+      "Kg8",
+      "Nxf6+",
+      "Qxf6",
+      "Rxf6"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1346,
+    "explanation": "Nh7+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle IAkx5).",
+    "source": "lichess:IAkx5"
+  },
+  {
+    "fen": "r3r3/pQ1R4/5q2/7k/7P/2P2pR1/PP3P2/6K1 b - - 0 30",
+    "solution_moves": [
+      "e8e1",
+      "g1h2",
+      "f6h4",
+      "g3h3",
+      "e1h1",
+      "h2h1",
+      "h4h3",
+      "h1g1",
+      "h3g2"
+    ],
+    "solution_san": [
+      "Re1+",
+      "Kh2",
+      "Qxh4+",
+      "Rh3",
+      "Rh1+",
+      "Kxh1",
+      "Qxh3+",
+      "Kg1",
+      "Qg2#"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1370,
+    "explanation": "Re1+ starts a 5-move combination built on a pin. From a real game on Lichess (puzzle AvDT5).",
+    "source": "lichess:AvDT5"
+  },
+  {
+    "fen": "4nrk1/ppr1Qppp/4P3/8/3K4/3P1B1P/P4PP1/2q5 w - - 1 30",
+    "solution_moves": [
+      "e6f7",
+      "f8f7",
+      "e7e8",
+      "f7f8",
+      "f3d5",
+      "c7f7",
+      "d5f7",
+      "g8h8",
+      "e8f8"
+    ],
+    "solution_san": [
+      "exf7+",
+      "Rxf7",
+      "Qxe8+",
+      "Rf8",
+      "Bd5+",
+      "Rf7",
+      "Bxf7+",
+      "Kh8",
+      "Qxf8#"
+    ],
+    "motif": "pin",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1397,
+    "explanation": "exf7+ starts a 5-move combination built on a pin. From a real game on Lichess (puzzle qSbeZ).",
+    "source": "lichess:qSbeZ"
+  },
+  {
+    "fen": "1r1q1rk1/5ppp/b2p4/p7/2B1P1PP/2Q2P2/PP6/2KR3R b - - 0 20",
+    "solution_moves": [
+      "a6c4",
+      "c3c4",
+      "b8c8",
+      "c4c8",
+      "d8c8"
+    ],
+    "solution_san": [
+      "Bxc4",
+      "Qxc4",
+      "Rc8",
+      "Qxc8",
+      "Qxc8+"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1414,
+    "explanation": "Bxc4 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle 5Wioa).",
+    "source": "lichess:5Wioa"
+  },
+  {
+    "fen": "7Q/2R1bk2/3p2q1/1p2n3/8/1P6/P4PP1/6K1 b - - 12 42",
+    "solution_moves": [
+      "e5f3",
+      "g1h1",
+      "g6b1",
+      "c7c1",
+      "b1c1"
+    ],
+    "solution_san": [
+      "Nf3+",
+      "Kh1",
+      "Qb1+",
+      "Rc1",
+      "Qxc1#"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1441,
+    "explanation": "Nf3+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle ENx6R).",
+    "source": "lichess:ENx6R"
+  },
+  {
+    "fen": "r3r1k1/pp3ppn/2nq2b1/2p3b1/4P2N/P2P4/BPPNQ3/2K2R1R w - - 0 21",
+    "solution_moves": [
+      "h4g6",
+      "d6g6",
+      "a2f7",
+      "g6f7",
+      "f1f7"
+    ],
+    "solution_san": [
+      "Nxg6",
+      "Qxg6",
+      "Bxf7+",
+      "Qxf7",
+      "Rxf7"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1450,
+    "explanation": "Nxg6 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle r84T4).",
+    "source": "lichess:r84T4"
+  },
+  {
+    "fen": "8/2r5/R3pk1p/2np4/5N2/4K3/6PP/8 w - - 4 43",
+    "solution_moves": [
+      "f4d5",
+      "f6g5",
+      "d5c7",
+      "c5a6",
+      "c7a6"
+    ],
+    "solution_san": [
+      "Nxd5+",
+      "Kg5",
+      "Nxc7",
+      "Nxa6",
+      "Nxa6"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1456,
+    "explanation": "Nxd5+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle xR2N4).",
+    "source": "lichess:xR2N4"
+  },
+  {
+    "fen": "5rk1/q1bQ2pp/p3p3/1p6/2p5/P1N5/1P2BPPP/4K2R b K - 0 19",
+    "solution_moves": [
+      "a7f2",
+      "e1d1",
+      "f8d8",
+      "d7d8",
+      "c7d8"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kd1",
+      "Rd8",
+      "Qxd8+",
+      "Bxd8"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1457,
+    "explanation": "Qxf2+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle MtHtp).",
+    "source": "lichess:MtHtp"
+  },
+  {
+    "fen": "b2k3r/2p1qp2/BpPp4/3Pn3/PP2Pp2/2N2P2/3K1Q1P/R7 b - - 1 30",
+    "solution_moves": [
+      "h8h2",
+      "f2h2",
+      "e5f3",
+      "d2c2",
+      "f3h2"
+    ],
+    "solution_san": [
+      "Rxh2",
+      "Qxh2",
+      "Nxf3+",
+      "Kc2",
+      "Nxh2"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1506,
+    "explanation": "Rxh2 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle Uheec).",
+    "source": "lichess:Uheec"
+  },
+  {
+    "fen": "r1b1kbnr/pp2qppp/1np5/8/2B5/1QN5/PP1B1PPP/R4KNR w kq - 1 11",
+    "solution_moves": [
+      "a1e1",
+      "b6c4",
+      "e1e7",
+      "f8e7",
+      "b3c4"
+    ],
+    "solution_san": [
+      "Re1",
+      "Nxc4",
+      "Rxe7+",
+      "Bxe7",
+      "Qxc4"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1524,
+    "explanation": "Re1 starts a 3-move combination built on a pin. From a real game on Lichess (puzzle z5ujj).",
+    "source": "lichess:z5ujj"
+  },
+  {
+    "fen": "4r1k1/pp2q1pp/2p2p2/1P1p4/3P1b2/P1NQ3P/2P2PP1/R5K1 b - - 0 23",
+    "solution_moves": [
+      "e7e1",
+      "a1e1",
+      "e8e1",
+      "d3f1",
+      "f4h2",
+      "g1h2",
+      "e1f1",
+      "b5c6",
+      "b7c6"
+    ],
+    "solution_san": [
+      "Qe1+",
+      "Rxe1",
+      "Rxe1+",
+      "Qf1",
+      "Bh2+",
+      "Kxh2",
+      "Rxf1",
+      "bxc6",
+      "bxc6"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1553,
+    "explanation": "Qe1+ starts a 5-move combination built on a pin. From a real game on Lichess (puzzle llRYj).",
+    "source": "lichess:llRYj"
+  },
+  {
+    "fen": "8/p7/1p1R1bk1/4p2p/2r1Pp1n/P4P2/1B5P/4N2K w - - 6 37",
+    "solution_moves": [
+      "b2e5",
+      "c4c1",
+      "d6f6",
+      "g6h7",
+      "f6f7",
+      "h7g8",
+      "f7g7",
+      "g8f8",
+      "g7g1"
+    ],
+    "solution_san": [
+      "Bxe5",
+      "Rc1",
+      "Rxf6+",
+      "Kh7",
+      "Rf7+",
+      "Kg8",
+      "Rg7+",
+      "Kf8",
+      "Rg1"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1587,
+    "explanation": "Bxe5 starts a 5-move combination built on a pin. From a real game on Lichess (puzzle MpC7V).",
+    "source": "lichess:MpC7V"
+  },
+  {
+    "fen": "3r3k/pp1rRBbp/1nb3p1/2p3B1/8/2P4P/PP4P1/2K1R3 w - - 1 23",
+    "solution_moves": [
+      "e7e8",
+      "d8e8",
+      "e1e8",
+      "g7f8",
+      "g5f6"
+    ],
+    "solution_san": [
+      "Re8+",
+      "Rxe8",
+      "Rxe8+",
+      "Bf8",
+      "Bf6#"
+    ],
+    "motif": "pin",
+    "difficulty": "advanced",
+    "difficulty_rating": 1588,
+    "explanation": "Re8+ starts a 3-move combination built on a pin. From a real game on Lichess (puzzle r0qdL).",
+    "source": "lichess:r0qdL"
+  },
+  {
+    "fen": "6k1/Bp2pp1p/4b1p1/8/8/2r3P1/P3PP1P/3R2K1 w - - 0 20",
+    "solution_moves": [
+      "d1d8",
+      "g8g7",
+      "a7d4",
+      "g7h6",
+      "d4c3"
+    ],
+    "solution_san": [
+      "Rd8+",
+      "Kg7",
+      "Bd4+",
+      "Kh6",
+      "Bxc3"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 839,
+    "explanation": "Rd8+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 744B6).",
+    "source": "lichess:744B6"
+  },
+  {
+    "fen": "5k2/5ppp/3P4/4n3/1R6/1Pr2P2/P5PP/6K1 b - - 0 37",
+    "solution_moves": [
+      "c3c1",
+      "g1f2",
+      "e5d3",
+      "f2e3",
+      "d3b4"
+    ],
+    "solution_san": [
+      "Rc1+",
+      "Kf2",
+      "Nd3+",
+      "Ke3",
+      "Nxb4"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 883,
+    "explanation": "Rc1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle pffEv).",
+    "source": "lichess:pffEv"
+  },
+  {
+    "fen": "1k1r4/ppR2p2/3P1np1/1B6/4pP1p/1P2K2P/P4P2/8 b - - 2 29",
+    "solution_moves": [
+      "f6d5",
+      "e3e4",
+      "d5c7",
+      "d6c7",
+      "b8c7"
+    ],
+    "solution_san": [
+      "Nd5+",
+      "Kxe4",
+      "Nxc7",
+      "dxc7+",
+      "Kxc7"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 889,
+    "explanation": "Nd5+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle Xz49n).",
+    "source": "lichess:Xz49n"
+  },
+  {
+    "fen": "8/p4ppk/P4b1p/5q2/3PQ3/5P2/6PP/R5K1 b - - 0 35",
+    "solution_moves": [
+      "f5e4",
+      "f3e4",
+      "f6d4",
+      "g1f1",
+      "d4a1"
+    ],
+    "solution_san": [
+      "Qxe4",
+      "fxe4",
+      "Bxd4+",
+      "Kf1",
+      "Bxa1"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 890,
+    "explanation": "Qxe4 starts a 3-move combination built on a fork. From a real game on Lichess (puzzle VGqfT).",
+    "source": "lichess:VGqfT"
+  },
+  {
+    "fen": "8/p5p1/r7/2b3p1/3kp3/1Bp3PP/P3KP2/2R5 w - - 6 47",
+    "solution_moves": [
+      "c1d1",
+      "d4e5",
+      "d1d5",
+      "e5f6",
+      "d5c5"
+    ],
+    "solution_san": [
+      "Rd1+",
+      "Ke5",
+      "Rd5+",
+      "Kf6",
+      "Rxc5"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 897,
+    "explanation": "Rd1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle NMYuw).",
+    "source": "lichess:NMYuw"
+  },
+  {
+    "fen": "8/KP1k4/P1q5/8/8/8/8/8 w - - 1 92",
+    "solution_moves": [
+      "b7b8n",
+      "d7d6",
+      "b8c6",
+      "d6c6",
+      "a7b8"
+    ],
+    "solution_san": [
+      "b8=N+",
+      "Kd6",
+      "Nxc6",
+      "Kxc6",
+      "Kb8"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 940,
+    "explanation": "b8=N+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle lHKYv).",
+    "source": "lichess:lHKYv"
+  },
+  {
+    "fen": "8/8/8/8/8/5Q1p/4K1pk/8 b - - 5 65",
+    "solution_moves": [
+      "g2g1n",
+      "e2e3",
+      "g1f3",
+      "e3f3",
+      "h2g1"
+    ],
+    "solution_san": [
+      "g1=N+",
+      "Ke3",
+      "Nxf3",
+      "Kxf3",
+      "Kg1"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 959,
+    "explanation": "g1=N+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle SS5vA).",
+    "source": "lichess:SS5vA"
+  },
+  {
+    "fen": "r3r3/pppb1p1k/3pp1p1/8/2P1P2b/2NB4/PP6/2KR1R2 w - - 0 20",
+    "solution_moves": [
+      "f1f7",
+      "h7g8",
+      "f7d7",
+      "e8e7",
+      "d7e7"
+    ],
+    "solution_san": [
+      "Rxf7+",
+      "Kg8",
+      "Rxd7",
+      "Re7",
+      "Rxe7"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 970,
+    "explanation": "Rxf7+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle YODew).",
+    "source": "lichess:YODew"
+  },
+  {
+    "fen": "r3kb1r/ppp2p2/n2p4/3P3p/2P3nR/P3q3/1P1NQ1P1/R1B1K1N1 w Qkq - 0 17",
+    "solution_moves": [
+      "e2e3",
+      "g4e3",
+      "h4e4",
+      "e8d7",
+      "e4e3"
+    ],
+    "solution_san": [
+      "Qxe3+",
+      "Nxe3",
+      "Re4+",
+      "Kd7",
+      "Rxe3"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 985,
+    "explanation": "Qxe3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle tNNo8).",
+    "source": "lichess:tNNo8"
+  },
+  {
+    "fen": "2krr3/p4ppp/2p2n2/2b5/8/P3NP2/1PP2P1P/R1BR2K1 b - - 2 15",
+    "solution_moves": [
+      "d8d1",
+      "e3d1",
+      "e8e1",
+      "g1g2",
+      "e1d1"
+    ],
+    "solution_san": [
+      "Rxd1+",
+      "Nxd1",
+      "Re1+",
+      "Kg2",
+      "Rxd1"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 989,
+    "explanation": "Rxd1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle bcHFd).",
+    "source": "lichess:bcHFd"
+  },
+  {
+    "fen": "N4knr/pb1pqp2/3B2pp/8/7P/5P2/PbP1PP2/R2QKB1R b KQ - 2 13",
+    "solution_moves": [
+      "b2c3",
+      "d1d2",
+      "c3d2",
+      "e1d2",
+      "e7d6"
+    ],
+    "solution_san": [
+      "Bc3+",
+      "Qd2",
+      "Bxd2+",
+      "Kxd2",
+      "Qxd6+"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 1049,
+    "explanation": "Bc3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 1B4kq).",
+    "source": "lichess:1B4kq"
+  },
+  {
+    "fen": "r3kb1r/2pq1ppp/p2p4/1p1Nn1B1/4P1P1/5N2/PPP2P2/R2Q1RK1 b kq - 0 16",
+    "solution_moves": [
+      "d7g4",
+      "g1h2",
+      "e5f3",
+      "d1f3",
+      "g4f3"
+    ],
+    "solution_san": [
+      "Qxg4+",
+      "Kh2",
+      "Nxf3+",
+      "Qxf3",
+      "Qxf3"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 1062,
+    "explanation": "Qxg4+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle MPmLP).",
+    "source": "lichess:MPmLP"
+  },
+  {
+    "fen": "2r2rk1/pp2bp1p/6pP/3p1bP1/1n1Qp3/4B3/PP3P2/K1R2B1R b - - 1 24",
+    "solution_moves": [
+      "c8c1",
+      "e3c1",
+      "b4c2",
+      "a1b1",
+      "c2d4"
+    ],
+    "solution_san": [
+      "Rxc1+",
+      "Bxc1",
+      "Nc2+",
+      "Kb1",
+      "Nxd4"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 1079,
+    "explanation": "Rxc1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle K7gA5).",
+    "source": "lichess:K7gA5"
+  },
+  {
+    "fen": "8/pppk3p/2q1n1p1/8/2PrR3/3N2P1/P6P/4R1K1 w - - 0 33",
+    "solution_moves": [
+      "d3e5",
+      "d7d6",
+      "e5c6",
+      "d4e4",
+      "e1e4"
+    ],
+    "solution_san": [
+      "Ne5+",
+      "Kd6",
+      "Nxc6",
+      "Rxe4",
+      "Rxe4"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 1083,
+    "explanation": "Ne5+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle iC31Y).",
+    "source": "lichess:iC31Y"
+  },
+  {
+    "fen": "r1b2rk1/1pp2ppp/p1q1p3/N7/Pb1P4/2N5/1P2QBPP/R3KB1R b KQ - 0 14",
+    "solution_moves": [
+      "b4c3",
+      "b2c3",
+      "c6c3",
+      "e2d2",
+      "c3a1"
+    ],
+    "solution_san": [
+      "Bxc3+",
+      "bxc3",
+      "Qxc3+",
+      "Qd2",
+      "Qxa1+"
+    ],
+    "motif": "fork",
+    "difficulty": "beginner",
+    "difficulty_rating": 1087,
+    "explanation": "Bxc3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle s8KNe).",
+    "source": "lichess:s8KNe"
+  },
+  {
+    "fen": "5rk1/5p1p/5Rp1/1pp1n2q/4N1P1/1P3P2/1QP4P/6K1 b - - 0 29",
+    "solution_moves": [
+      "e5f3",
+      "f6f3",
+      "h5g4",
+      "g1f2",
+      "g4e4"
+    ],
+    "solution_san": [
+      "Nxf3+",
+      "Rxf3",
+      "Qxg4+",
+      "Kf2",
+      "Qxe4"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1132,
+    "explanation": "Nxf3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle jQhZE).",
+    "source": "lichess:jQhZE"
+  },
+  {
+    "fen": "r1bqk2r/1pp2ppp/p1P5/4p1N1/2B3n1/3P4/PPP3PP/RNBQ2KR b kq - 2 9",
+    "solution_moves": [
+      "d8d4",
+      "c1e3",
+      "d4e3",
+      "g1f1",
+      "e3f2"
+    ],
+    "solution_san": [
+      "Qd4+",
+      "Be3",
+      "Qxe3+",
+      "Kf1",
+      "Qf2#"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1176,
+    "explanation": "Qd4+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle RQgYM).",
+    "source": "lichess:RQgYM"
+  },
+  {
+    "fen": "6k1/p2r3p/4p1p1/3b1p2/N2Rn3/5P1P/P3Q1PK/1r6 b - - 0 33",
+    "solution_moves": [
+      "b1h1",
+      "h2h1",
+      "e4g3",
+      "h1h2",
+      "g3e2"
+    ],
+    "solution_san": [
+      "Rh1+",
+      "Kxh1",
+      "Ng3+",
+      "Kh2",
+      "Nxe2"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1181,
+    "explanation": "Rh1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle r6ffA).",
+    "source": "lichess:r6ffA"
+  },
+  {
+    "fen": "r1q1kb1r/p2bpppp/1p6/nB1PN3/Q4B2/2P5/P4PPP/R3K2R b KQkq - 3 14",
+    "solution_moves": [
+      "c8c3",
+      "e1d1",
+      "c3a1",
+      "f4c1",
+      "a1e5"
+    ],
+    "solution_san": [
+      "Qxc3+",
+      "Kd1",
+      "Qxa1+",
+      "Bc1",
+      "Qxe5"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1195,
+    "explanation": "Qxc3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle O3Cbj).",
+    "source": "lichess:O3Cbj"
+  },
+  {
+    "fen": "8/1p4p1/p1b1R2p/P1N2kp1/1r6/5P2/6PP/6K1 w - - 1 32",
+    "solution_moves": [
+      "g2g4",
+      "f5f4",
+      "c5d3",
+      "f4f3",
+      "d3b4"
+    ],
+    "solution_san": [
+      "g4+",
+      "Kf4",
+      "Nd3+",
+      "Kxf3",
+      "Nxb4"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1197,
+    "explanation": "g4+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 0j0TV).",
+    "source": "lichess:0j0TV"
+  },
+  {
+    "fen": "r4rk1/pp4pp/4p3/1Nppq3/3n4/2P2P2/P1P3PP/R2KQB1R b - - 0 16",
+    "solution_moves": [
+      "e5e1",
+      "d1e1",
+      "d4c2",
+      "e1d2",
+      "c2a1"
+    ],
+    "solution_san": [
+      "Qxe1+",
+      "Kxe1",
+      "Nxc2+",
+      "Kd2",
+      "Nxa1"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1235,
+    "explanation": "Qxe1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle DaDGU).",
+    "source": "lichess:DaDGU"
+  },
+  {
+    "fen": "r1b1k1nr/1pp2ppp/p2p4/8/1b1PPq2/1PB4P/P3QPP1/RN2KB1R b KQkq - 2 11",
+    "solution_moves": [
+      "f4c1",
+      "e2d1",
+      "b4c3",
+      "b1c3",
+      "c1c3"
+    ],
+    "solution_san": [
+      "Qc1+",
+      "Qd1",
+      "Bxc3+",
+      "Nxc3",
+      "Qxc3+"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1255,
+    "explanation": "Qc1+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle GDQkP).",
+    "source": "lichess:GDQkP"
+  },
+  {
+    "fen": "rnbq3r/p2pk1p1/2p2n1p/1p4N1/4PB2/2PP4/P1P3PP/R2QK2R w KQ - 0 11",
+    "solution_moves": [
+      "f4d6",
+      "e7d6",
+      "g5f7",
+      "d6c7",
+      "f7d8"
+    ],
+    "solution_san": [
+      "Bd6+",
+      "Kxd6",
+      "Nf7+",
+      "Kc7",
+      "Nxd8"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1269,
+    "explanation": "Bd6+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle bHUVm).",
+    "source": "lichess:bHUVm"
+  },
+  {
+    "fen": "r1b1k3/pp2r1p1/2q5/3R4/3QP3/6Pp/PP5P/4R1K1 w q - 1 27",
+    "solution_moves": [
+      "d5d8",
+      "e8f7",
+      "e1f1",
+      "f7g6",
+      "d8d6",
+      "g6h7",
+      "d6c6"
+    ],
+    "solution_san": [
+      "Rd8+",
+      "Kf7",
+      "Rf1+",
+      "Kg6",
+      "Rd6+",
+      "Kh7",
+      "Rxc6"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1276,
+    "explanation": "Rd8+ starts a 4-move combination built on a fork. From a real game on Lichess (puzzle h96uH).",
+    "source": "lichess:h96uH"
+  },
+  {
+    "fen": "8/p4pk1/6p1/3R3p/2Pp3P/P7/2P2P2/3b3K b - - 2 45",
+    "solution_moves": [
+      "d1f3",
+      "h1h2",
+      "f3d5",
+      "c4d5",
+      "g7f6",
+      "h2g3",
+      "f6e5"
+    ],
+    "solution_san": [
+      "Bf3+",
+      "Kh2",
+      "Bxd5",
+      "cxd5",
+      "Kf6",
+      "Kg3",
+      "Ke5"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1293,
+    "explanation": "Bf3+ starts a 4-move combination built on a fork. From a real game on Lichess (puzzle NO4b7).",
+    "source": "lichess:NO4b7"
+  },
+  {
+    "fen": "8/8/3pN2K/8/2kp3P/6R1/5r2/8 b - - 9 49",
+    "solution_moves": [
+      "f2f6",
+      "g3g6",
+      "f6g6",
+      "h6g6",
+      "d4d3",
+      "h4h5",
+      "d3d2",
+      "h5h6",
+      "d2d1q"
+    ],
+    "solution_san": [
+      "Rf6+",
+      "Rg6",
+      "Rxg6+",
+      "Kxg6",
+      "d3",
+      "h5",
+      "d2",
+      "h6",
+      "d1=Q"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1303,
+    "explanation": "Rf6+ starts a 5-move combination built on a fork. From a real game on Lichess (puzzle 3WyTr).",
+    "source": "lichess:3WyTr"
+  },
+  {
+    "fen": "r2q2nr/pp1bbkpp/2np4/4pP2/3NP3/8/PPP3PP/RNBQ1RK1 w - - 0 10",
+    "solution_moves": [
+      "d1h5",
+      "f7f8",
+      "d4e6",
+      "d7e6",
+      "f5e6",
+      "e7f6",
+      "h5f7"
+    ],
+    "solution_san": [
+      "Qh5+",
+      "Kf8",
+      "Ne6+",
+      "Bxe6",
+      "fxe6+",
+      "Bf6",
+      "Qf7#"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1336,
+    "explanation": "Qh5+ starts a 4-move combination built on a fork. From a real game on Lichess (puzzle y7lRW).",
+    "source": "lichess:y7lRW"
+  },
+  {
+    "fen": "r5k1/p6p/6p1/2N5/2p5/4nN1P/PRP1rRP1/6K1 b - - 4 23",
+    "solution_moves": [
+      "e2f2",
+      "g1f2",
+      "e3d1",
+      "f2e2",
+      "d1b2"
+    ],
+    "solution_san": [
+      "Rxf2",
+      "Kxf2",
+      "Nd1+",
+      "Ke2",
+      "Nxb2"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1359,
+    "explanation": "Rxf2 starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 1q4El).",
+    "source": "lichess:1q4El"
+  },
+  {
+    "fen": "2r3k1/pp4bp/1qn1p1p1/4p3/3nN3/4BBPP/PP1Q1P2/2RR2K1 b - - 0 22",
+    "solution_moves": [
+      "d4f3",
+      "g1g2",
+      "f3d2",
+      "e3b6",
+      "d2e4"
+    ],
+    "solution_san": [
+      "Nxf3+",
+      "Kg2",
+      "Nxd2",
+      "Bxb6",
+      "Nxe4"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1360,
+    "explanation": "Nxf3+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle uQ9Fo).",
+    "source": "lichess:uQ9Fo"
+  },
+  {
+    "fen": "2r1r1k1/5pp1/7p/3N4/1p6/3R2P1/5PP1/2R1b1K1 w - - 5 31",
+    "solution_moves": [
+      "c1c8",
+      "e8c8",
+      "d5e7",
+      "g8h7",
+      "e7c8"
+    ],
+    "solution_san": [
+      "Rxc8",
+      "Rxc8",
+      "Ne7+",
+      "Kh7",
+      "Nxc8"
+    ],
+    "motif": "fork",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1392,
+    "explanation": "Rxc8 starts a 3-move combination built on a fork. From a real game on Lichess (puzzle arRA5).",
+    "source": "lichess:arRA5"
+  },
+  {
+    "fen": "3r4/r1p3R1/2p2p2/p1N1pk1p/8/1P3P2/P1P3PP/6K1 w - - 8 31",
+    "solution_moves": [
+      "g2g4",
+      "f5f4",
+      "c5e6",
+      "f4f3",
+      "e6d8"
+    ],
+    "solution_san": [
+      "g4+",
+      "Kf4",
+      "Ne6+",
+      "Kxf3",
+      "Nxd8"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1414,
+    "explanation": "g4+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle EbVqX).",
+    "source": "lichess:EbVqX"
+  },
+  {
+    "fen": "r5k1/bbpp1pNp/pq6/1p1P4/1P2Q3/P4N2/1B3RPP/R5K1 b - - 0 21",
+    "solution_moves": [
+      "b6f2",
+      "g1h1",
+      "f2b2",
+      "a1e1",
+      "b2g7"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Kh1",
+      "Qxb2",
+      "Re1",
+      "Qxg7"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1448,
+    "explanation": "Qxf2+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 1HVAi).",
+    "source": "lichess:1HVAi"
+  },
+  {
+    "fen": "Q2qkb1r/2p2pp1/3p1n1p/4p1N1/4P3/1PN5/1P1P1PPP/2B3K1 w k - 2 17",
+    "solution_moves": [
+      "a8d8",
+      "e8d8",
+      "g5f7",
+      "d8e8",
+      "f7h8"
+    ],
+    "solution_san": [
+      "Qxd8+",
+      "Kxd8",
+      "Nxf7+",
+      "Ke8",
+      "Nxh8"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1458,
+    "explanation": "Qxd8+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle NNjAF).",
+    "source": "lichess:NNjAF"
+  },
+  {
+    "fen": "4r1k1/p4ppp/1p6/1R1n4/3B2r1/P3P3/7P/3KN2R b - - 1 27",
+    "solution_moves": [
+      "g4d4",
+      "e3d4",
+      "d5c3",
+      "d1d2",
+      "c3b5"
+    ],
+    "solution_san": [
+      "Rxd4+",
+      "exd4",
+      "Nc3+",
+      "Kd2",
+      "Nxb5"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1487,
+    "explanation": "Rxd4+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle u6l18).",
+    "source": "lichess:u6l18"
+  },
+  {
+    "fen": "6k1/p3P1p1/3n2Pp/3p4/r2P4/P4r2/1P3P2/1KR5 w - - 1 37",
+    "solution_moves": [
+      "c1c8",
+      "d6c8",
+      "e7e8q",
+      "f3f8",
+      "e8a4"
+    ],
+    "solution_san": [
+      "Rc8+",
+      "Nxc8",
+      "e8=Q+",
+      "Rf8",
+      "Qxa4"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1492,
+    "explanation": "Rc8+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle gjRzl).",
+    "source": "lichess:gjRzl"
+  },
+  {
+    "fen": "3r2k1/r1p1n1b1/1p2b1pp/1P2Np2/2P4P/P3p1P1/1B3PB1/2R1R1K1 b - - 0 20",
+    "solution_moves": [
+      "e3f2",
+      "g1f2",
+      "d8d2",
+      "f2f1",
+      "d2b2"
+    ],
+    "solution_san": [
+      "exf2+",
+      "Kxf2",
+      "Rd2+",
+      "Kf1",
+      "Rxb2"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1520,
+    "explanation": "exf2+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle 4YFq6).",
+    "source": "lichess:4YFq6"
+  },
+  {
+    "fen": "q3r2k/1b3Bp1/1n1b3p/1pp1N3/5n2/2PP3P/1P3PPN/3QR1K1 w - - 1 20",
+    "solution_moves": [
+      "e5g6",
+      "f4g6",
+      "e1e8",
+      "a8e8",
+      "f7e8"
+    ],
+    "solution_san": [
+      "Ng6+",
+      "Nxg6",
+      "Rxe8+",
+      "Qxe8",
+      "Bxe8"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1537,
+    "explanation": "Ng6+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle p3j6T).",
+    "source": "lichess:p3j6T"
+  },
+  {
+    "fen": "r4rk1/pR4bp/2pq2p1/3bpp2/8/2BPQ3/2P1NPPP/5RK1 w - - 2 26",
+    "solution_moves": [
+      "b7g7",
+      "g8g7",
+      "c3e5",
+      "d6e5",
+      "e3e5"
+    ],
+    "solution_san": [
+      "Rxg7+",
+      "Kxg7",
+      "Bxe5+",
+      "Qxe5",
+      "Qxe5+"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1547,
+    "explanation": "Rxg7+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle uIqMv).",
+    "source": "lichess:uIqMv"
+  },
+  {
+    "fen": "5k1r/p3bpp1/1pqp4/8/4b1P1/2P1BN2/P1P2PK1/1R1Q3R b - - 4 19",
+    "solution_moves": [
+      "h8h1",
+      "g2h1",
+      "e4f3",
+      "h1g1",
+      "f3d1"
+    ],
+    "solution_san": [
+      "Rxh1",
+      "Kxh1",
+      "Bxf3+",
+      "Kg1",
+      "Bxd1"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1563,
+    "explanation": "Rxh1 starts a 3-move combination built on a fork. From a real game on Lichess (puzzle VKumJ).",
+    "source": "lichess:VKumJ"
+  },
+  {
+    "fen": "r5k1/5qpp/b1p1P2r/p1P5/1p6/1P3pPB/P1Q4P/3RR1K1 b - - 0 29",
+    "solution_moves": [
+      "f3f2",
+      "c2f2",
+      "f7f2",
+      "g1f2",
+      "h6h3"
+    ],
+    "solution_san": [
+      "f2+",
+      "Qxf2",
+      "Qxf2+",
+      "Kxf2",
+      "Rxh3"
+    ],
+    "motif": "fork",
+    "difficulty": "advanced",
+    "difficulty_rating": 1584,
+    "explanation": "f2+ starts a 3-move combination built on a fork. From a real game on Lichess (puzzle dMGyX).",
+    "source": "lichess:dMGyX"
+  },
+  {
+    "fen": "2r1R3/5k1p/6p1/p2b4/B2R4/1P6/P4PPP/6K1 b - - 0 32",
+    "solution_moves": [
+      "c8c1",
+      "d4d1",
+      "c1d1",
+      "e8e1",
+      "d1e1"
+    ],
+    "solution_san": [
+      "Rc1+",
+      "Rd1",
+      "Rxd1+",
+      "Re1",
+      "Rxe1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 844,
+    "explanation": "Rc1+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle lbx98).",
+    "source": "lichess:lbx98"
+  },
+  {
+    "fen": "4r1k1/p4b1p/6p1/8/2B3Q1/2P5/PP3qPP/3R3K b - - 0 34",
+    "solution_moves": [
+      "e8e1",
+      "d1e1",
+      "f2e1",
+      "c4f1",
+      "e1f1"
+    ],
+    "solution_san": [
+      "Re1+",
+      "Rxe1",
+      "Qxe1+",
+      "Bf1",
+      "Qxf1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 874,
+    "explanation": "Re1+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle a2MN1).",
+    "source": "lichess:a2MN1"
+  },
+  {
+    "fen": "7k/p2r2pp/1p1p1r2/2pQ4/2P3q1/6B1/P4PK1/7R w - - 3 37",
+    "solution_moves": [
+      "d5a8",
+      "d7d8",
+      "a8d8",
+      "f6f8",
+      "d8f8"
+    ],
+    "solution_san": [
+      "Qa8+",
+      "Rd8",
+      "Qxd8+",
+      "Rf8",
+      "Qxf8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 882,
+    "explanation": "Qa8+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle Zjb8e).",
+    "source": "lichess:Zjb8e"
+  },
+  {
+    "fen": "8/1pk4p/1p4p1/8/1R1R3P/P4rP1/1P5r/1K6 w - - 0 34",
+    "solution_moves": [
+      "b4c4",
+      "c7b8",
+      "d4d8",
+      "b8a7",
+      "c4a4"
+    ],
+    "solution_san": [
+      "Rbc4+",
+      "Kb8",
+      "Rd8+",
+      "Ka7",
+      "Ra4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 894,
+    "explanation": "Rbc4+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle iD5qH).",
+    "source": "lichess:iD5qH"
+  },
+  {
+    "fen": "6k1/ppp4p/2n2r2/3R1p2/N3p1B1/1P2PnP1/P1P2P2/5R1K b - - 0 23",
+    "solution_moves": [
+      "f6h6",
+      "g4h5",
+      "h6h5",
+      "h1g2",
+      "h5h2"
+    ],
+    "solution_san": [
+      "Rh6+",
+      "Bh5",
+      "Rxh5+",
+      "Kg2",
+      "Rh2#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 899,
+    "explanation": "Rh6+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle ZYGwg).",
+    "source": "lichess:ZYGwg"
+  },
+  {
+    "fen": "3r2kb/3P1p1p/1p4pP/1r6/4NnP1/5P2/PPP5/1K1RR3 w - - 3 29",
+    "solution_moves": [
+      "e4f6",
+      "h8f6",
+      "e1e8",
+      "d8e8",
+      "d7e8q"
+    ],
+    "solution_san": [
+      "Nf6+",
+      "Bxf6",
+      "Re8+",
+      "Rxe8",
+      "dxe8=Q#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 937,
+    "explanation": "Nf6+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle eqGPO).",
+    "source": "lichess:eqGPO"
+  },
+  {
+    "fen": "3Rn2k/4q2p/6p1/3Rb3/8/2P5/PP2QPP1/7K b - - 1 29",
+    "solution_moves": [
+      "e7h4",
+      "h1g1",
+      "h4h2",
+      "g1f1",
+      "h2h1"
+    ],
+    "solution_san": [
+      "Qh4+",
+      "Kg1",
+      "Qh2+",
+      "Kf1",
+      "Qh1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 950,
+    "explanation": "Qh4+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle xAOcT).",
+    "source": "lichess:xAOcT"
+  },
+  {
+    "fen": "rnbqk2r/pp3ppp/8/3p2N1/2P5/8/PP4PP/RN1Q1BKR b kq - 0 10",
+    "solution_moves": [
+      "d8b6",
+      "c4c5",
+      "b6c5",
+      "d1d4",
+      "c5d4"
+    ],
+    "solution_san": [
+      "Qb6+",
+      "c5",
+      "Qxc5+",
+      "Qd4",
+      "Qxd4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 977,
+    "explanation": "Qb6+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle 4kRnq).",
+    "source": "lichess:4kRnq"
+  },
+  {
+    "fen": "1k4r1/1p2Qp1p/pP2p3/4Pq2/3P1n2/5N2/P6P/2R4K w - - 1 32",
+    "solution_moves": [
+      "e7c7",
+      "b8a8",
+      "c7c8",
+      "g8c8",
+      "c1c8"
+    ],
+    "solution_san": [
+      "Qc7+",
+      "Ka8",
+      "Qc8+",
+      "Rxc8",
+      "Rxc8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 987,
+    "explanation": "Qc7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle a1HQ9).",
+    "source": "lichess:a1HQ9"
+  },
+  {
+    "fen": "2r5/p3bp1k/4p1pp/1p2B3/2p2P2/P3PR1Q/2qr2PP/4R1K1 w - - 1 29",
+    "solution_moves": [
+      "h3h6",
+      "h7h6",
+      "f3h3",
+      "e7h4",
+      "h3h4"
+    ],
+    "solution_san": [
+      "Qxh6+",
+      "Kxh6",
+      "Rh3+",
+      "Bh4",
+      "Rxh4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 995,
+    "explanation": "Qxh6+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle tl0IZ).",
+    "source": "lichess:tl0IZ"
+  },
+  {
+    "fen": "2r4r/8/R4p2/1P1k1p2/P2P4/B1n1P3/5PPP/5RK1 b - - 4 32",
+    "solution_moves": [
+      "c3e2",
+      "g1h1",
+      "h8h2",
+      "h1h2",
+      "c8h8"
+    ],
+    "solution_san": [
+      "Ne2+",
+      "Kh1",
+      "Rxh2+",
+      "Kxh2",
+      "Rh8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1054,
+    "explanation": "Ne2+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle V4x7I).",
+    "source": "lichess:V4x7I"
+  },
+  {
+    "fen": "6rk/pp3p1p/2p3r1/4nN1R/8/qP2P1P1/3PQ2P/6K1 w - - 0 26",
+    "solution_moves": [
+      "h5h7",
+      "h8h7",
+      "e2h5",
+      "g6h6",
+      "h5h6"
+    ],
+    "solution_san": [
+      "Rxh7+",
+      "Kxh7",
+      "Qh5+",
+      "Rh6",
+      "Qxh6#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1068,
+    "explanation": "Rxh7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle M7e84).",
+    "source": "lichess:M7e84"
+  },
+  {
+    "fen": "5rk1/pQ3pp1/1bNp4/4n1r1/8/2P5/PPK5/8 w - - 3 30",
+    "solution_moves": [
+      "c6e7",
+      "g8h7",
+      "b7h1",
+      "g5h5",
+      "h1h5"
+    ],
+    "solution_san": [
+      "Ne7+",
+      "Kh7",
+      "Qh1+",
+      "Rh5",
+      "Qxh5#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1092,
+    "explanation": "Ne7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle UBOKU).",
+    "source": "lichess:UBOKU"
+  },
+  {
+    "fen": "1r3rk1/1b3ppp/p7/1p1N3R/2p2P2/2P5/PP3qPP/R2Q3K w - - 3 21",
+    "solution_moves": [
+      "d5e7",
+      "g8h8",
+      "h5h7",
+      "h8h7",
+      "d1h5"
+    ],
+    "solution_san": [
+      "Ne7+",
+      "Kh8",
+      "Rxh7+",
+      "Kxh7",
+      "Qh5#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1094,
+    "explanation": "Ne7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle kYrXi).",
+    "source": "lichess:kYrXi"
+  },
+  {
+    "fen": "1k3r2/p1RQ2pp/1r3q2/4N3/8/P7/5PPP/5RK1 b - - 0 25",
+    "solution_moves": [
+      "f6f2",
+      "f1f2",
+      "b6b1",
+      "c7c1",
+      "b1c1",
+      "d7d1",
+      "c1d1",
+      "f2f1",
+      "f8f1"
+    ],
+    "solution_san": [
+      "Qxf2+",
+      "Rxf2",
+      "Rb1+",
+      "Rc1",
+      "Rxc1+",
+      "Qd1",
+      "Rxd1+",
+      "Rf1",
+      "Rfxf1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "beginner",
+    "difficulty_rating": 1098,
+    "explanation": "Qxf2+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle il1Ln).",
+    "source": "lichess:il1Ln"
+  },
+  {
+    "fen": "6k1/5p1p/6p1/r6n/1pN1P3/1P1NbPP1/3r2BP/1R3R1K b - - 8 35",
+    "solution_moves": [
+      "h5g3",
+      "h2g3",
+      "a5h5",
+      "g2h3",
+      "h5h3"
+    ],
+    "solution_san": [
+      "Nxg3+",
+      "hxg3",
+      "Rh5+",
+      "Bh3",
+      "Rxh3#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1135,
+    "explanation": "Nxg3+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle 2obs6).",
+    "source": "lichess:2obs6"
+  },
+  {
+    "fen": "r4rk1/pp4p1/2p2qP1/3p2p1/3P4/2PQ3R/P1P3P1/R5K1 w - - 1 21",
+    "solution_moves": [
+      "h3h8",
+      "g8h8",
+      "d3h3",
+      "h8g8",
+      "h3h7"
+    ],
+    "solution_san": [
+      "Rh8+",
+      "Kxh8",
+      "Qh3+",
+      "Kg8",
+      "Qh7#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1142,
+    "explanation": "Rh8+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle AOY53).",
+    "source": "lichess:AOY53"
+  },
+  {
+    "fen": "6k1/2p3pp/pb1p4/1p2p1qn/4P1P1/P2P3P/1PP4K/R2Q2N1 b - - 0 22",
+    "solution_moves": [
+      "g5f4",
+      "h2h1",
+      "h5g3",
+      "h1g2",
+      "f4f2"
+    ],
+    "solution_san": [
+      "Qf4+",
+      "Kh1",
+      "Ng3+",
+      "Kg2",
+      "Qf2#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1187,
+    "explanation": "Qf4+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle TRxnG).",
+    "source": "lichess:TRxnG"
+  },
+  {
+    "fen": "7k/p5p1/2Rr1r1p/4p3/P6P/3QKp2/1q3P1P/8 w - - 0 35",
+    "solution_moves": [
+      "c6c8",
+      "d6d8",
+      "c8d8",
+      "f6f8",
+      "d8f8"
+    ],
+    "solution_san": [
+      "Rc8+",
+      "Rd8",
+      "Rxd8+",
+      "Rf8",
+      "Rxf8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1188,
+    "explanation": "Rc8+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle HJQwy).",
+    "source": "lichess:HJQwy"
+  },
+  {
+    "fen": "r3b1k1/pp2b1p1/1qn1p1P1/3pP1r1/1P1P2P1/P1N1P3/4Q3/R3K2R w KQ - 1 20",
+    "solution_moves": [
+      "h1h8",
+      "g8h8",
+      "e2h2",
+      "g5h5",
+      "h2h5",
+      "h8g8",
+      "h5h7",
+      "g8f8",
+      "h7h8"
+    ],
+    "solution_san": [
+      "Rh8+",
+      "Kxh8",
+      "Qh2+",
+      "Rh5",
+      "Qxh5+",
+      "Kg8",
+      "Qh7+",
+      "Kf8",
+      "Qh8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1197,
+    "explanation": "Rh8+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle Dn28w).",
+    "source": "lichess:Dn28w"
+  },
+  {
+    "fen": "8/k2r1p2/4p3/1R3pPp/3r3P/1R2KP2/1P6/8 b - - 1 55",
+    "solution_moves": [
+      "f5f4",
+      "e3f2",
+      "d4d2",
+      "f2f1",
+      "d2d1",
+      "f1g2",
+      "d7d2",
+      "g2h3",
+      "d1h1"
+    ],
+    "solution_san": [
+      "f4+",
+      "Kf2",
+      "Rd2+",
+      "Kf1",
+      "Rd1+",
+      "Kg2",
+      "R7d2+",
+      "Kh3",
+      "Rh1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1225,
+    "explanation": "f4+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle 8Gl44).",
+    "source": "lichess:8Gl44"
+  },
+  {
+    "fen": "2r3k1/pbqn1Npn/1p5p/2ppN3/3P4/2P3P1/PPQ2PP1/4R1K1 w - - 0 22",
+    "solution_moves": [
+      "f7h6",
+      "g7h6",
+      "c2g6",
+      "g8h8",
+      "e5f7"
+    ],
+    "solution_san": [
+      "Nxh6+",
+      "gxh6",
+      "Qg6+",
+      "Kh8",
+      "Nf7#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1252,
+    "explanation": "Nxh6+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle 1FhTV).",
+    "source": "lichess:1FhTV"
+  },
+  {
+    "fen": "8/p5p1/1pQ2p1p/1n3rk1/1P1bR3/7P/6PK/5r2 w - - 0 39",
+    "solution_moves": [
+      "e4g4",
+      "g5h5",
+      "c6e8",
+      "g7g6",
+      "e8g6"
+    ],
+    "solution_san": [
+      "Rg4+",
+      "Kh5",
+      "Qe8+",
+      "g6",
+      "Qxg6#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1265,
+    "explanation": "Rg4+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle DRlJf).",
+    "source": "lichess:DRlJf"
+  },
+  {
+    "fen": "r3kbnr/1bpn3p/p2pp1p1/6N1/2P1P1Q1/P7/2K2PPP/q1B2B1R w kq - 0 15",
+    "solution_moves": [
+      "g4e6",
+      "f8e7",
+      "e6f7",
+      "e8d8",
+      "g5e6",
+      "d8c8",
+      "f7e8",
+      "e7d8",
+      "e8d8"
+    ],
+    "solution_san": [
+      "Qxe6+",
+      "Be7",
+      "Qf7+",
+      "Kd8",
+      "Ne6+",
+      "Kc8",
+      "Qe8+",
+      "Bd8",
+      "Qxd8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1267,
+    "explanation": "Qxe6+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle nWYBn).",
+    "source": "lichess:nWYBn"
+  },
+  {
+    "fen": "7Q/6Q1/4p3/3pP3/3P4/1n2B3/1k3P1K/q4q2 b - - 0 51",
+    "solution_moves": [
+      "f1h1",
+      "h2g3",
+      "a1g1",
+      "g3f4",
+      "h1e4"
+    ],
+    "solution_san": [
+      "Qh1+",
+      "Kg3",
+      "Qag1+",
+      "Kf4",
+      "Qe4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1284,
+    "explanation": "Qh1+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle sedxZ).",
+    "source": "lichess:sedxZ"
+  },
+  {
+    "fen": "1Q6/3Q4/P4kpp/8/3p1P1K/6P1/7P/7q b - - 0 56",
+    "solution_moves": [
+      "h1h2",
+      "d7h3",
+      "g6g5",
+      "f4g5",
+      "h6g5",
+      "h4g4",
+      "h2e2"
+    ],
+    "solution_san": [
+      "Qxh2+",
+      "Qh3",
+      "g5+",
+      "fxg5+",
+      "hxg5+",
+      "Kg4",
+      "Qe2#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1300,
+    "explanation": "Qxh2+ starts a 4-move combination built on checkmate. From a real game on Lichess (puzzle bpRK8).",
+    "source": "lichess:bpRK8"
+  },
+  {
+    "fen": "8/3qbrpk/3p3p/p3pN2/Pp2n3/6RQ/1r1B1PPP/3R2K1 w - - 0 27",
+    "solution_moves": [
+      "g3g7",
+      "f7g7",
+      "h3h6",
+      "h7g8",
+      "h6g7"
+    ],
+    "solution_san": [
+      "Rxg7+",
+      "Rxg7",
+      "Qxh6+",
+      "Kg8",
+      "Qxg7#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1300,
+    "explanation": "Rxg7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle mrDdX).",
+    "source": "lichess:mrDdX"
+  },
+  {
+    "fen": "8/6kP/4K1P1/8/8/8/pn6/8 w - - 0 61",
+    "solution_moves": [
+      "h7h8q",
+      "g7h8",
+      "e6f7",
+      "a2a1q",
+      "g6g7",
+      "h8h7",
+      "g7g8q",
+      "h7h6",
+      "g8g6"
+    ],
+    "solution_san": [
+      "h8=Q+",
+      "Kxh8",
+      "Kf7",
+      "a1=Q",
+      "g7+",
+      "Kh7",
+      "g8=Q+",
+      "Kh6",
+      "Qg6#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1327,
+    "explanation": "h8=Q+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle yVrx2).",
+    "source": "lichess:yVrx2"
+  },
+  {
+    "fen": "R7/1ppkq1p1/p1npN3/4p2n/1P2P2r/1BPPP1p1/P5P1/RN1Q2K1 b - - 0 19",
+    "solution_moves": [
+      "h4h1",
+      "g1h1",
+      "e7h4",
+      "h1g1",
+      "h4h2",
+      "g1f1",
+      "h2h1",
+      "f1e2",
+      "h1g2",
+      "e2e1",
+      "g2f2"
+    ],
+    "solution_san": [
+      "Rh1+",
+      "Kxh1",
+      "Qh4+",
+      "Kg1",
+      "Qh2+",
+      "Kf1",
+      "Qh1+",
+      "Ke2",
+      "Qxg2+",
+      "Ke1",
+      "Qf2#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1330,
+    "explanation": "Rh1+ starts a 6-move combination built on checkmate. From a real game on Lichess (puzzle e5s5a).",
+    "source": "lichess:e5s5a"
+  },
+  {
+    "fen": "1R6/7k/1R5p/P2p2p1/3P4/6PK/4rr2/8 b - - 1 39",
+    "solution_moves": [
+      "f2h2",
+      "h3g4",
+      "e2e4",
+      "g4f3",
+      "g5g4"
+    ],
+    "solution_san": [
+      "Rh2+",
+      "Kg4",
+      "Re4+",
+      "Kf3",
+      "g4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1376,
+    "explanation": "Rh2+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle uDZRp).",
+    "source": "lichess:uDZRp"
+  },
+  {
+    "fen": "8/p2R4/1p1p1b2/3Pp2k/4P3/1P2Bp1K/P3nPpP/1R6 b - - 7 33",
+    "solution_moves": [
+      "g2g1n",
+      "b1g1",
+      "e2g1",
+      "h3g3",
+      "f6h4"
+    ],
+    "solution_san": [
+      "g1=N+",
+      "Rxg1",
+      "Nxg1+",
+      "Kg3",
+      "Bh4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1418,
+    "explanation": "g1=N+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle mCOUy).",
+    "source": "lichess:mCOUy"
+  },
+  {
+    "fen": "r4r1k/ppp1Nppp/3pb3/8/5P2/1P6/1PPK4/4R2R w - - 2 23",
+    "solution_moves": [
+      "h1h7",
+      "h8h7",
+      "e1h1",
+      "e6h3",
+      "h1h3"
+    ],
+    "solution_san": [
+      "Rxh7+",
+      "Kxh7",
+      "Rh1+",
+      "Bh3",
+      "Rxh3#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1423,
+    "explanation": "Rxh7+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle w5bG5).",
+    "source": "lichess:w5bG5"
+  },
+  {
+    "fen": "5rk1/1np2p2/p4BpP/3r4/1p3R2/1P1pK3/P1P3qP/R2Q4 w - - 0 26",
+    "solution_moves": [
+      "h6h7",
+      "g8h7",
+      "f4h4",
+      "d5h5",
+      "h4h5",
+      "g6h5",
+      "d1h5",
+      "h7g8",
+      "h5h8"
+    ],
+    "solution_san": [
+      "h7+",
+      "Kxh7",
+      "Rh4+",
+      "Rh5",
+      "Rxh5+",
+      "gxh5",
+      "Qxh5+",
+      "Kg8",
+      "Qh8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1433,
+    "explanation": "h7+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle Ux9r1).",
+    "source": "lichess:Ux9r1"
+  },
+  {
+    "fen": "2k4r/1ppq4/1P2p3/1N2p1Q1/P3P2r/3P4/2P1n1PP/R4RBK b - - 0 22",
+    "solution_moves": [
+      "h4h2",
+      "g1h2",
+      "h8h2",
+      "h1h2",
+      "d7h7",
+      "g5h6",
+      "h7h6"
+    ],
+    "solution_san": [
+      "Rxh2+",
+      "Bxh2",
+      "Rxh2+",
+      "Kxh2",
+      "Qh7+",
+      "Qh6",
+      "Qxh6#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1458,
+    "explanation": "Rxh2+ starts a 4-move combination built on checkmate. From a real game on Lichess (puzzle 9bLHp).",
+    "source": "lichess:9bLHp"
+  },
+  {
+    "fen": "1k4r1/1bpR2Bp/p7/np6/5Q2/8/q1P2P1P/2K5 w - - 5 28",
+    "solution_moves": [
+      "f4c7",
+      "b8a7",
+      "g7d4",
+      "a7a8",
+      "d7d8",
+      "g8d8",
+      "c7d8",
+      "b7c8",
+      "d8c8"
+    ],
+    "solution_san": [
+      "Qxc7+",
+      "Ka7",
+      "Bd4+",
+      "Ka8",
+      "Rd8+",
+      "Rxd8",
+      "Qxd8+",
+      "Bc8",
+      "Qxc8#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1458,
+    "explanation": "Qxc7+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle CUzdk).",
+    "source": "lichess:CUzdk"
+  },
+  {
+    "fen": "Q7/7p/p5pk/3r1p2/1P2qP2/P5RP/5P1K/3q4 w - - 0 39",
+    "solution_moves": [
+      "a8f8",
+      "h6h5",
+      "g3g5",
+      "h5h4",
+      "f8h6",
+      "d1h5",
+      "g5h5",
+      "g6h5",
+      "h6g5"
+    ],
+    "solution_san": [
+      "Qf8+",
+      "Kh5",
+      "Rg5+",
+      "Kh4",
+      "Qh6+",
+      "Qh5",
+      "Rxh5+",
+      "gxh5",
+      "Qg5#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1503,
+    "explanation": "Qf8+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle gY1jI).",
+    "source": "lichess:gY1jI"
+  },
+  {
+    "fen": "6rk/p2qb2p/1p1p2r1/4p3/2PpNp2/3P1B1P/PP3Q1K/R5R1 b - - 13 30",
+    "solution_moves": [
+      "d7h3",
+      "h2h3",
+      "g6h6",
+      "f3h5",
+      "h6h5",
+      "f2h4",
+      "h5h4"
+    ],
+    "solution_san": [
+      "Qxh3+",
+      "Kxh3",
+      "Rh6+",
+      "Bh5",
+      "Rxh5+",
+      "Qh4",
+      "Rxh4#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1519,
+    "explanation": "Qxh3+ starts a 4-move combination built on checkmate. From a real game on Lichess (puzzle TSrzv).",
+    "source": "lichess:TSrzv"
+  },
+  {
+    "fen": "7R/pbp2R1p/1p6/3r2k1/PP6/7P/6PK/1r6 w - - 0 34",
+    "solution_moves": [
+      "h8g8",
+      "g5h6",
+      "f7f6",
+      "h6h5",
+      "g2g4",
+      "h5h4",
+      "f6h6",
+      "d5h5",
+      "h6h5"
+    ],
+    "solution_san": [
+      "Rg8+",
+      "Kh6",
+      "Rf6+",
+      "Kh5",
+      "g4+",
+      "Kh4",
+      "Rh6+",
+      "Rh5",
+      "Rxh5#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1528,
+    "explanation": "Rg8+ starts a 5-move combination built on checkmate. From a real game on Lichess (puzzle pt9xK).",
+    "source": "lichess:pt9xK"
+  },
+  {
+    "fen": "8/pp3kp1/2bR3p/4r3/5Bn1/2N3P1/PPP2P2/4RK2 b - - 4 26",
+    "solution_moves": [
+      "g4h2",
+      "f1g1",
+      "e5e1",
+      "g1h2",
+      "e1h1"
+    ],
+    "solution_san": [
+      "Nh2+",
+      "Kg1",
+      "Rxe1+",
+      "Kxh2",
+      "Rh1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1530,
+    "explanation": "Nh2+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle 6r9OQ).",
+    "source": "lichess:6r9OQ"
+  },
+  {
+    "fen": "8/5rk1/8/1p1Pp2q/8/2P2rpQ/PP4P1/R4RK1 b - - 2 36",
+    "solution_moves": [
+      "f3f1",
+      "a1f1",
+      "f7f1",
+      "g1f1",
+      "h5d1"
+    ],
+    "solution_san": [
+      "Rxf1+",
+      "Rxf1",
+      "Rxf1+",
+      "Kxf1",
+      "Qd1#"
+    ],
+    "motif": "checkmate",
+    "difficulty": "advanced",
+    "difficulty_rating": 1538,
+    "explanation": "Rxf1+ starts a 3-move combination built on checkmate. From a real game on Lichess (puzzle JYT4R).",
+    "source": "lichess:JYT4R"
+  },
+  {
+    "fen": "8/8/1p6/p7/2kR2P1/8/5PK1/8 b - - 0 49",
+    "solution_moves": [
+      "c4d4",
+      "g2f3",
+      "a5a4",
+      "f3e2",
+      "a4a3"
+    ],
+    "solution_san": [
+      "Kxd4",
+      "Kf3",
+      "a4",
+      "Ke2",
+      "a3"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 847,
+    "explanation": "Kxd4 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle EMDA0).",
+    "source": "lichess:EMDA0"
+  },
+  {
+    "fen": "1k4r1/2p2pr1/p3p3/1b2P3/p4PBR/1p4PK/1Q6/8 b - - 1 35",
+    "solution_moves": [
+      "b5f1",
+      "h3h2",
+      "g7g4",
+      "h4g4",
+      "g8g4"
+    ],
+    "solution_san": [
+      "Bf1+",
+      "Kh2",
+      "Rxg4",
+      "Rxg4",
+      "Rxg4"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 874,
+    "explanation": "Bf1+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle 7xTLI).",
+    "source": "lichess:7xTLI"
+  },
+  {
+    "fen": "6k1/pp1q2pp/3br3/3Q1p2/1P6/P7/1RP2PPP/4R1K1 b - - 1 24",
+    "solution_moves": [
+      "d6h2",
+      "g1h2",
+      "d7d5",
+      "e1e6",
+      "d5e6"
+    ],
+    "solution_san": [
+      "Bxh2+",
+      "Kxh2",
+      "Qxd5",
+      "Rxe6",
+      "Qxe6"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 879,
+    "explanation": "Bxh2+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle GLHro).",
+    "source": "lichess:GLHro"
+  },
+  {
+    "fen": "8/1K1k4/2pP4/4P3/8/8/8/8 b - - 4 56",
+    "solution_moves": [
+      "c6c5",
+      "b7b6",
+      "c5c4",
+      "b6b5",
+      "c4c3",
+      "b5c4",
+      "c3c2"
+    ],
+    "solution_san": [
+      "c5",
+      "Kb6",
+      "c4",
+      "Kb5",
+      "c3",
+      "Kc4",
+      "c2"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 882,
+    "explanation": "c5 starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle g6csj).",
+    "source": "lichess:g6csj"
+  },
+  {
+    "fen": "8/8/1p6/7P/1P1p4/2k2K2/8/8 w - - 1 54",
+    "solution_moves": [
+      "h5h6",
+      "d4d3",
+      "h6h7",
+      "d3d2",
+      "h7h8q"
+    ],
+    "solution_san": [
+      "h6",
+      "d3",
+      "h7",
+      "d2",
+      "h8=Q+"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 883,
+    "explanation": "h6 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle 2S4pH).",
+    "source": "lichess:2S4pH"
+  },
+  {
+    "fen": "2r4k/6pp/1p6/3R4/3N4/1P1b1BP1/P4P1P/6K1 b - - 2 31",
+    "solution_moves": [
+      "c8c1",
+      "f3d1",
+      "c1d1",
+      "g1g2",
+      "d3e4"
+    ],
+    "solution_san": [
+      "Rc1+",
+      "Bd1",
+      "Rxd1+",
+      "Kg2",
+      "Be4+"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 935,
+    "explanation": "Rc1+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle dR5sR).",
+    "source": "lichess:dR5sR"
+  },
+  {
+    "fen": "8/2n1PP2/4k1K1/p7/8/6P1/7P/8 b - - 0 50",
+    "solution_moves": [
+      "e6e7",
+      "f7f8q",
+      "e7f8",
+      "g6f5",
+      "a5a4"
+    ],
+    "solution_san": [
+      "Kxe7",
+      "f8=Q+",
+      "Kxf8",
+      "Kf5",
+      "a4"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 957,
+    "explanation": "Kxe7 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle W8Md4).",
+    "source": "lichess:W8Md4"
+  },
+  {
+    "fen": "8/7p/r5p1/2k2p2/2P2P1P/2K1R1P1/8/8 b - - 2 51",
+    "solution_moves": [
+      "a6a3",
+      "c3d2",
+      "a3e3",
+      "d2e3",
+      "c5c4",
+      "h4h5",
+      "g6h5"
+    ],
+    "solution_san": [
+      "Ra3+",
+      "Kd2",
+      "Rxe3",
+      "Kxe3",
+      "Kxc4",
+      "h5",
+      "gxh5"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 977,
+    "explanation": "Ra3+ starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle FdTf8).",
+    "source": "lichess:FdTf8"
+  },
+  {
+    "fen": "8/p3K1k1/8/5P2/P2p4/8/2P4b/8 w - - 5 55",
+    "solution_moves": [
+      "f5f6",
+      "g7g6",
+      "f6f7",
+      "h2d6",
+      "e7d6"
+    ],
+    "solution_san": [
+      "f6+",
+      "Kg6",
+      "f7",
+      "Bd6+",
+      "Kxd6"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 987,
+    "explanation": "f6+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle 7zN9F).",
+    "source": "lichess:7zN9F"
+  },
+  {
+    "fen": "8/8/8/5P2/4k3/4N3/1p6/bK6 w - - 5 74",
+    "solution_moves": [
+      "f5f6",
+      "e4e3",
+      "f6f7",
+      "e3f4",
+      "f7f8q"
+    ],
+    "solution_san": [
+      "f6",
+      "Kxe3",
+      "f7",
+      "Kf4",
+      "f8=Q+"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 995,
+    "explanation": "f6 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle UozRN).",
+    "source": "lichess:UozRN"
+  },
+  {
+    "fen": "1k5r/ppp2p2/2p5/8/6qp/3PR1P1/P1P3P1/4Q2K w - - 2 31",
+    "solution_moves": [
+      "e3e8",
+      "h8e8",
+      "e1e8",
+      "g4c8",
+      "e8c8",
+      "b8c8",
+      "g3h4"
+    ],
+    "solution_san": [
+      "Re8+",
+      "Rxe8",
+      "Qxe8+",
+      "Qc8",
+      "Qxc8+",
+      "Kxc8",
+      "gxh4"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 1010,
+    "explanation": "Re8+ starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle Sy579).",
+    "source": "lichess:Sy579"
+  },
+  {
+    "fen": "4r1k1/p3r2p/1p6/4np2/2Np4/1P6/1P3PPP/R3R1K1 b - - 3 23",
+    "solution_moves": [
+      "e5f3",
+      "g2f3",
+      "e7e1",
+      "a1e1",
+      "e8e1"
+    ],
+    "solution_san": [
+      "Nf3+",
+      "gxf3",
+      "Rxe1+",
+      "Rxe1",
+      "Rxe1+"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 1044,
+    "explanation": "Nf3+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle SUDOi).",
+    "source": "lichess:SUDOi"
+  },
+  {
+    "fen": "1b1B4/1P6/2P5/8/8/4pk2/1P6/4K3 b - - 1 43",
+    "solution_moves": [
+      "b8g3",
+      "e1d1",
+      "e3e2",
+      "d1c2",
+      "e2e1q"
+    ],
+    "solution_san": [
+      "Bg3+",
+      "Kd1",
+      "e2+",
+      "Kc2",
+      "e1=Q"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 1061,
+    "explanation": "Bg3+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle sY38G).",
+    "source": "lichess:sY38G"
+  },
+  {
+    "fen": "8/8/8/8/3k4/4R3/4K3/7r b - - 0 70",
+    "solution_moves": [
+      "h1h2",
+      "e2f3",
+      "h2h3",
+      "f3f4",
+      "h3e3"
+    ],
+    "solution_san": [
+      "Rh2+",
+      "Kf3",
+      "Rh3+",
+      "Kf4",
+      "Rxe3"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 1078,
+    "explanation": "Rh2+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle OjUCm).",
+    "source": "lichess:OjUCm"
+  },
+  {
+    "fen": "6k1/1bq1rpp1/pp5p/1B1pP3/1P1Q1P2/P1R3P1/6KP/8 b - - 1 29",
+    "solution_moves": [
+      "c7c3",
+      "d4c3",
+      "d5d4",
+      "g2f2",
+      "d4c3"
+    ],
+    "solution_san": [
+      "Qxc3",
+      "Qxc3",
+      "d4+",
+      "Kf2",
+      "dxc3"
+    ],
+    "motif": "endgame",
+    "difficulty": "beginner",
+    "difficulty_rating": 1090,
+    "explanation": "Qxc3 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle YTEjZ).",
+    "source": "lichess:YTEjZ"
+  },
+  {
+    "fen": "5r2/ppp1k1p1/7p/4p3/4R3/4K3/PPP3PP/RN1r4 b - - 4 20",
+    "solution_moves": [
+      "d1e1",
+      "e3d3",
+      "f8d8",
+      "d3c3",
+      "e1e4"
+    ],
+    "solution_san": [
+      "Re1+",
+      "Kd3",
+      "Rd8+",
+      "Kc3",
+      "Rxe4"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1164,
+    "explanation": "Re1+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle mbYqU).",
+    "source": "lichess:mbYqU"
+  },
+  {
+    "fen": "8/1k6/1p6/1P6/P5N1/3K1n1p/8/8 b - - 1 51",
+    "solution_moves": [
+      "f3e5",
+      "g4e5",
+      "h3h2",
+      "e5f3",
+      "h2h1q"
+    ],
+    "solution_san": [
+      "Ne5+",
+      "Nxe5",
+      "h2",
+      "Nf3",
+      "h1=Q"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1169,
+    "explanation": "Ne5+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle IvTzG).",
+    "source": "lichess:IvTzG"
+  },
+  {
+    "fen": "8/7p/5KP1/7P/8/pk6/8/8 b - - 0 39",
+    "solution_moves": [
+      "h7g6",
+      "h5g6",
+      "a3a2",
+      "f6f7",
+      "a2a1q"
+    ],
+    "solution_san": [
+      "hxg6",
+      "hxg6",
+      "a2",
+      "Kf7",
+      "a1=Q"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1182,
+    "explanation": "hxg6 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle zosdQ).",
+    "source": "lichess:zosdQ"
+  },
+  {
+    "fen": "3R4/r1p1k3/2P1p1pp/pb3p2/P7/4PP2/6PP/6K1 w - - 0 33",
+    "solution_moves": [
+      "d8d7",
+      "e7e8",
+      "a4b5",
+      "a5a4",
+      "b5b6"
+    ],
+    "solution_san": [
+      "Rd7+",
+      "Ke8",
+      "axb5",
+      "a4",
+      "b6"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1197,
+    "explanation": "Rd7+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle 96jzG).",
+    "source": "lichess:96jzG"
+  },
+  {
+    "fen": "5k2/5p1p/p1pP2p1/1P6/P4P2/5P2/7P/6K1 b - - 0 29",
+    "solution_moves": [
+      "c6b5",
+      "a4b5",
+      "a6b5",
+      "d6d7",
+      "f8e7",
+      "d7d8q",
+      "e7d8"
+    ],
+    "solution_san": [
+      "cxb5",
+      "axb5",
+      "axb5",
+      "d7",
+      "Ke7",
+      "d8=Q+",
+      "Kxd8"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1199,
+    "explanation": "cxb5 starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle 1s1vw).",
+    "source": "lichess:1s1vw"
+  },
+  {
+    "fen": "8/8/3R4/1p5P/1k3K2/pr4P1/6B1/8 b - - 0 47",
+    "solution_moves": [
+      "a3a2",
+      "d6d1",
+      "b3b1",
+      "g2d5",
+      "a2a1q",
+      "d1b1",
+      "a1b1"
+    ],
+    "solution_san": [
+      "a2",
+      "Rd1",
+      "Rb1",
+      "Bd5",
+      "a1=Q",
+      "Rxb1+",
+      "Qxb1"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1260,
+    "explanation": "a2 starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle utBZc).",
+    "source": "lichess:utBZc"
+  },
+  {
+    "fen": "8/4b3/2Pk4/3p2p1/6P1/4BK2/8/8 w - - 1 52",
+    "solution_moves": [
+      "e3c5",
+      "d6c5",
+      "c6c7",
+      "e7d6",
+      "c7c8q"
+    ],
+    "solution_san": [
+      "Bc5+",
+      "Kxc5",
+      "c7",
+      "Bd6",
+      "c8=Q+"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1275,
+    "explanation": "Bc5+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle dI3vm).",
+    "source": "lichess:dI3vm"
+  },
+  {
+    "fen": "7r/2p5/3b1p2/5kp1/3BR3/6P1/PPP2P1r/4RK2 b - - 5 25",
+    "solution_moves": [
+      "h2h1",
+      "f1g2",
+      "h8h2",
+      "g2f3",
+      "g5g4",
+      "e4g4",
+      "h1e1"
+    ],
+    "solution_san": [
+      "Rh1+",
+      "Kg2",
+      "R8h2+",
+      "Kf3",
+      "g4+",
+      "Rxg4",
+      "Rxe1"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1289,
+    "explanation": "Rh1+ starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle 04cPz).",
+    "source": "lichess:04cPz"
+  },
+  {
+    "fen": "7r/2R2p2/p3k2p/3pbpp1/3B4/7P/PP3PP1/6K1 w - - 0 28",
+    "solution_moves": [
+      "c7c6",
+      "e6d7",
+      "d4e5",
+      "d7c6",
+      "e5h8"
+    ],
+    "solution_san": [
+      "Rc6+",
+      "Kd7",
+      "Bxe5",
+      "Kxc6",
+      "Bxh8"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1298,
+    "explanation": "Rc6+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle FkP7Q).",
+    "source": "lichess:FkP7Q"
+  },
+  {
+    "fen": "5r2/2p1q1kp/3p2p1/8/8/P2r3B/1PP1R2P/1K6 w - - 0 31",
+    "solution_moves": [
+      "e2e7",
+      "g7f6",
+      "e7e6",
+      "f6f7",
+      "c2d3"
+    ],
+    "solution_san": [
+      "Rxe7+",
+      "Kf6",
+      "Re6+",
+      "Kf7",
+      "cxd3"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1298,
+    "explanation": "Rxe7+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle yiyy6).",
+    "source": "lichess:yiyy6"
+  },
+  {
+    "fen": "8/8/8/5k2/3np3/4P1K1/5P2/8 w - - 0 70",
+    "solution_moves": [
+      "e3d4",
+      "f5g5",
+      "d4d5",
+      "g5f5",
+      "d5d6"
+    ],
+    "solution_san": [
+      "exd4",
+      "Kg5",
+      "d5",
+      "Kf5",
+      "d6"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1302,
+    "explanation": "exd4 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle hduEz).",
+    "source": "lichess:hduEz"
+  },
+  {
+    "fen": "8/pp2Q3/3p1pkp/4n3/8/P1r5/2q3PP/5RK1 w - - 2 27",
+    "solution_moves": [
+      "e7f6",
+      "g6h5",
+      "f1f5",
+      "c2f5",
+      "f6f5"
+    ],
+    "solution_san": [
+      "Qxf6+",
+      "Kh5",
+      "Rf5+",
+      "Qxf5",
+      "Qxf5+"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1349,
+    "explanation": "Qxf6+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle 0Fbct).",
+    "source": "lichess:0Fbct"
+  },
+  {
+    "fen": "8/pQ6/6kp/3P4/1Pq5/8/8/3K4 w - - 0 49",
+    "solution_moves": [
+      "b7c6",
+      "c4c6",
+      "d5c6",
+      "g6f5",
+      "c6c7"
+    ],
+    "solution_san": [
+      "Qc6+",
+      "Qxc6",
+      "dxc6",
+      "Kf5",
+      "c7"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1361,
+    "explanation": "Qc6+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle h2yQ2).",
+    "source": "lichess:h2yQ2"
+  },
+  {
+    "fen": "6k1/5ppp/8/4P3/8/2N1Q3/Pq1r1RPP/6K1 b - - 10 28",
+    "solution_moves": [
+      "b2c1",
+      "f2f1",
+      "d2g2",
+      "g1g2",
+      "c1e3"
+    ],
+    "solution_san": [
+      "Qc1+",
+      "Rf1",
+      "Rxg2+",
+      "Kxg2",
+      "Qxe3"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1375,
+    "explanation": "Qc1+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle EJqdv).",
+    "source": "lichess:EJqdv"
+  },
+  {
+    "fen": "8/8/p3p3/1p2P3/1PkPp2p/P3Pp1P/8/4K3 b - - 15 44",
+    "solution_moves": [
+      "c4d3",
+      "e1f2",
+      "d3d2",
+      "d4d5",
+      "e6d5",
+      "e5e6",
+      "d5d4",
+      "e3d4",
+      "e4e3",
+      "f2f3",
+      "e3e2"
+    ],
+    "solution_san": [
+      "Kd3",
+      "Kf2",
+      "Kd2",
+      "d5",
+      "exd5",
+      "e6",
+      "d4",
+      "exd4",
+      "e3+",
+      "Kxf3",
+      "e2"
+    ],
+    "motif": "endgame",
+    "difficulty": "intermediate",
+    "difficulty_rating": 1399,
+    "explanation": "Kd3 starts a 6-move combination built on endgame technique. From a real game on Lichess (puzzle qQP9V).",
+    "source": "lichess:qQP9V"
+  },
+  {
+    "fen": "8/8/4R3/3p2P1/2p4k/p1P5/r1PK4/8 w - - 0 38",
+    "solution_moves": [
+      "g5g6",
+      "a2b2",
+      "g6g7",
+      "b2b8",
+      "e6h6",
+      "h4g5",
+      "h6h8"
+    ],
+    "solution_san": [
+      "g6",
+      "Rb2",
+      "g7",
+      "Rb8",
+      "Rh6+",
+      "Kg5",
+      "Rh8"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1402,
+    "explanation": "g6 starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle UAqBZ).",
+    "source": "lichess:UAqBZ"
+  },
+  {
+    "fen": "3r2k1/1p4p1/p2p3p/2pR1rq1/2P1R3/1P3P2/P1Q3P1/7K w - - 6 29",
+    "solution_moves": [
+      "d5f5",
+      "g5f5",
+      "e4e8",
+      "d8e8",
+      "c2f5"
+    ],
+    "solution_san": [
+      "Rxf5",
+      "Qxf5",
+      "Re8+",
+      "Rxe8",
+      "Qxf5"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1411,
+    "explanation": "Rxf5 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle Qsn9f).",
+    "source": "lichess:Qsn9f"
+  },
+  {
+    "fen": "6k1/pp2R1bp/3p2p1/2p5/2PP2b1/1PB3P1/r5BP/6K1 w - - 0 31",
+    "solution_moves": [
+      "g2d5",
+      "g8f8",
+      "e7f7",
+      "f8e8",
+      "f7g7"
+    ],
+    "solution_san": [
+      "Bd5+",
+      "Kf8",
+      "Rf7+",
+      "Ke8",
+      "Rxg7"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1412,
+    "explanation": "Bd5+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle BQg6l).",
+    "source": "lichess:BQg6l"
+  },
+  {
+    "fen": "2r3k1/p5p1/6rp/3Rpp2/P1q5/5P2/P1Q3PP/5RK1 w - - 0 30",
+    "solution_moves": [
+      "d5d8",
+      "g8h7",
+      "d8c8",
+      "c4c2",
+      "c8c2"
+    ],
+    "solution_san": [
+      "Rd8+",
+      "Kh7",
+      "Rxc8",
+      "Qxc2",
+      "Rxc2"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1449,
+    "explanation": "Rd8+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle KQLm2).",
+    "source": "lichess:KQLm2"
+  },
+  {
+    "fen": "8/5p2/8/5Pp1/2P5/5K1k/8/8 b - - 3 61",
+    "solution_moves": [
+      "g5g4",
+      "f3f2",
+      "h3h2",
+      "c4c5",
+      "g4g3",
+      "f2e2",
+      "g3g2"
+    ],
+    "solution_san": [
+      "g4+",
+      "Kf2",
+      "Kh2",
+      "c5",
+      "g3+",
+      "Ke2",
+      "g2"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1458,
+    "explanation": "g4+ starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle Wuix3).",
+    "source": "lichess:Wuix3"
+  },
+  {
+    "fen": "6R1/1p1r2p1/p1p2P1p/7k/3p4/3K4/P7/8 w - - 0 44",
+    "solution_moves": [
+      "g8g7",
+      "d7d6",
+      "f6f7",
+      "d6f6",
+      "d3d4"
+    ],
+    "solution_san": [
+      "Rxg7",
+      "Rd6",
+      "f7",
+      "Rf6",
+      "Kxd4"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1501,
+    "explanation": "Rxg7 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle ecMOU).",
+    "source": "lichess:ecMOU"
+  },
+  {
+    "fen": "4QK2/8/4k1b1/8/p1p1p3/P5Bp/1P3P2/8 b - - 0 54",
+    "solution_moves": [
+      "g6e8",
+      "f8e8",
+      "e6f5",
+      "e8e7",
+      "f5g4",
+      "g3d6",
+      "g4f3"
+    ],
+    "solution_san": [
+      "Bxe8",
+      "Kxe8",
+      "Kf5",
+      "Ke7",
+      "Kg4",
+      "Bd6",
+      "Kf3"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1528,
+    "explanation": "Bxe8 starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle UuSMb).",
+    "source": "lichess:UuSMb"
+  },
+  {
+    "fen": "8/pp6/8/2P3p1/PP3P2/5K1k/8/8 b - - 0 46",
+    "solution_moves": [
+      "g5g4",
+      "f3f2",
+      "h3h2",
+      "f4f5",
+      "g4g3"
+    ],
+    "solution_san": [
+      "g4+",
+      "Kf2",
+      "Kh2",
+      "f5",
+      "g3+"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1548,
+    "explanation": "g4+ starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle s3TP3).",
+    "source": "lichess:s3TP3"
+  },
+  {
+    "fen": "r5k1/1pRb1pp1/p3q2p/3N4/8/8/PP3PPP/3Q2K1 w - - 2 21",
+    "solution_moves": [
+      "c7d7",
+      "e6d7",
+      "d5f6",
+      "g7f6",
+      "d1d7"
+    ],
+    "solution_san": [
+      "Rxd7",
+      "Qxd7",
+      "Nf6+",
+      "gxf6",
+      "Qxd7"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1569,
+    "explanation": "Rxd7 starts a 3-move combination built on endgame technique. From a real game on Lichess (puzzle EeU0B).",
+    "source": "lichess:EeU0B"
+  },
+  {
+    "fen": "4R3/p4p1k/5Qpp/8/P7/2P3P1/q2r1P1P/6K1 b - - 1 28",
+    "solution_moves": [
+      "d2d1",
+      "g1g2",
+      "a2d5",
+      "f6f3",
+      "d1g1",
+      "g2g1",
+      "d5f3"
+    ],
+    "solution_san": [
+      "Rd1+",
+      "Kg2",
+      "Qd5+",
+      "Qf3",
+      "Rg1+",
+      "Kxg1",
+      "Qxf3"
+    ],
+    "motif": "endgame",
+    "difficulty": "advanced",
+    "difficulty_rating": 1585,
+    "explanation": "Rd1+ starts a 4-move combination built on endgame technique. From a real game on Lichess (puzzle Ql5GI).",
+    "source": "lichess:Ql5GI"
+  }
+]

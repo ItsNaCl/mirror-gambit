@@ -5,7 +5,7 @@ import { loadPuzzles, MOTIF_GUIDE, PUZZLE_SETS, puzzlesFor, validatePuzzle } fro
 describe('puzzle validation', () => {
   const { puzzles, dropped } = loadPuzzles()
 
-  it('loads the eight playable sets and reports anything dropped', () => {
+  it('loads the nine playable sets and reports anything dropped', () => {
     for (const d of dropped) console.log(`DROPPED puzzle ${d.set}#${d.index} (${d.fen}): ${d.reason}`)
     console.log(`puzzles kept: ${puzzles.length}, dropped: ${dropped.length}`)
     expect(puzzles.length).toBeGreaterThan(200)

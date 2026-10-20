@@ -1,4 +1,6 @@
 import { Chess, type Square } from 'chess.js'
+import { classifyMove } from '../analysis/classify'
+import type { Score } from '../engine/uci'
 
 /**
  * Shared rules for "find the move" practice: puzzles, opening drills and
@@ -169,4 +171,14 @@ export function movesMatch(playedUci: string, playedSan: string, expectedUci: st
   if (expectedUci && playedUci === expectedUci) return true
   const norm = (s: string) => s.replace(/[+#!?]/g, '')
   return norm(playedSan) === norm(expectedSan)
+}
+
+/**
+ * Whether a move that differs from the expected one is still good enough to count as
+ * correct: the engine rates it Best or Great (at most 30 centipawns worse, or a mate when
+ * a mate was available). Scores are from White's point of view.
+ */
+export function acceptsAlternative(bestBefore: Score, after: Score, mover: 'w' | 'b'): boolean {
+  const { cls } = classifyMove({ before: bestBefore, after, mover })
+  return cls === 'best' || cls === 'great'
 }

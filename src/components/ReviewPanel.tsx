@@ -39,7 +39,7 @@ export function ReviewPanel({ review, game, onJump, onExport, engineReady, onAdd
 
   const canStart = engineReady && game.moves.length > 0
   const startButton = (
-    <button className="btn primary" onClick={start} disabled={!canStart} title={!engineReady ? 'Waiting for the engine' : ''}>
+    <button className="btn primary" onClick={() => start()} disabled={!canStart} title={!engineReady ? 'Waiting for the engine' : ''}>
       {state.result ? 'Review again' : 'Review game'}
     </button>
   )

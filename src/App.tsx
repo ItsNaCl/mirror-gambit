@@ -6,6 +6,7 @@ import { EvalBar } from './components/EvalBar'
 import { MoveList } from './components/MoveList'
 import { Modal } from './components/Modal'
 import { OpeningsPanel } from './components/OpeningsPanel'
+import { PlayPanel } from './components/PlayPanel'
 import { ProgressPanel } from './components/ProgressPanel'
 import { PuzzlesPanel } from './components/PuzzlesPanel'
 import { ReviewPanel } from './components/ReviewPanel'
@@ -17,6 +18,7 @@ import { ToastStack, useToasts } from './components/Toast'
 import { EngineProvider, useEngine } from './hooks/useEngine'
 import { useGame, type GameApi } from './hooks/useGame'
 import { useSettings } from './hooks/useSettings'
+import { usePlay } from './hooks/usePlay'
 import { usePuzzles } from './hooks/usePuzzles'
 import { useReview } from './hooks/useReview'
 import { useSrs } from './hooks/useSrs'
@@ -25,12 +27,14 @@ import { useTrainer } from './hooks/useTrainer'
 import { CLASS_LABEL, CLASS_SYMBOL } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
+import type { SavedGame } from './lib/play/savedGames'
 import { reviewComment } from './lib/review/review'
 
-type Tab = 'analysis' | 'openings' | 'puzzles' | 'cards' | 'review' | 'progress' | 'settings'
+type Tab = 'analysis' | 'play' | 'openings' | 'puzzles' | 'cards' | 'review' | 'progress' | 'settings'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'analysis', label: 'Analysis' },
+  { id: 'play', label: 'Play' },
   { id: 'openings', label: 'Openings' },
   { id: 'puzzles', label: 'Puzzles' },
   { id: 'cards', label: 'Cards' },
@@ -62,28 +66,35 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   const [pgnError, setPgnError] = useState<string | null>(null)
 
   const trainerRaw = useTrainer(gameApi)
-  const puzzlesRaw = usePuzzles(gameApi)
+  const puzzlesRaw = usePuzzles(gameApi, engine)
   const srsRaw = useSrs(gameApi)
-  // Only one of the trainer and the puzzles may drive the board at a time.
+  const playRaw = usePlay(gameApi, engine)
+  // Only one mode may drive the board at a time: starting one exits the others.
   const trainer = useMemo(
     () => ({
       ...trainerRaw,
-      select: (o: Parameters<typeof trainerRaw.select>[0]) => { puzzlesRaw.exit(); srsRaw.exit(); trainerRaw.select(o) },
+      select: (o: Parameters<typeof trainerRaw.select>[0]) => { puzzlesRaw.exit(); srsRaw.exit(); playRaw.exit(); trainerRaw.select(o) },
       exit: () => { puzzlesRaw.exit(); trainerRaw.exit() },
     }),
-    [trainerRaw, puzzlesRaw, srsRaw],
+    [trainerRaw, puzzlesRaw, srsRaw, playRaw],
   )
   const puzzles = useMemo(
-    () => ({ ...puzzlesRaw, start: (c: Parameters<typeof puzzlesRaw.start>[0]) => { trainerRaw.exit(); srsRaw.exit(); puzzlesRaw.start(c) } }),
-    [puzzlesRaw, trainerRaw, srsRaw],
+    () => ({ ...puzzlesRaw, start: (c: Parameters<typeof puzzlesRaw.start>[0]) => { trainerRaw.exit(); srsRaw.exit(); playRaw.exit(); puzzlesRaw.start(c) } }),
+    [puzzlesRaw, trainerRaw, srsRaw, playRaw],
   )
   const srs = useMemo(
-    () => ({ ...srsRaw, startReview: () => { trainerRaw.exit(); puzzlesRaw.exit(); srsRaw.startReview() } }),
-    [srsRaw, trainerRaw, puzzlesRaw],
+    () => ({ ...srsRaw, startReview: () => { trainerRaw.exit(); puzzlesRaw.exit(); playRaw.exit(); srsRaw.startReview() } }),
+    [srsRaw, trainerRaw, puzzlesRaw, playRaw],
+  )
+  const play = useMemo(
+    () => ({ ...playRaw, start: (c: 'w' | 'b', level: number) => { trainerRaw.exit(); puzzlesRaw.exit(); srsRaw.exit(); playRaw.start(c, level) } }),
+    [playRaw, trainerRaw, puzzlesRaw, srsRaw],
   )
   const srsActive = srs.active
   const puzzleActive = puzzles.active && !srsActive
   const trainerActive = trainer.active && !puzzleActive && !srsActive
+  const playActive = play.active && !trainerActive && !puzzleActive && !srsActive
+  const playLive = playActive && !play.result
   const review = useReview(gameApi, engine)
   const [includeClassifications, setIncludeClassifications] = useState(true)
   const reviewResult = review.matchesCurrentGame ? review.state.result : null
@@ -108,6 +119,8 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   const turn = turnOf(fen)
   const orientation: 'white' | 'black' = srsActive
     ? srs.orientation
+    : playActive
+    ? play.orientation
     : puzzleActive
     ? puzzles.orientation
     : trainerActive
@@ -130,7 +143,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     },
     [notify, gameApi],
   )
-  const tips = useTips(gameApi, { enabled: !setupMode && !trainerActive && !puzzleActive && !srsActive, notify: onMoveAlert })
+  const tips = useTips(gameApi, { enabled: !setupMode && !trainerActive && !puzzleActive && !srsActive && !playLive, notify: onMoveAlert })
 
   // Left/right arrow keys step through the game (or through the opening line in the trainer).
   useEffect(() => {
@@ -140,6 +153,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
       if (pgnModal || setupMode) return
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
       e.preventDefault()
+      if (playLive) return
       if (srsActive) {
         if (srs.userToMove) return
         if (e.key === 'ArrowLeft') gameApi.undoMove()
@@ -163,7 +177,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [gameApi, pgnModal, setupMode, trainerActive, trainer, puzzleActive, puzzles, srsActive, srs])
+  }, [gameApi, pgnModal, setupMode, trainerActive, trainer, puzzleActive, puzzles, srsActive, srs, playLive])
 
   const copyText = useCallback(
     async (text: string, what: string) => {
@@ -221,6 +235,27 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
       notify({ kind: card ? 'good' : 'info', title: card ? 'Saved to your review deck' : 'Already in your deck' }, 3000)
     },
     [tips.alert, srs, game, notify],
+  )
+
+  const openReview = useCallback(() => {
+    setTab('review')
+    if (!reviewResult && review.state.status !== 'running') review.start()
+  }, [reviewResult, review])
+
+  const reviewSavedGame = useCallback(
+    (saved: SavedGame) => {
+      try {
+        const state = importPgn(saved.pgn)
+        playRaw.exit()
+        gameApi.load(state)
+        setManualOrientation(saved.userColor === 'w' ? 'white' : 'black')
+        setTab('review')
+        review.start(state)
+      } catch (e) {
+        notify({ kind: 'warn', title: 'Could not load that game', body: e instanceof Error ? e.message : String(e) })
+      }
+    },
+    [playRaw, gameApi, review, notify],
   )
 
   function openExport() {
@@ -314,17 +349,31 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
             <Board
               fen={fen}
               orientation={orientation}
-              interactive={srsActive ? !!srs.userToMove : puzzleActive ? puzzles.solverToMove : trainerActive ? trainer.mode === 'drill' && trainer.userToMove : !gameOver}
+              interactive={playActive ? playLive && play.userToMove && !play.thinking : srsActive ? !!srs.userToMove : puzzleActive ? puzzles.solverToMove : trainerActive ? trainer.mode === 'drill' && trainer.userToMove : !gameOver}
               showLegalDots={settings.legalDots}
               lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
-              arrows={srsActive ? srs.arrows : puzzleActive ? puzzles.arrows : trainerActive ? trainer.arrows : arrows}
+              arrows={playLive ? [] : srsActive ? srs.arrows : puzzleActive ? puzzles.arrows : trainerActive ? trainer.arrows : arrows}
               extraSquareStyles={srsActive ? srs.squareStyles : puzzleActive ? puzzles.squareStyles : trainerActive ? trainer.hintSquareStyles : undefined}
               shakeKey={trainer.shakeKey + puzzles.shakeKey}
-              onMove={srsActive ? srs.onBoardMove : puzzleActive ? puzzles.onBoardMove : trainerActive ? trainer.onBoardMove : gameApi.move}
+              onMove={playActive ? play.onBoardMove : srsActive ? srs.onBoardMove : puzzleActive ? puzzles.onBoardMove : trainerActive ? trainer.onBoardMove : gameApi.move}
             />
           </div>
 
-          {srsActive ? (
+          {playActive ? (
+            <div className="controls">
+              <span className="small-text muted">
+                Playing {play.userColor === 'w' ? 'White' : 'Black'} vs {play.level.name}
+                {play.thinking ? ' · computer is thinking…' : ''}
+              </span>
+              <span className="spacer" />
+              <button className="btn small" onClick={play.takeBack} disabled={!play.canTakeBack}>
+                ↶ Take back
+              </button>
+              <button className="btn small" onClick={play.exit}>
+                Exit game
+              </button>
+            </div>
+          ) : srsActive ? (
             <div className="controls">
               <span className="small-text muted">Mistake review: find the best move</span>
               <span className="spacer" />
@@ -410,20 +459,31 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
           </div>
           )}
 
-          {gameOver && !trainerActive && !puzzleActive && !srsActive && (
+          {playActive && play.result && (
+            <div className="banner">
+              <div>
+                <strong>{play.result.title}</strong>
+                <div className="small-text muted">{play.result.detail}</div>
+              </div>
+              <div className="actions">
+                <button className="btn primary" onClick={openReview}>
+                  Review game
+                </button>
+                <button className="btn" onClick={() => play.start(play.userColor, play.level.id)}>
+                  Play again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {gameOver && !trainerActive && !puzzleActive && !srsActive && !playActive && (
             <div className="banner">
               <div>
                 <strong>{gameOver.title}</strong>
                 <div className="small-text muted">{gameOver.detail}</div>
               </div>
               <div className="actions">
-                <button
-                  className="btn primary"
-                  onClick={() => {
-                    setTab('review')
-                    if (!reviewResult && review.state.status !== 'running') review.start()
-                  }}
-                >
+                <button className="btn primary" onClick={openReview}>
                   Review game
                 </button>
                 <button className="btn" onClick={() => gameApi.reset()}>
@@ -436,7 +496,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
           <MoveList
             game={game}
             onJump={(ply) => {
-              if (srsActive) {
+              if (playActive) {
+                if (play.result) gameApi.jump(ply)
+              } else if (srsActive) {
                 if (!srs.userToMove) gameApi.jump(ply)
               } else if (puzzleActive) {
                 if (puzzles.status !== 'playing') gameApi.jump(ply)
@@ -469,6 +531,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
               <AnalysisPanel fen={fen} onPlayLine={playLine}>
                 <TipsSection tips={tips} gameOver={!!gameOver} onTakeBack={(i) => gameApi.jump(i)} onSaveCard={saveAlertCard} />
               </AnalysisPanel>
+            )}
+            {tab === 'play' && (
+              <PlayPanel play={play} engineReady={engine.status === 'ready'} onReview={openReview} onReviewSaved={reviewSavedGame} />
             )}
             {tab === 'openings' && <OpeningsPanel trainer={trainer} puzzles={puzzles} />}
             {tab === 'puzzles' && <PuzzlesPanel puzzles={puzzles} />}

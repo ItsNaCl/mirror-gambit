@@ -45,8 +45,9 @@ export function useReview(gameApi: GameApi, engine: EngineContextValue) {
     setState((s) => (s.status === 'running' ? { ...s, status: s.result ? 'done' : 'idle', progress: 0 } : s))
   }, [engine])
 
-  const start = useCallback(async () => {
-    const game = gameApi.game
+  /** Reviews the current game, or the given one (e.g. a saved game that was just loaded onto the board). */
+  const start = useCallback(async (target?: GameState) => {
+    const game = target ?? gameApi.game
     const id = ++runId.current
     const fens = [game.startFen, ...game.moves.map((m) => m.after)]
     const key = gameKey(game)

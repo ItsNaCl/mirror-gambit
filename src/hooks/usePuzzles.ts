@@ -2,9 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { newGame, playUci, redo, type PromotionPiece } from '../lib/chess/game'
-import { emptyStats, movesMatch, normalizeStats, outcomeOf, recordOutcome, type Outcome, type SetStats } from '../lib/practice/practice'
+import type { Score } from '../lib/engine/uci'
+import {
+  acceptsAlternative,
+  emptyStats,
+  movesMatch,
+  normalizeStats,
+  outcomeOf,
+  recordOutcome,
+  type Outcome,
+  type SetStats,
+} from '../lib/practice/practice'
 import { loadPuzzles, motifGuide, puzzlesFor, shuffle, type Puzzle, type PuzzleChoice, type PuzzleSetId } from '../lib/puzzles/puzzles'
 import { useAttempt, useHintDecorations } from './useAttempt'
+import type { EngineContextValue } from './useEngine'
 import type { GameApi } from './useGame'
 
 export type { SetStats } from '../lib/practice/practice'
@@ -14,6 +25,9 @@ export type PuzzleStats = Partial<Record<PuzzleSetId, SetStats>>
 export type PuzzleStatus = 'idle' | 'playing' | 'solved' | 'revealing'
 
 const STATS_KEY = 'mirror-gambit.puzzle-stats.v1'
+/** Depth for judging a move that differs from the solution, and for replies once off the script. */
+const ALT_DEPTH = 12
+const SUSPEND_OWNER = 'puzzles'
 
 export function loadPuzzleStats(): PuzzleStats {
   try {
@@ -46,8 +60,10 @@ export function puzzleTheme(motif: string): string {
   }
 }
 
-export function usePuzzles(gameApi: GameApi) {
+export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
   const { setGame } = gameApi
+  const { evaluate, setLiveSuspended } = engine
+  const engineReady = engine.status === 'ready'
   const attempt = useAttempt()
   const [choice, setChoice] = useState<PuzzleChoice | 'custom' | null>(null)
   const [customList, setCustomList] = useState<Puzzle[]>([])
@@ -61,6 +77,22 @@ export function usePuzzles(gameApi: GameApi) {
   const [shakeKey, setShakeKey] = useState(0)
   const [stats, setStats] = useState<PuzzleStats>(loadPuzzleStats)
   const timer = useRef<number | null>(null)
+  // Set when the student played a different but equally good move: from that step on the
+  // engine plays the replies and judges the moves, since the stored solution no longer applies.
+  const [offScriptAt, setOffScriptAt] = useState<number | null>(null)
+  const [engineExpected, setEngineExpected] = useState<string | null>(null)
+  const [checking, setChecking] = useState(false)
+  const checkId = useRef(0)
+  // Engine questions run one after another: a second evaluate() would cancel the first.
+  const engineQueue = useRef<Promise<unknown>>(Promise.resolve())
+  const ask = useCallback(
+    (fen: string) => {
+      const run = engineQueue.current.then(() => evaluate(fen, ALT_DEPTH, 1))
+      engineQueue.current = run.catch(() => {})
+      return run
+    },
+    [evaluate],
+  )
 
   const record = useCallback((p: Puzzle, result: Outcome) => {
     setStats((all) => {
@@ -81,6 +113,10 @@ export function usePuzzles(gameApi: GameApi) {
       setStatus('playing')
       setOutcome(null)
       setMessage(null)
+      setOffScriptAt(null)
+      setEngineExpected(null)
+      setChecking(false)
+      checkId.current++
       attempt.reset()
       setGame(newGame(p.fen))
     },
@@ -146,6 +182,8 @@ export function usePuzzles(gameApi: GameApi) {
   }, [puzzle, show])
 
   const exit = useCallback(() => {
+    checkId.current++
+    setChecking(false)
     setChoice(null)
     setPuzzle(null)
     setStatus('idle')
@@ -153,77 +191,164 @@ export function usePuzzles(gameApi: GameApi) {
     if (timer.current) clearTimeout(timer.current)
   }, [])
 
+  // Live analysis would race the engine checks below (and show the answer on the Analysis tab).
+  const solving = puzzle !== null && status === 'playing'
+  useEffect(() => {
+    setLiveSuspended(solving, SUSPEND_OWNER)
+  }, [solving, setLiveSuspended])
+  useEffect(() => () => setLiveSuspended(false, SUSPEND_OWNER), [setLiveSuspended])
+
+  const fen = gameApi.fen
+  const gameEnded = gameApi.gameOver !== null
+
   // After a correct solver move, the app plays the reply (if any) after a short pause.
   useEffect(() => {
     if (!puzzle || status !== 'playing') return
-    if (step % 2 === 0) return // solver's turn
-    const reply = puzzle.solution[step]
-    if (!reply) return
-    const t = window.setTimeout(() => {
-      setGame((g) => playUci(g, reply) ?? g)
+    if (step % 2 === 0 || step >= puzzle.solution.length || gameEnded) return // solver's turn, or done
+    const scripted = offScriptAt === null ? puzzle.solution[step] : null
+    let cancelled = false
+    const t = window.setTimeout(async () => {
+      let reply = scripted
+      if (!reply) {
+        try {
+          reply = (await ask(fen)).bestMove
+        } catch {
+          reply = null
+        }
+      }
+      if (cancelled || !reply) return
+      const move = reply
+      setGame((g) => playUci(g, move) ?? g)
       setStep((s) => s + 1)
     }, 600)
     timer.current = t
-    return () => clearTimeout(t)
-  }, [puzzle, status, step, setGame])
+    return () => {
+      cancelled = true
+      clearTimeout(t)
+    }
+  }, [puzzle, status, step, setGame, offScriptAt, fen, ask, gameEnded])
 
-  // Finished when all solution moves are on the board.
+  // Off the script, the engine's best move is what the hints point at.
+  useEffect(() => {
+    if (!puzzle || status !== 'playing' || offScriptAt === null || step % 2 === 1 || gameEnded) return
+    let cancelled = false
+    setEngineExpected(null)
+    ask(fen)
+      .then((r) => {
+        if (!cancelled) setEngineExpected(r.bestMove)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [puzzle, status, offScriptAt, step, fen, ask, gameEnded])
+
+  // Finished when all solution moves are on the board, or when the solver's move ended the game
+  // (an alternative mate can finish sooner than the stored line).
   useEffect(() => {
     if (!puzzle || status !== 'playing') return
-    if (step >= puzzle.solution.length) {
+    if (step >= puzzle.solution.length || (step % 2 === 1 && gameEnded)) {
       const result = outcomeOf(attempt.record(false))
       setStatus('solved')
       setOutcome(result)
       record(puzzle, result)
       setMessage(null)
     }
-  }, [puzzle, status, step, record, attempt])
+  }, [puzzle, status, step, record, attempt, gameEnded])
 
   /** Give up: counts as failed, then the solution is shown one move at a time from where you are. */
   const giveUp = useCallback(() => {
     if (!puzzle || status !== 'playing') return
+    checkId.current++
+    setChecking(false)
     let g = newGame(puzzle.fen)
     for (const uci of puzzle.solution) g = playUci(g, uci) ?? g
-    setGame({ ...g, ply: step })
+    // Off the script the stored line no longer matches the board, so show it from where you left it.
+    setGame({ ...g, ply: offScriptAt ?? step })
     setStatus('revealing')
     setOutcome('failed')
     record(puzzle, 'failed')
     setMessage(null)
-  }, [puzzle, status, step, record, setGame])
+  }, [puzzle, status, step, record, setGame, offScriptAt])
 
   /** While revealing, show the next solution move. */
   const revealNext = useCallback(() => setGame((g) => redo(g)), [setGame])
 
   const onBoardMove = useCallback(
     (from: Square, to: Square, promotion?: PromotionPiece): boolean => {
-      if (!puzzle || status !== 'playing' || step % 2 === 1) return false
-      const expected = puzzle.solution[step]
-      const chess = new Chess(gameApi.fen)
-      let san: string
+      if (!puzzle || status !== 'playing' || step % 2 === 1 || checking) return false
+      const beforeFen = gameApi.fen
+      let played: { san: string; after: string; color: 'w' | 'b' }
       try {
-        san = chess.move({ from, to, promotion }).san
+        played = new Chess(beforeFen).move({ from, to, promotion })
       } catch {
         return false
       }
-      if (movesMatch(from + to + (promotion ?? ''), san, expected, puzzle.solutionSan[step])) {
-        setGame((g) => playUci(g, expected) ?? g)
+      const uci = from + to + (promotion ?? '')
+      const onScript = offScriptAt === null
+      const expected = onScript ? puzzle.solution[step] : engineExpected
+      const isLast = step + 1 >= puzzle.solution.length
+
+      const accept = (alternative: boolean) => {
+        setGame((g) => playUci(g, uci) ?? g)
         setStep(step + 1)
         attempt.nextMove()
-        setMessage(step + 1 >= puzzle.solution.length ? null : 'Correct! Keep going…')
-        return true
+        if (alternative && onScript) setOffScriptAt(step)
+        if (alternative) setMessage(isLast ? null : 'That works too! It is not the stored answer, but it is just as strong. Keep going…')
+        else setMessage(isLast ? null : 'Correct! Keep going…')
       }
       // Wrong: the piece snaps back and you stay on the same move. Never ends the puzzle.
-      setShakeKey((k) => k + 1)
-      attempt.wrong()
-      setMessage(`Not quite, try again. (${san} is not it.)`)
+      const reject = () => {
+        setShakeKey((k) => k + 1)
+        attempt.wrong()
+        setMessage(`Not quite, try again. (${played.san} is not it.)`)
+      }
+
+      if (expected && movesMatch(uci, played.san, expected, onScript ? puzzle.solutionSan[step] : '')) {
+        accept(false)
+        return true
+      }
+      if (played.san.includes('#')) {
+        accept(true)
+        return true
+      }
+      if (!engineReady) {
+        reject()
+        return false
+      }
+      // A different move: ask the engine whether it is just as good before calling it wrong.
+      const id = ++checkId.current
+      setChecking(true)
+      setMessage('Checking that move…')
+      void (async () => {
+        try {
+          const before = await ask(beforeFen)
+          const best = before.lines[0]?.score
+          let ok = before.bestMove === uci
+          if (!ok && best) {
+            const afterChess = new Chess(played.after)
+            const after: Score | undefined = afterChess.isGameOver()
+              ? { type: afterChess.isCheckmate() ? 'mate' : 'cp', value: 0 }
+              : (await ask(played.after)).lines[0]?.score
+            ok = !!after && acceptsAlternative(best, after, played.color)
+          }
+          if (checkId.current !== id) return
+          if (ok) accept(true)
+          else reject()
+        } catch {
+          if (checkId.current === id) reject()
+        } finally {
+          if (checkId.current === id) setChecking(false)
+        }
+      })()
       return false
     },
-    [puzzle, status, step, gameApi.fen, setGame, attempt],
+    [puzzle, status, step, checking, gameApi.fen, offScriptAt, engineExpected, engineReady, setGame, attempt, ask],
   )
 
-  const solverToMove = puzzle !== null && status === 'playing' && step % 2 === 0
+  const solverToMove = puzzle !== null && status === 'playing' && step % 2 === 0 && !checking
   const orientation: 'white' | 'black' = puzzle?.side === 'b' ? 'black' : 'white'
-  const expectedUci = puzzle && solverToMove ? (puzzle.solution[step] ?? null) : null
+  const expectedUci = puzzle && solverToMove ? (offScriptAt === null ? (puzzle.solution[step] ?? null) : engineExpected) : null
   const hints = useHintDecorations(attempt.hintLevel, expectedUci, puzzle ? puzzleTheme(puzzle.motif) : '', solverToMove)
 
   // During the give-up walkthrough, an arrow shows the next solution move.
@@ -253,6 +378,8 @@ export function usePuzzles(gameApi: GameApi) {
     squareStyles: hints.squareStyles,
     arrows: status === 'revealing' ? revealArrows : hints.arrows,
     solverToMove,
+    checking,
+    offScript: offScriptAt !== null,
     orientation,
     revealDone,
     remaining: queue.length,
