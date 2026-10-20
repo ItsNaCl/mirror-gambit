@@ -306,5 +306,11 @@ src/data/           bundled Lichess opening names (CC0) and puzzle sets
   factor rules as `scripts/srs.py`), and its tactical motif catalogue as beginner explanations. The nine
   puzzle JSON files in `src/data/puzzles/` are copied from its `puzzles/` folder. Its reference notes on
   opening teaching, common beginner mistakes and chess pedagogy shaped the wording of the opening
-  commentary, principle reminders and move alerts. No Python code was copied. This app is private and
-  not distributed.
+  commentary, principle reminders and move alerts. No Python code was copied.
+
+## License
+
+Mirror Gambit is free software, licensed under the
+[GNU General Public License v3.0](LICENSE). It bundles Stockfish and puzzle data from
+Chess Rocket, which are GPL-3.0 as well. You may use, change and share it under the
+same terms: anything built from it must also be shared under GPL-3.0 with its source.

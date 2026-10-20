@@ -52,6 +52,7 @@
   },
   "description": "Mirror Gambit: a local chess study app for beginners with Stockfish analysis, an opening trainer, puzzles and spaced-repetition review.",
   "author": "Mirror Gambit",
+  "license": "GPL-3.0-only",
   "main": "dist-electron/main.cjs",
   "productName": "Mirror Gambit"
 }
