@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { Chessboard, defaultPieces, type Arrow } from 'react-chessboard'
 import type { Square } from 'chess.js'
 import {
@@ -24,6 +24,8 @@ export interface BoardProps {
   shakeKey?: number
   /** Return true if the move was accepted. */
   onMove: (from: Square, to: Square, promotion?: PromotionPiece) => boolean
+  /** Drawn over the squares and under the promotion picker; it must not take pointer events. */
+  overlay?: ReactNode
 }
 
 const LAST_MOVE_STYLE: CSSProperties = { background: LAST_MOVE }
@@ -50,6 +52,7 @@ export function Board({
   extraSquareStyles,
   shakeKey,
   onMove,
+  overlay,
 }: BoardProps) {
   const [selected, setSelected] = useState<Square | null>(null)
   const [promotion, setPromotion] = useState<{ from: Square; to: Square } | null>(null)
@@ -149,6 +152,7 @@ export function Board({
   return (
     <div className={'board-wrap' + (shaking ? ' shake' : '')}>
       <Chessboard options={options} />
+      {overlay}
       {promotion && (
         <div className="promotion-picker" role="dialog" aria-label="Choose promotion piece">
           {promoPieces.map((p) => {

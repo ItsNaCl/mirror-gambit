@@ -6,6 +6,8 @@ export interface MenuItem {
   icon?: LucideIcon
   disabled?: boolean
   title?: string
+  /** Makes the item a checkbox (role="menuitemcheckbox"); the menu stays open when it is toggled. */
+  checked?: boolean
   onSelect: () => void
 }
 
@@ -89,17 +91,19 @@ export function MenuButton({ label, children, items }: { label: string; children
             return (
               <button
                 key={item.label}
-                role="menuitem"
+                role={item.checked === undefined ? 'menuitem' : 'menuitemcheckbox'}
+                aria-checked={item.checked}
                 className="menu-item"
                 tabIndex={i === active ? 0 : -1}
                 disabled={item.disabled}
                 title={item.title}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => {
-                  setOpen(false)
+                  if (item.checked === undefined) setOpen(false)
                   item.onSelect()
                 }}
               >
+                {item.checked !== undefined && <span className={'menu-check' + (item.checked ? ' on' : '')} aria-hidden="true" />}
                 {Icon && <Icon aria-hidden="true" />}
                 {item.label}
               </button>

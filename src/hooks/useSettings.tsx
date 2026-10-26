@@ -15,6 +15,10 @@ export interface Settings {
   threads: number
   /** Make the Hint button pulse after this many wrong tries on one move. 0 = off. */
   autoHintAfter: 0 | 2 | 3 | 5
+  /** Board layers on the Board and Game review screens. */
+  overlayControl: boolean
+  overlayLines: boolean
+  overlayLoose: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -29,6 +33,9 @@ export const DEFAULT_SETTINGS: Settings = {
   engineBuild: 'full',
   threads: 0,
   autoHintAfter: 0,
+  overlayControl: false,
+  overlayLines: false,
+  overlayLoose: false,
 }
 
 const STORAGE_KEY = 'mirror-gambit.settings.v1'

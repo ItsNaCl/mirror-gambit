@@ -9,6 +9,7 @@ import {
   Download,
   Ellipsis,
   Eye,
+  Layers2,
   FileUp,
   Plus,
   Redo2,
@@ -21,6 +22,7 @@ import { AnalysisPanel } from './components/AnalysisPanel'
 import type { BoardPreview } from './components/CoachPanel'
 import { moveBadgeStyle } from './components/moveBadge'
 import { Board } from './components/Board'
+import { BoardOverlay } from './components/BoardOverlay'
 import { CommandPalette, type Command } from './components/CommandPalette'
 import { EvalBar } from './components/EvalBar'
 import { MenuButton } from './components/MenuButton'
@@ -193,6 +195,11 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     if (!best || gameOver) return []
     return [{ startSquare: best.slice(0, 2), endSquare: best.slice(2, 4), color: ANSWER_ARROW }]
   }, [bestLine, gameOver])
+
+  const layers = useMemo(
+    () => ({ control: settings.overlayControl, lines: settings.overlayLines, loose: settings.overlayLoose }),
+    [settings.overlayControl, settings.overlayLines, settings.overlayLoose],
+  )
 
   const session: BoardSession | null = useMemo(() => {
     switch (sessionId) {
@@ -489,6 +496,11 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                     extraSquareStyles={session.id === 'free' && route === 'review' ? reviewBadge : session.squareStyles}
                     shakeKey={session.shakeKey}
                     onMove={session.onMove}
+                    overlay={
+                      session.id === 'free' && !preview ? (
+                        <BoardOverlay fen={session.game.fen} orientation={session.orientation} layers={layers} />
+                      ) : null
+                    }
                   />
                 </div>
 
@@ -528,6 +540,16 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                         Review game
                       </button>
                     )}
+                    <MenuButton
+                      label="Board layers"
+                      items={[
+                        { label: 'Square control (light: White, dark: Black)', checked: layers.control, onSelect: () => update({ overlayControl: !layers.control }) },
+                        { label: 'Pins and skewers', checked: layers.lines, onSelect: () => update({ overlayLines: !layers.lines }) },
+                        { label: 'Loose pieces (red: free, amber: underdefended)', checked: layers.loose, onSelect: () => update({ overlayLoose: !layers.loose }) },
+                      ]}
+                    >
+                      <Layers2 /> <span className="btn-label">Layers</span>
+                    </MenuButton>
                     <MenuButton
                       label="More game actions"
                       items={[
