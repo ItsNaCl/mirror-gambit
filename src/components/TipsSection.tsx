@@ -1,6 +1,6 @@
 import type { TipsState } from '../hooks/useTips'
 import { useSettings } from '../hooks/useSettings'
-import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from '../lib/analysis/classify'
+import { CLASS_LABEL, isProblem } from '../lib/analysis/classify'
 
 export interface TipsSectionProps {
   tips: TipsState
@@ -30,7 +30,7 @@ export function TipsSection({ tips, gameOver, onTakeBack, onSaveCard }: TipsSect
       {settings.blunderAlerts && alert && (
         <div className={`card ${cardKind}`}>
           <h3>
-            {CLASS_SYMBOL[alert.classification.cls]} {CLASS_LABEL[alert.classification.cls]}: {alert.san}
+            {CLASS_LABEL[alert.classification.cls]}: {alert.san}
           </h3>
           <p className={'small-text' + (problem ? '' : ' muted')}>{alert.text || 'That was the engine’s top choice.'}</p>
           {problem && (

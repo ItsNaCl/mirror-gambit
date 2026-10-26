@@ -1,7 +1,8 @@
 import type { MoveClass } from '../analysis/classify'
 import type { ReviewResult, SideCounts } from '../review/review'
+import * as kv from '../store/kv'
 
-/** One reviewed game, stored in localStorage for the progress page. */
+/** One reviewed game, stored for the progress page. */
 export interface GameRecord {
   id: string
   date: string
@@ -42,7 +43,7 @@ export function recordFromReview(result: ReviewResult, gameKey: string, nowMs: n
 
 export function loadHistory(): GameRecord[] {
   try {
-    const raw = localStorage.getItem(HISTORY_KEY)
+    const raw = kv.getItem(HISTORY_KEY)
     return raw ? (JSON.parse(raw) as GameRecord[]) : []
   } catch {
     return []
@@ -54,7 +55,7 @@ export function appendHistory(record: GameRecord): GameRecord[] {
   const list = loadHistory().filter((r) => r.id !== record.id)
   list.push(record)
   try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(list))
+    kv.setItem(HISTORY_KEY, JSON.stringify(list))
   } catch {
     /* ignore */
   }

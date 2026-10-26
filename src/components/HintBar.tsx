@@ -1,3 +1,4 @@
+import { Lightbulb } from 'lucide-react'
 import type { AttemptApi } from '../hooks/useAttempt'
 import { MAX_HINT_LEVEL } from '../lib/practice/practice'
 
@@ -16,22 +17,22 @@ export function HintBar({ attempt, hintText, onGiveUp, giveUpLabel = 'Give up' }
   const { wrongThisMove, hintLevel, pulse, hint } = attempt
   return (
     <div>
-      <div className="row" style={{ marginTop: 8 }}>
-        <span className="small-text muted" title="Wrong tries on the move you are looking for now">
-          Attempts on this move: {wrongThisMove}
-        </span>
-        <span className="spacer" style={{ flex: 1 }} />
+      <div className="row" style={{ marginTop: 12 }}>
         <button
           className={'btn small' + (pulse ? ' pulse' : '')}
           onClick={hint}
           disabled={hintLevel >= MAX_HINT_LEVEL}
           title={pulse ? 'A hint is available if you want one' : 'Each click shows a little more'}
         >
-          💡 {NEXT_HINT_LABEL[hintLevel]}
+          <Lightbulb /> {NEXT_HINT_LABEL[hintLevel]}
         </button>
         <button className="btn small" onClick={onGiveUp} title="Show the solution move by move. Counts as failed.">
           {giveUpLabel}
         </button>
+        <span className="spacer" />
+        <span className="small-text muted tabular" title="Wrong tries on the move you are looking for now">
+          {wrongThisMove} wrong {wrongThisMove === 1 ? 'try' : 'tries'}
+        </span>
       </div>
       {hintText && (
         <div className="hint-box small-text">

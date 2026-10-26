@@ -9,6 +9,7 @@ import {
   turnOf,
   type PromotionPiece,
 } from '../lib/chess/game'
+import { CHECK, LAST_MOVE, SELECTED } from '../lib/ui/boardColors'
 
 export interface BoardProps {
   fen: string
@@ -25,16 +26,18 @@ export interface BoardProps {
   onMove: (from: Square, to: Square, promotion?: PromotionPiece) => boolean
 }
 
-const LAST_MOVE_STYLE: CSSProperties = { background: 'rgba(255, 213, 0, 0.35)' }
-const SELECTED_STYLE: CSSProperties = { background: 'rgba(91, 156, 255, 0.55)' }
+const LAST_MOVE_STYLE: CSSProperties = { background: LAST_MOVE }
+const SELECTED_STYLE: CSSProperties = { background: SELECTED }
 const CHECK_STYLE: CSSProperties = {
-  background: 'radial-gradient(circle, rgba(239, 60, 60, 0.9) 0%, rgba(239, 60, 60, 0.55) 45%, transparent 72%)',
+  boxShadow: `inset 0 0 0 4px ${CHECK}`,
+  background: 'rgba(239, 107, 126, 0.35)',
 }
 const DOT_STYLE: CSSProperties = {
-  background: 'radial-gradient(circle, rgba(20, 20, 20, 0.35) 23%, transparent 25%)',
+  // A flat circle drawn as an image, so the square keeps its own colour underneath.
+  background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='16' fill='rgba(20,20,20,0.35)'/%3E%3C/svg%3E") center / 100% no-repeat`,
 }
 const CAPTURE_STYLE: CSSProperties = {
-  background: 'radial-gradient(circle, transparent 60%, rgba(20, 20, 20, 0.35) 62%, rgba(20, 20, 20, 0.35) 76%, transparent 78%)',
+  background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='43' fill='none' stroke='rgba(20,20,20,0.35)' stroke-width='9'/%3E%3C/svg%3E") center / 100% no-repeat`,
 }
 
 export function Board({
@@ -110,7 +113,9 @@ export function Board({
     allowDragging: interactive,
     darkSquareStyle: { backgroundColor: 'var(--board-dark)' },
     lightSquareStyle: { backgroundColor: 'var(--board-light)' },
-    boardStyle: { borderRadius: '6px', overflow: 'hidden', boxShadow: '0 6px 24px rgba(0,0,0,0.45)' },
+    boardStyle: { borderRadius: '6px', overflow: 'hidden' },
+    lightSquareNotationStyle: { color: 'var(--board-dark)', fontWeight: 600, fontSize: '11px' },
+    darkSquareNotationStyle: { color: 'var(--board-light)', fontWeight: 600, fontSize: '11px' },
     canDragPiece: ({ piece }: { piece: { pieceType: string } }) => interactive && isOwnPiece(piece.pieceType),
     onPieceDrag: ({ square }: { square: string | null }) => {
       if (square) setSelected(square as Square)

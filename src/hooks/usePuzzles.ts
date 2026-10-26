@@ -17,6 +17,8 @@ import { loadPuzzles, motifGuide, puzzlesFor, shuffle, type Puzzle, type PuzzleC
 import { useAttempt, useHintDecorations } from './useAttempt'
 import type { EngineContextValue } from './useEngine'
 import type { GameApi } from './useGame'
+import * as kv from '../lib/store/kv'
+import { ANSWER_ARROW } from '../lib/ui/boardColors'
 
 export type { SetStats } from '../lib/practice/practice'
 export type PuzzleStats = Partial<Record<PuzzleSetId, SetStats>>
@@ -31,7 +33,7 @@ const SUSPEND_OWNER = 'puzzles'
 
 export function loadPuzzleStats(): PuzzleStats {
   try {
-    const raw = localStorage.getItem(STATS_KEY)
+    const raw = kv.getItem(STATS_KEY)
     if (!raw) return {}
     const parsed = JSON.parse(raw) as Record<string, unknown>
     const out: PuzzleStats = {}
@@ -98,7 +100,7 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
     setStats((all) => {
       const next: PuzzleStats = { ...all, [p.set]: recordOutcome(all[p.set] ?? emptyStats(), result, p.id) }
       try {
-        localStorage.setItem(STATS_KEY, JSON.stringify(next))
+        kv.setItem(STATS_KEY, JSON.stringify(next))
       } catch {
         /* ignore */
       }
@@ -357,7 +359,7 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
     const nextIndex = gameApi.game.ply
     const uci = puzzle.solution[nextIndex]
     if (!uci || nextIndex >= gameApi.game.moves.length) return []
-    return [{ startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: 'rgba(79, 196, 138, 0.9)' }]
+    return [{ startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: ANSWER_ARROW }]
   }, [puzzle, status, gameApi.game])
 
   const revealDone = status === 'revealing' && gameApi.game.ply >= gameApi.game.moves.length

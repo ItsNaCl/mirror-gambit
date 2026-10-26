@@ -6,6 +6,8 @@ import { newGame, playSan, turnOf, type GameState, type PromotionPiece } from '.
 import { movesMatch, themeForMove } from '../lib/practice/practice'
 import { useAttempt, useHintDecorations } from './useAttempt'
 import type { GameApi } from './useGame'
+import * as kv from '../lib/store/kv'
+import { ANSWER_ARROW } from '../lib/ui/boardColors'
 
 export type TrainerMode = 'step' | 'auto' | 'drill'
 
@@ -25,7 +27,7 @@ const STATS_KEY = 'mirror-gambit.opening-stats.v1'
 
 function loadStats(): Record<string, DrillStats> {
   try {
-    const raw = localStorage.getItem(STATS_KEY)
+    const raw = kv.getItem(STATS_KEY)
     return raw ? (JSON.parse(raw) as Record<string, DrillStats>) : {}
   } catch {
     return {}
@@ -71,7 +73,7 @@ export function useTrainer(gameApi: GameApi) {
         const prev = all[opening.id] ?? { attempts: 0, correct: 0 }
         const next = { ...all, [opening.id]: { attempts: prev.attempts + 1, correct: prev.correct + (correct ? 1 : 0) } }
         try {
-          localStorage.setItem(STATS_KEY, JSON.stringify(next))
+          kv.setItem(STATS_KEY, JSON.stringify(next))
         } catch {
           /* ignore */
         }
@@ -262,7 +264,7 @@ export function useTrainer(gameApi: GameApi) {
     try {
       const chess = new Chess(gameApi.fen)
       const mv = chess.move(revealMove)
-      return [{ startSquare: mv.from, endSquare: mv.to, color: 'rgba(79, 196, 138, 0.9)' }]
+      return [{ startSquare: mv.from, endSquare: mv.to, color: ANSWER_ARROW }]
     } catch {
       return []
     }

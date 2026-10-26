@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 import type { PuzzlesApi } from '../hooks/usePuzzles'
 import { OUTCOME_LABEL, solvedCount } from '../lib/practice/practice'
 import { loadPuzzles, motifGuide, PUZZLE_SETS, puzzlesFor, type PuzzleChoice } from '../lib/puzzles/puzzles'
@@ -72,7 +73,7 @@ export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
     <div>
       <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
         <button className="btn small" onClick={puzzles.exit}>
-          {puzzles.choice === 'custom' ? '← Back' : '← Puzzle sets'}
+          <ChevronLeft /> {puzzles.choice === 'custom' ? 'Back' : 'Puzzle sets'}
         </button>
         <span className="small-text muted">
           {setLabel} · {sideName} to move
@@ -97,7 +98,7 @@ export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
         {puzzles.status === 'solved' && (
           <>
             <h3>
-              {puzzles.outcome === 'clean' ? '✓ Solved: Clean' : '✓ Solved: Assisted'}
+              {puzzles.outcome === 'clean' ? 'Solved clean' : 'Solved with help'}
             </h3>
             <p className="small-text">
               {puzzles.outcome === 'clean'
@@ -119,7 +120,7 @@ export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
             </p>
             {!puzzles.revealDone && (
               <button className="btn small primary" onClick={puzzles.revealNext}>
-                Show next move ▶
+                Show next move <ChevronRight />
               </button>
             )}
           </>
@@ -128,10 +129,10 @@ export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
         {done && (
           <div className="row" style={{ marginTop: 8 }}>
             <button className="btn primary" onClick={puzzles.next}>
-              Next puzzle ▶
+              Next puzzle <ChevronRight />
             </button>
             <button className="btn" onClick={puzzles.retry} title="Play the same puzzle again from the start">
-              ↺ Retry puzzle
+              <RotateCcw /> Retry puzzle
             </button>
           </div>
         )}

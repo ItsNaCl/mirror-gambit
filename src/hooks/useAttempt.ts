@@ -2,9 +2,10 @@ import { useCallback, useMemo, useState, type CSSProperties } from 'react'
 import type { Arrow } from 'react-chessboard'
 import { hintView, MAX_HINT_LEVEL, shouldPulse, type AttemptRecord, type HintLevel } from '../lib/practice/practice'
 import { useSettings } from './useSettings'
+import { ANSWER_ARROW, HINT_FROM, HINT_TO } from '../lib/ui/boardColors'
 
-const FROM_STYLE: CSSProperties = { boxShadow: 'inset 0 0 0 4px rgba(242, 185, 66, 0.95)', background: 'rgba(242, 185, 66, 0.25)' }
-const TO_STYLE: CSSProperties = { boxShadow: 'inset 0 0 0 4px rgba(79, 196, 138, 0.95)', background: 'rgba(79, 196, 138, 0.25)' }
+const FROM_STYLE: CSSProperties = { boxShadow: `inset 0 0 0 4px ${HINT_FROM}` }
+const TO_STYLE: CSSProperties = { boxShadow: `inset 0 0 0 4px ${HINT_TO}` }
 
 /**
  * Per-exercise attempt state shared by puzzles, opening drills and review cards:
@@ -69,7 +70,7 @@ export function useHintDecorations(level: HintLevel, uci: string | null, theme: 
     const squareStyles: Record<string, CSSProperties> = {}
     if (view.highlightFrom) squareStyles[view.highlightFrom] = FROM_STYLE
     if (view.highlightTo) squareStyles[view.highlightTo] = TO_STYLE
-    const arrows: Arrow[] = view.arrow ? [{ startSquare: view.arrow.from, endSquare: view.arrow.to, color: 'rgba(79, 196, 138, 0.9)' }] : []
+    const arrows: Arrow[] = view.arrow ? [{ startSquare: view.arrow.from, endSquare: view.arrow.to, color: ANSWER_ARROW }] : []
     return { text: view.text, squareStyles, arrows }
   }, [level, uci, theme, active])
 }

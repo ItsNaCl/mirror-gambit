@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lightbulb, Pause, Play } from 'lucide-react'
+import { ANSWER_ARROW } from '../lib/ui/boardColors'
 import type { Arrow } from 'react-chessboard'
 import { CLASS_LABEL, CLASS_SYMBOL, isProblem, MOVE_CLASSES, type MoveClass } from '../lib/analysis/classify'
 import { fenAt, moveLabel, type GameState } from '../lib/chess/game'
@@ -24,8 +26,8 @@ export interface CoachPanelProps {
 
 const LINE_STEP_MS = 1100
 const GAME_STEP_MS = 2200
-const BEST_ARROW = 'rgba(79, 196, 138, 0.9)'
-const DANGER_ARROW = 'rgba(239, 107, 107, 0.9)'
+const BEST_ARROW = ANSWER_ARROW
+const DANGER_ARROW = 'rgba(239, 107, 126, 0.9)'
 
 type LineKind = 'better' | 'danger'
 
@@ -143,20 +145,20 @@ export function CoachPanel({ result, game, onJump, preview, onPreview }: CoachPa
   return (
     <div>
       <div className="coach-controls">
-        <button className="btn small" onClick={() => onJump(0)} disabled={ply === 0} title="Start of the game">
-          ⏮
+        <button className="btn small" onClick={() => onJump(0)} disabled={ply === 0} title="Start of the game" aria-label="Start of the game">
+          <ChevronsLeft />
         </button>
-        <button className="btn small" onClick={() => onJump(ply - 1)} disabled={ply === 0} title="Previous move (Left arrow)">
-          ◀
+        <button className="btn small" onClick={() => onJump(ply - 1)} disabled={ply === 0} title="Previous move (Left arrow)" aria-label="Previous move">
+          <ChevronLeft />
         </button>
         <button className={'btn small' + (autoGame ? ' active' : '')} onClick={() => setAutoGame((a) => !a)} disabled={ply >= game.moves.length && !autoGame}>
-          {autoGame ? '⏸ Pause' : '▶ Play-by-play'}
+          {autoGame ? <><Pause /> Pause</> : <><Play /> Play-by-play</>}
         </button>
-        <button className="btn small" onClick={() => onJump(ply + 1)} disabled={ply >= game.moves.length} title="Next move (Right arrow)">
-          ▶
+        <button className="btn small" onClick={() => onJump(ply + 1)} disabled={ply >= game.moves.length} title="Next move (Right arrow)" aria-label="Next move">
+          <ChevronRight />
         </button>
-        <button className="btn small" onClick={() => onJump(game.moves.length)} disabled={ply >= game.moves.length} title="End of the game">
-          ⏭
+        <button className="btn small" onClick={() => onJump(game.moves.length)} disabled={ply >= game.moves.length} title="End of the game" aria-label="End of the game">
+          <ChevronsRight />
         </button>
         <label className="toggle small-text" title="Stop the play-by-play on inaccuracies, mistakes and blunders">
           <input type="checkbox" checked={pauseOnMistakes} onChange={(e) => setPauseOnMistakes(e.target.checked)} />
@@ -168,7 +170,7 @@ export function CoachPanel({ result, game, onJump, preview, onPreview }: CoachPa
         <div className="card info">
           <h3>Coach</h3>
           <p className="small-text">
-            Press ▶ or Play-by-play to go through the game move by move. For every move the coach explains what happened, and
+            Press Next or Play-by-play to go through the game move by move. For every move the coach explains what happened, and
             for mistakes it can play the better line on the board.
           </p>
         </div>
@@ -187,10 +189,10 @@ export function CoachPanel({ result, game, onJump, preview, onPreview }: CoachPa
             {note.better && (
               <>
                 <button className="btn small" onClick={showBestMove}>
-                  💡 Show best move
+                  <Lightbulb /> Show best move
                 </button>
                 <button className="btn small primary" onClick={() => startLine('better')}>
-                  ▶ Play best line
+                  <Play /> Play best line
                 </button>
               </>
             )}
@@ -227,14 +229,14 @@ export function CoachPanel({ result, game, onJump, preview, onPreview }: CoachPa
               </p>
             ))}
           <div className="row" style={{ marginTop: 6 }}>
-            <button className="btn small" onClick={() => stepLine(-1)} disabled={line.shown === 0}>
-              ◀
+            <button className="btn small" onClick={() => stepLine(-1)} disabled={line.shown === 0} aria-label="Previous move of the line">
+              <ChevronLeft />
             </button>
             <button className="btn small" onClick={() => setLine((l) => (l ? { ...l, playing: !l.playing, shown: l.shown >= l.lesson.steps.length ? 0 : l.shown } : l))}>
-              {line.playing ? '⏸' : '▶'}
+              {line.playing ? <Pause aria-label="Pause" /> : <Play aria-label="Play" />}
             </button>
-            <button className="btn small" onClick={() => stepLine(1)} disabled={line.shown >= line.lesson.steps.length}>
-              ▶
+            <button className="btn small" onClick={() => stepLine(1)} disabled={line.shown >= line.lesson.steps.length} aria-label="Next move of the line">
+              <ChevronRight />
             </button>
             <span className="spacer" style={{ flex: 1 }} />
             <button className="btn small" onClick={() => setLine(null)}>

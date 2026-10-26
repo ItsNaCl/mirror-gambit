@@ -85,9 +85,6 @@ export function AnalysisPanel({ fen, onPlayLine, children }: AnalysisPanelProps)
         </div>
       )}
 
-      <p className="small-text muted" style={{ marginTop: 14 }}>
-        {statusText}
-      </p>
     </div>
   )
 }

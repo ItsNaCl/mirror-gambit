@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { RotateCcw, X } from 'lucide-react'
 import type { PlayApi } from '../hooks/usePlay'
 import { levelById, PLAY_LEVELS } from '../lib/play/levels'
 import { outcomeFor, recordByLevel, type SavedGame } from '../lib/play/savedGames'
@@ -59,7 +60,7 @@ function PlaySetup({ play, engineReady, onReviewSaved }: { play: PlayApi; engine
       <div className="row">
         {(['w', 'b', 'random'] as const).map((c) => (
           <button key={c} className={'btn small' + (color === c ? ' active' : '')} onClick={() => setColor(c)}>
-            {c === 'w' ? '♔ White' : c === 'b' ? '♚ Black' : '🎲 Random'}
+            {c === 'random' ? 'Random' : <><span className={'side-chip ' + (c === 'w' ? 'white' : 'black')} /> {c === 'w' ? 'White' : 'Black'}</>}
           </button>
         ))}
       </div>
@@ -99,7 +100,7 @@ function PlaySetup({ play, engineReady, onReviewSaved }: { play: PlayApi; engine
                   Review
                 </button>
                 <button className="btn small" onClick={() => play.deleteSaved(g.id)} title="Delete this game" aria-label="Delete this game">
-                  ✕
+                  <X />
                 </button>
               </div>
             )
@@ -156,11 +157,11 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
       </div>
       {play.coachAlert && (
         <div className={'card ' + (play.coachAlert.cls === 'blunder' ? 'bad' : 'warn')}>
-          <h3>🎓 Coach</h3>
+          <h3>Coach</h3>
           <p className="small-text">{play.coachAlert.text}</p>
           <div className="row">
             <button className="btn small primary" onClick={play.takeBack} disabled={!play.canTakeBack}>
-              ↶ Take it back
+              <RotateCcw /> Take it back
             </button>
             <button className="btn small" onClick={play.dismissCoach}>
               Keep playing
@@ -170,7 +171,7 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
       )}
       <div className="row">
         <button className="btn" onClick={play.takeBack} disabled={!play.canTakeBack} title="Undo your last move and the computer's reply">
-          ↶ Take back
+          <RotateCcw /> Take back
         </button>
         {confirmResign ? (
           <>

@@ -17,12 +17,14 @@ import {
 } from '../lib/srs/srs'
 import { useAttempt, useHintDecorations } from './useAttempt'
 import type { GameApi } from './useGame'
+import * as kv from '../lib/store/kv'
+import { ANSWER_ARROW } from '../lib/ui/boardColors'
 
 const CARDS_KEY = 'mirror-gambit.srs-cards.v1'
 
 function loadCards(): SrsCard[] {
   try {
-    const raw = localStorage.getItem(CARDS_KEY)
+    const raw = kv.getItem(CARDS_KEY)
     if (!raw) return []
     return parseCardsJson(raw)
   } catch {
@@ -59,7 +61,7 @@ export function useSrs(gameApi: GameApi) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(CARDS_KEY, JSON.stringify(cards))
+      kv.setItem(CARDS_KEY, JSON.stringify(cards))
     } catch {
       /* ignore */
     }
@@ -212,7 +214,7 @@ export function useSrs(gameApi: GameApi) {
   const orientation: 'white' | 'black' = session?.card.fen.split(' ')[1] === 'b' ? 'black' : 'white'
   const revealArrow: Arrow[] = useMemo(() => {
     if (!session || session.status !== 'revealed' || !expected) return []
-    return [{ startSquare: expected.slice(0, 2), endSquare: expected.slice(2, 4), color: 'rgba(79, 196, 138, 0.9)' }]
+    return [{ startSquare: expected.slice(0, 2), endSquare: expected.slice(2, 4), color: ANSWER_ARROW }]
   }, [session, expected])
 
   return {

@@ -24,8 +24,12 @@
     "release:desktop": "npm run build && npm run build:main && electron-builder --win --x64 --config electron-builder.yml --publish always"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "chess.js": "^1.4.0",
     "electron-updater": "^6.8.9",
+    "idb": "^8.0.4",
+    "lucide-react": "^1.61.0",
     "react": "^19.2.8",
     "react-chessboard": "^5.12.1",
     "react-dom": "^19.2.8",
@@ -40,6 +44,7 @@
     "electron": "^44.7.0",
     "electron-builder": "^26.15.3",
     "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.6",
     "jsdom": "^30.1.2",
     "oxlint": "^1.81.0",
     "sharp": "^0.35.5",

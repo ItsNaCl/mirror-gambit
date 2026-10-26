@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { SrsApi } from '../hooks/useSrs'
 import type { SrsCard } from '../lib/srs/srs'
@@ -65,7 +66,7 @@ function Deck({ srs, notify }: SrsPanelProps) {
         Deck · {srs.cards.length} card{srs.cards.length === 1 ? '' : 's'}, {srs.dueCount} due
       </div>
       {srs.cards.length === 0 ? (
-        <p className="small-text muted">No cards yet. Review a game, or press "Save for review" on a blunder alert, or "Save this position" under the board.</p>
+        <p className="small-text muted">No cards yet. Review a game, or press "Save for review" on a blunder alert, or choose More, then "Save position as a card" under the board.</p>
       ) : (
         <div className="lines">
           {(showAll ? upcoming : upcoming.slice(0, 8)).map((c) => (
@@ -98,7 +99,7 @@ function Deck({ srs, notify }: SrsPanelProps) {
           }}
         />
       </div>
-      <p className="small-text muted">Cards live in this browser's storage. Export them now and then so clearing browser data does not lose them.</p>
+      <p className="small-text muted">Cards are saved on this computer. Export them now and then as a backup.</p>
     </div>
   )
 }
@@ -114,8 +115,8 @@ function CardRow({ card, onRemove }: { card: SrsCard; onRemove: () => void }) {
         {side} to move{card.playerMove ? `, you played ${card.playerMove}` : ''}. Ease {card.easeFactor.toFixed(2)}, step {card.repetitions}.
       </span>
       <span className="depth">due {hoursUntil(card.nextReview)}</span>
-      <button className="btn small" onClick={onRemove} title="Delete this card">
-        ✕
+      <button className="btn small icon ghost" onClick={onRemove} title="Delete this card" aria-label="Delete this card">
+        <X />
       </button>
     </div>
   )
@@ -130,14 +131,14 @@ function ReviewSession({ srs }: { srs: SrsApi }) {
     <div>
       <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
         <button className="btn small" onClick={srs.exit}>
-          ← Deck
+          <ChevronLeft /> Deck
         </button>
         <span className="small-text muted">{srs.dueCount} due</span>
       </div>
       <div className={'card ' + kind}>
         <h3>
           {s.status === 'solved'
-            ? `✓ ${s.outcome === 'clean' ? 'Clean' : 'Assisted'} (grade ${s.grade}/5)`
+            ? `${s.outcome === 'clean' ? 'Clean' : 'Assisted'} (grade ${s.grade}/5)`
             : s.status === 'revealed'
               ? 'Failed (grade 0/5)'
               : `What is the best move for ${side}?`}
@@ -147,7 +148,7 @@ function ReviewSession({ srs }: { srs: SrsApi }) {
         {done && (
           <div className="row" style={{ marginTop: 8 }}>
             <button className="btn primary" onClick={srs.nextCard}>
-              {srs.due.some((c) => c.id !== s.card.id) ? 'Next card ▶' : 'Finish'}
+              {srs.due.some((c) => c.id !== s.card.id) ? <>Next card <ChevronRight /></> : 'Finish'}
             </button>
           </div>
         )}

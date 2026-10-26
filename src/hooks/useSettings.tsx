@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import * as kv from '../lib/store/kv'
 
 export interface Settings {
   showAnalysis: boolean
@@ -34,7 +35,7 @@ const STORAGE_KEY = 'mirror-gambit.settings.v1'
 
 function loadSettings(): Settings {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = kv.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_SETTINGS
     const parsed = JSON.parse(raw) as Partial<Settings>
     return { ...DEFAULT_SETTINGS, ...parsed }
@@ -54,7 +55,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(loadSettings)
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+      kv.setItem(STORAGE_KEY, JSON.stringify(settings))
     } catch {
       /* storage may be unavailable; settings just will not persist */
     }

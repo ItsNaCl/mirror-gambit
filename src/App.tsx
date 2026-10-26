@@ -1,113 +1,138 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Arrow } from 'react-chessboard'
+import {
+  ArrowLeft,
+  ArrowUpDown,
+  Flag,
+  RotateCcw,
+  BookOpen,
+  ClipboardCopy,
+  Crosshair,
+  Download,
+  Ellipsis,
+  Eye,
+  FileUp,
+  Plus,
+  Redo2,
+  Save,
+  Undo2,
+} from 'lucide-react'
+import { ROUTE_ICONS, Sidebar, TopBar } from './app/Shell'
+import { NAV, ROUTES, useRoute, type RouteId } from './app/routes'
 import { AnalysisPanel } from './components/AnalysisPanel'
 import type { BoardPreview } from './components/CoachPanel'
 import { moveBadgeStyle } from './components/moveBadge'
 import { Board } from './components/Board'
+import { CommandPalette, type Command } from './components/CommandPalette'
 import { EvalBar } from './components/EvalBar'
-import { MoveList } from './components/MoveList'
+import { MenuButton } from './components/MenuButton'
 import { Modal } from './components/Modal'
+import { MoveList } from './components/MoveList'
 import { OpeningsPanel } from './components/OpeningsPanel'
 import { PlayPanel } from './components/PlayPanel'
 import { ProgressPanel } from './components/ProgressPanel'
 import { PuzzlesPanel } from './components/PuzzlesPanel'
 import { ReviewPanel } from './components/ReviewPanel'
-import { SetupPanel } from './components/SetupPanel'
 import { SettingsPanel } from './components/SettingsPanel'
+import { SetupPanel } from './components/SetupPanel'
 import { SrsPanel } from './components/SrsPanel'
 import { TipsSection } from './components/TipsSection'
 import { ToastStack, useToasts } from './components/Toast'
 import { UpdateBanner } from './components/UpdatePanel'
 import { EngineProvider, useEngine } from './hooks/useEngine'
 import { useGame, type GameApi } from './hooks/useGame'
-import { useSettings } from './hooks/useSettings'
-import { usePlay } from './hooks/usePlay'
-import { usePuzzles } from './hooks/usePuzzles'
+import { usePlay, type PlayApi } from './hooks/usePlay'
+import { usePuzzles, type PuzzlesApi } from './hooks/usePuzzles'
 import { useReview } from './hooks/useReview'
-import { useSrs } from './hooks/useSrs'
+import { useSettings } from './hooks/useSettings'
+import { useSrs, type SrsApi } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
-import { useTrainer } from './hooks/useTrainer'
+import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useUpdates } from './hooks/useUpdates'
-import { CLASS_LABEL, CLASS_SYMBOL } from './lib/analysis/classify'
+import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
 import { cleanError, fetchChessComJson } from './lib/desktop'
 import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
 import type { SavedGame } from './lib/play/savedGames'
+import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
+import { ANSWER_ARROW } from './lib/ui/boardColors'
+import { openings } from './openings'
+import { freeSession, playSession, puzzleSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
 
-type Tab = 'analysis' | 'play' | 'openings' | 'puzzles' | 'cards' | 'review' | 'progress' | 'settings'
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'analysis', label: 'Analysis' },
-  { id: 'play', label: 'Play' },
-  { id: 'openings', label: 'Openings' },
-  { id: 'puzzles', label: 'Puzzles' },
-  { id: 'cards', label: 'Cards' },
-  { id: 'review', label: 'Review' },
-  { id: 'progress', label: 'Progress' },
-  { id: 'settings', label: 'Settings' },
-]
 
 export default function App() {
-  const gameApi = useGame()
+  const [route, navigate] = useRoute()
+  // Each mode has its own game, so a puzzle, a drill or a game against the computer never
+  // overwrites the game on the board.
+  const free = useGame()
+  const playGame = useGame()
+  const trainerGame = useGame()
+  const puzzleGame = useGame()
+  const srsGame = useGame()
+  const games: Record<SessionId, GameApi> = { free, play: playGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame }
+  // Play and puzzles need the engine, so they live inside the provider; the workspace reports
+  // which board is on screen and the engine follows it.
+  const [engineFen, setEngineFen] = useState(free.fen)
+
   return (
-    <EngineProvider fen={gameApi.fen}>
-      <Workspace gameApi={gameApi} />
+    <EngineProvider fen={engineFen}>
+      <Workspace route={route} navigate={navigate} games={games} onBoardFen={setEngineFen} />
     </EngineProvider>
   )
 }
 
-function Workspace({ gameApi }: { gameApi: GameApi }) {
-  const { settings, update } = useSettings()
-  const { game, fen, gameOver } = gameApi
-  const engine = useEngine()
-  const { toasts, notify, dismiss } = useToasts()
-  const updates = useUpdates()
+interface WorkspaceProps {
+  route: RouteId
+  navigate: (id: RouteId) => void
+  games: Record<SessionId, GameApi>
+  onBoardFen: (fen: string) => void
+}
 
-  const [tab, setTab] = useState<Tab>('analysis')
+function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
+  const { settings, update } = useSettings()
+  const engine = useEngine()
+  const trainer = useTrainer(games.trainer)
+  const puzzles = usePuzzles(games.puzzle, engine)
+  const srs = useSrs(games.srs)
+  const play = usePlay(games.play, engine)
+  const updates = useUpdates()
+  const sessionId = sessionFor(route, puzzles)
+  const free = games.free
+  const { game, fen, gameOver } = free
+  const { toasts, notify, dismiss } = useToasts()
+  // A coach line or best move shown on the board in place of the game (Game review only).
+  const [boardPreview, setBoardPreview] = useState<BoardPreview | null>(null)
+  const preview = route === 'review' ? boardPreview : null
+
   const [manualOrientation, setManualOrientation] = useState<'white' | 'black'>('white')
   const [setupMode, setSetupMode] = useState(false)
   const [pgnModal, setPgnModal] = useState<'import' | 'export' | null>(null)
   const [pgnText, setPgnText] = useState('')
   const [pgnError, setPgnError] = useState<string | null>(null)
-  // A coach line or best move shown on the board in place of the game (Review tab only).
-  const [boardPreview, setBoardPreview] = useState<BoardPreview | null>(null)
-  const preview = tab === 'review' ? boardPreview : null
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  const trainerRaw = useTrainer(gameApi)
-  const puzzlesRaw = usePuzzles(gameApi, engine)
-  const srsRaw = useSrs(gameApi)
-  const playRaw = usePlay(gameApi, engine)
-  // Only one mode may drive the board at a time: starting one exits the others.
-  const trainer = useMemo(
-    () => ({
-      ...trainerRaw,
-      select: (o: Parameters<typeof trainerRaw.select>[0]) => { puzzlesRaw.exit(); srsRaw.exit(); playRaw.exit(); trainerRaw.select(o) },
-      exit: () => { puzzlesRaw.exit(); trainerRaw.exit() },
-    }),
-    [trainerRaw, puzzlesRaw, srsRaw, playRaw],
-  )
-  const puzzles = useMemo(
-    () => ({ ...puzzlesRaw, start: (c: Parameters<typeof puzzlesRaw.start>[0]) => { trainerRaw.exit(); srsRaw.exit(); playRaw.exit(); puzzlesRaw.start(c) } }),
-    [puzzlesRaw, trainerRaw, srsRaw, playRaw],
-  )
-  const srs = useMemo(
-    () => ({ ...srsRaw, startReview: () => { trainerRaw.exit(); puzzlesRaw.exit(); playRaw.exit(); srsRaw.startReview() } }),
-    [srsRaw, trainerRaw, puzzlesRaw, playRaw],
-  )
-  const play = useMemo(
-    () => ({ ...playRaw, start: (c: 'w' | 'b', level: number, coach?: boolean) => { trainerRaw.exit(); puzzlesRaw.exit(); srsRaw.exit(); playRaw.start(c, level, coach) } }),
-    [playRaw, trainerRaw, puzzlesRaw, srsRaw],
-  )
-  const srsActive = srs.active
-  const puzzleActive = puzzles.active && !srsActive
-  const trainerActive = trainer.active && !puzzleActive && !srsActive
-  const playActive = play.active && !trainerActive && !puzzleActive && !srsActive
-  const playLive = playActive && !play.result
-  const review = useReview(gameApi, engine)
+  const review = useReview(free, engine)
   const [includeClassifications, setIncludeClassifications] = useState(true)
   const reviewResult = review.matchesCurrentGame ? review.state.result : null
+
+  const go = useCallback(
+    (id: RouteId) => {
+      setMenuOpen(false)
+      if (id !== 'board') setSetupMode(false)
+      navigate(id)
+    },
+    [navigate],
+  )
+
+  // Leaving an opening also stops its trap puzzles.
+  const exitTrainer = useCallback(() => {
+    if (puzzles.choice === 'custom') puzzles.exit()
+    trainer.exit()
+  }, [puzzles, trainer])
+  const trainerForPanel = useMemo(() => ({ ...trainer, exit: exitTrainer }), [trainer, exitTrainer])
 
   const exportText = useMemo(() => {
     if (pgnModal !== 'export') return ''
@@ -121,78 +146,62 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     return exportPgn(game, { comments })
   }, [pgnModal, includeClassifications, reviewResult, game])
 
-  // Dev-only hook so browser automation can read the current position.
+  // Dev-only hook so browser automation can read the positions.
   useEffect(() => {
-    if (import.meta.env.DEV) (window as unknown as { __mirrorGambit?: unknown }).__mirrorGambit = { fen, ply: game.ply }
-  }, [fen, game.ply])
+    if (import.meta.env.DEV)
+      (window as unknown as { __mirrorGambit?: unknown }).__mirrorGambit = { fen, ply: game.ply, route, session: sessionId, boardFen: games[sessionId ?? 'free'].fen }
+  }, [fen, game.ply, route, sessionId, games])
 
   const turn = turnOf(fen)
-  const orientation: 'white' | 'black' = srsActive
-    ? srs.orientation
-    : playActive
-    ? play.orientation
-    : puzzleActive
-    ? puzzles.orientation
-    : trainerActive
-    ? trainer.boardOrientation
-    : settings.autoFlip
-      ? turn === 'w'
-        ? 'white'
-        : 'black'
-      : manualOrientation
-  const lastMove = lastMoveAt(game)
-  const reviewedMove = tab === 'review' && reviewResult && game.ply > 0 ? reviewResult.moves[game.ply - 1] : null
-  const reviewBadge = useMemo(
-    () => (reviewedMove && lastMove && !preview ? { [lastMove.to]: moveBadgeStyle(reviewedMove.classification.cls) } : undefined),
-    [reviewedMove, lastMove, preview],
-  )
+  const freeOrientation: 'white' | 'black' = settings.autoFlip ? (turn === 'w' ? 'white' : 'black') : manualOrientation
 
   const onMoveAlert = useCallback(
     (alert: MoveAlert) => {
       const kind = alert.classification.cls === 'blunder' ? 'bad' : 'warn'
       const action =
-        alert.classification.cls === 'blunder'
-          ? { label: 'Take it back', onClick: () => gameApi.jump(alert.moveIndex) }
-          : undefined
+        alert.classification.cls === 'blunder' ? { label: 'Take it back', onClick: () => free.jump(alert.moveIndex) } : undefined
       notify({ kind, title: `${CLASS_LABEL[alert.classification.cls]}: ${alert.san}`, body: alert.text, action }, 12000)
     },
-    [notify, gameApi],
+    [notify, free],
   )
-  const tips = useTips(gameApi, { enabled: !setupMode && !trainerActive && !puzzleActive && !srsActive && !playLive, notify: onMoveAlert })
+  const tips = useTips(free, { enabled: sessionId === 'free' && !setupMode, notify: onMoveAlert })
 
-  // Left/right arrow keys step through the game (or through the opening line in the trainer).
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      const target = e.target as HTMLElement | null
-      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return
-      if (pgnModal || setupMode) return
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-      e.preventDefault()
-      if (playLive) return
-      if (srsActive) {
-        if (srs.userToMove) return
-        if (e.key === 'ArrowLeft') gameApi.undoMove()
-        else gameApi.redoMove()
-        return
-      }
-      if (puzzleActive) {
-        if (puzzles.status === 'playing') return
-        if (e.key === 'ArrowLeft') gameApi.undoMove()
-        else gameApi.redoMove()
-        return
-      }
-      if (trainerActive) {
-        if (trainer.mode === 'drill') return
-        if (e.key === 'ArrowLeft') trainer.prev()
-        else trainer.next()
-        return
-      }
-      if (e.key === 'ArrowLeft') gameApi.undoMove()
-      else gameApi.redoMove()
+  // What the board shows from the engine, only when analysis is switched on.
+  const bestLine = settings.showAnalysis ? engine.analysis?.lines[0] : undefined
+  const evalScore = settings.showAnalysis ? (engine.analysis?.lines[0]?.score ?? engine.getCached(fen)?.score ?? null) : null
+  const analysisArrows: Arrow[] = useMemo(() => {
+    const best = bestLine?.pv[0]
+    if (!best || gameOver) return []
+    return [{ startSquare: best.slice(0, 2), endSquare: best.slice(2, 4), color: ANSWER_ARROW }]
+  }, [bestLine, gameOver])
+
+  const session: BoardSession | null = useMemo(() => {
+    switch (sessionId) {
+      case 'free':
+        return freeSession(free, { orientation: freeOrientation, arrows: route === 'board' ? analysisArrows : [] })
+      case 'play':
+        return playSession(play, games.play)
+      case 'trainer':
+        return trainerSession(trainer, games.trainer)
+      case 'puzzle':
+        return puzzleSession(puzzles, games.puzzle)
+      case 'srs':
+        return srsSession(srs, games.srs)
+      default:
+        return null
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [gameApi, pgnModal, setupMode, trainerActive, trainer, puzzleActive, puzzles, srsActive, srs, playLive])
+  }, [sessionId, free, freeOrientation, route, analysisArrows, play, trainer, puzzles, srs, games])
+
+  const boardFen = session?.game.fen ?? fen
+  useEffect(() => onBoardFen(boardFen), [boardFen, onBoardFen])
+
+  // In review, the reviewed move's grade sits as a badge on its square.
+  const reviewedMove = route === 'review' && reviewResult && game.ply > 0 ? reviewResult.moves[game.ply - 1] : null
+  const freeLastMove = lastMoveAt(game)
+  const reviewBadge = useMemo(
+    () => (reviewedMove && freeLastMove && !preview ? { [freeLastMove.to]: moveBadgeStyle(reviewedMove.classification.cls) } : undefined),
+    [reviewedMove, freeLastMove, preview],
+  )
 
   const copyText = useCallback(
     async (text: string, what: string) => {
@@ -200,7 +209,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
         await navigator.clipboard.writeText(text)
         notify({ kind: 'good', title: `${what} copied to clipboard` }, 2500)
       } catch {
-        notify({ kind: 'warn', title: `Could not copy ${what}`, body: 'Your browser blocked clipboard access.' })
+        notify({ kind: 'warn', title: `Could not copy ${what}`, body: 'Clipboard access was blocked.' })
       }
     },
     [notify],
@@ -214,9 +223,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
         if (!next) break
         state = next
       }
-      if (state !== game) gameApi.setGame(state)
+      if (state !== game) free.setGame(state)
     },
-    [game, gameApi],
+    [game, free],
   )
 
   const savePositionCard = useCallback(() => {
@@ -231,7 +240,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
       explanation: 'A position you chose to practise.',
       source: 'manual',
     })
-    notify({ kind: card ? 'good' : 'info', title: card ? 'Saved to your review deck' : 'This position is already in your deck' }, 3000)
+    notify({ kind: card ? 'good' : 'info', title: card ? 'Saved to your mistake cards' : 'This position is already in your cards' }, 3000)
   }, [engine, fen, srs, notify])
 
   const saveAlertCard = useCallback(
@@ -247,59 +256,58 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
         explanation: alert.text,
         source: 'alert',
       })
-      notify({ kind: card ? 'good' : 'info', title: card ? 'Saved to your review deck' : 'Already in your deck' }, 3000)
+      notify({ kind: card ? 'good' : 'info', title: card ? 'Saved to your mistake cards' : 'Already in your cards' }, 3000)
     },
     [tips.alert, srs, game, notify],
   )
 
-  const openReview = useCallback(() => {
-    setTab('review')
+  const openExport = useCallback(() => setPgnModal('export'), [])
+  const openImport = useCallback(() => {
+    setPgnText('')
+    setPgnError(null)
+    setPgnModal('import')
+  }, [])
+  const flip = useCallback(() => setManualOrientation((o) => (o === 'white' ? 'black' : 'white')), [])
+  const startReview = useCallback(() => {
+    go('review')
     if (!reviewResult && review.state.status !== 'running') review.start()
-  }, [reviewResult, review])
+  }, [go, reviewResult, review])
+
+  /** Reviews a game from another mode: it is copied onto the board, so the review and the move list match. */
+  const reviewState = useCallback(
+    (state: GameApi['game'], orientation?: 'white' | 'black') => {
+      free.load(state)
+      if (orientation) setManualOrientation(orientation)
+      go('review')
+      void review.start(state)
+    },
+    [free, go, review],
+  )
+
+  const reviewPlayedGame = useCallback(() => reviewState(games.play.game, play.orientation), [reviewState, games.play.game, play.orientation])
 
   const reviewSavedGame = useCallback(
     (saved: SavedGame) => {
       try {
-        const state = importPgn(saved.pgn)
-        playRaw.exit()
-        gameApi.load(state)
-        setManualOrientation(saved.userColor === 'w' ? 'white' : 'black')
-        setTab('review')
-        review.start(state)
+        reviewState(importPgn(saved.pgn), saved.userColor === 'w' ? 'white' : 'black')
       } catch (e) {
         notify({ kind: 'warn', title: 'Could not load that game', body: e instanceof Error ? e.message : String(e) })
       }
     },
-    [playRaw, gameApi, review, notify],
+    [reviewState, notify],
   )
 
-  /** Loads a chess.com game from its URL onto the board and starts the review. Throws a readable Error. */
+  /** Loads a chess.com game from its URL and reviews it. Throws a readable Error. */
   const loadChessCom = useCallback(
     async (url: string) => {
       const ref = parseChessComUrl(url)
       if (!ref) throw new Error('That does not look like a chess.com game link.')
       const loaded = gameFromChessComJson(await fetchChessComJson(ref.kind, ref.id))
-      trainerRaw.exit()
-      puzzlesRaw.exit()
-      srsRaw.exit()
-      playRaw.exit()
-      gameApi.load(loaded.state)
-      setTab('review')
+      reviewState(loaded.state)
       notify({ kind: 'good', title: `Loaded ${loaded.white} vs ${loaded.black} (${loaded.result})`, body: loaded.termination || undefined }, 4000)
-      review.start(loaded.state)
     },
-    [trainerRaw, puzzlesRaw, srsRaw, playRaw, gameApi, review, notify],
+    [reviewState, notify],
   )
-
-  function openExport() {
-    setPgnModal('export')
-  }
-
-  function openImport() {
-    setPgnText('')
-    setPgnError(null)
-    setPgnModal('import')
-  }
 
   function doImport() {
     if (parseChessComUrl(pgnText)) {
@@ -310,8 +318,9 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     }
     try {
       const state = importPgn(pgnText)
-      gameApi.load(state)
+      free.load(state)
       setPgnModal(null)
+      go('board')
       notify({ kind: 'good', title: `Loaded ${state.moves.length} moves from PGN` }, 3000)
     } catch (e) {
       setPgnError(e instanceof Error ? e.message : String(e))
@@ -328,297 +337,300 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
     URL.revokeObjectURL(url)
   }
 
-  const statusText = useMemo(() => {
-    if (gameOver) return gameOver.title
-    return `${turn === 'w' ? 'White' : 'Black'} to move`
-  }, [gameOver, turn])
+  // Keyboard: Ctrl+K opens the palette; Left and Right step through the game on the board.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setPaletteOpen((o) => !o)
+        return
+      }
+      const target = e.target as HTMLElement | null
+      if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return
+      if (paletteOpen || pgnModal || setupMode || !session) return
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      if (target?.closest('[role="menu"], .nav')) return
+      e.preventDefault()
+      if (session.canBrowse) session.step(e.key === 'ArrowLeft' ? -1 : 1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [paletteOpen, pgnModal, setupMode, session])
 
-  const engineBadge =
-    engine.status === 'loading' ? 'Engine loading…' : engine.status === 'error' ? 'Engine unavailable' : 'Engine ready'
-
-  // What the board shows from the engine, only when analysis is switched on.
-  const bestLine = settings.showAnalysis ? engine.analysis?.lines[0] : undefined
-  const evalScore = settings.showAnalysis ? (engine.analysis?.lines[0]?.score ?? engine.getCached(fen)?.score ?? null) : null
-  const arrows: Arrow[] = useMemo(() => {
-    const best = bestLine?.pv[0]
-    if (!best || gameOver) return []
-    return [{ startSquare: best.slice(0, 2), endSquare: best.slice(2, 4), color: 'rgba(91, 156, 255, 0.8)' }]
-  }, [bestLine, gameOver])
-
-  if (setupMode) {
-    return (
-      <div className="app">
-        <Header status="Position setup" engine={engineBadge} />
-        <main className="layout">
-          <SetupPanel
-            initialFen={fen}
-            orientation={orientation}
-            onStart={(newFen) => {
-              gameApi.reset(newFen)
-              setSetupMode(false)
-              notify({ kind: 'good', title: 'Playing from your position' }, 2500)
-            }}
-            onCancel={() => setSetupMode(false)}
-          />
-          <aside className="panel">
-            <div className="panel-body">
-              <h3>Position setup</h3>
-              <p className="muted small-text">
-                Build any position you want to practise, then press <b>Play from this position</b>. The app checks
-                that the position is legal before you start.
-              </p>
-            </div>
-          </aside>
-        </main>
-      </div>
-    )
+  const engineState = {
+    state: engine.status === 'loading' ? ('loading' as const) : engine.status === 'error' ? ('error' as const) : ('ready' as const),
+    text: engine.status === 'loading' ? 'Engine loading' : engine.status === 'error' ? 'Engine unavailable' : 'Stockfish 19 ready',
   }
+
+  const commands: Command[] = useMemo(() => {
+    const list: Command[] = []
+    for (const group of NAV)
+      for (const id of group.routes)
+        list.push({
+          id: `go-${id}`,
+          group: 'Go to',
+          label: ROUTES[id].label,
+          description: ROUTES[id].description,
+          keywords: ROUTES[id].keywords,
+          icon: ROUTE_ICONS[id],
+          run: () => go(id),
+        })
+    list.push(
+      { id: 'play-new', group: 'Play', label: 'New game against the computer', keywords: 'bot ai', icon: ROUTE_ICONS.play, run: () => go('play') },
+      { id: 'new-game', group: 'Board', label: 'New game', icon: Plus, run: () => { free.reset(); go('board') } },
+      { id: 'undo', group: 'Board', label: 'Undo move', icon: Undo2, enabled: game.ply > 0, run: free.undoMove },
+      { id: 'redo', group: 'Board', label: 'Redo move', icon: Redo2, enabled: !isAtEnd(game), run: free.redoMove },
+      { id: 'flip', group: 'Board', label: 'Flip board', icon: ArrowUpDown, enabled: !settings.autoFlip, run: flip },
+      {
+        id: 'analysis',
+        group: 'Board',
+        label: settings.showAnalysis ? 'Hide engine analysis' : 'Show engine analysis',
+        keywords: 'eval bar best move lines',
+        icon: Eye,
+        run: () => update({ showAnalysis: !settings.showAnalysis }),
+      },
+      { id: 'review-game', group: 'Board', label: 'Review this game', icon: ROUTE_ICONS.review, enabled: game.moves.length > 0, run: startReview },
+      { id: 'import', group: 'Board', label: 'Import PGN', icon: FileUp, run: openImport },
+      { id: 'export', group: 'Board', label: 'Export PGN', icon: Download, enabled: game.moves.length > 0, run: openExport },
+      { id: 'copy-fen', group: 'Board', label: 'Copy FEN', icon: ClipboardCopy, run: () => void copyText(fen, 'FEN') },
+      { id: 'setup', group: 'Board', label: 'Set up a position', keywords: 'fen editor', icon: Crosshair, run: () => { go('board'); setSetupMode(true) } },
+      { id: 'due', group: 'Train', label: `Review ${srs.dueCount} due card${srs.dueCount === 1 ? '' : 's'}`, icon: ROUTE_ICONS.cards, enabled: srs.dueCount > 0, run: () => { go('cards'); srs.startReview() } },
+    )
+    for (const s of PUZZLE_SETS)
+      list.push({ id: `puzzles-${s.id}`, group: 'Puzzles', label: `${s.label} puzzles`, keywords: 'tactics', icon: ROUTE_ICONS.puzzles, run: () => { go('puzzles'); puzzles.start(s.id) } })
+    for (const o of openings)
+      list.push({ id: `opening-${o.id}`, group: 'Openings', label: o.name, description: o.summary, keywords: 'opening line', icon: BookOpen, run: () => { go('openings'); trainer.select(o) } })
+    return list
+  }, [go, free, game, settings, update, flip, startReview, openImport, openExport, copyText, fen, srs, puzzles, trainer])
+
+  const title = setupMode && route === 'board' ? 'Set up a position' : ROUTES[route].label
+  const sub = topBarSub(route, { tips, gameOver, turn, trainer, puzzles, srs, play, settings })
 
   return (
     <div className="app">
-      <Header
-        status={statusText}
-        engine={engineBadge}
-        opening={tips.opening ? `${tips.opening.eco} ${tips.opening.name}` : undefined}
+      <Sidebar
+        route={route}
+        onNavigate={go}
+        counts={{ cards: srs.dueCount }}
+        engine={engineState}
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
       />
-      <UpdateBanner updates={updates} />
-      <main className="layout">
-        <section className="left">
-          <div className="board-row">
-            {settings.showAnalysis && <EvalBar score={evalScore} orientation={orientation} />}
-            <Board
-              fen={preview?.fen ?? fen}
-              orientation={orientation}
-              interactive={preview ? false : playActive ? playLive && play.userToMove && !play.thinking : srsActive ? !!srs.userToMove : puzzleActive ? puzzles.solverToMove : trainerActive ? trainer.mode === 'drill' && trainer.userToMove : !gameOver}
-              showLegalDots={settings.legalDots}
-              lastMove={preview ? (preview.lastMove ?? null) : lastMove ? { from: lastMove.from, to: lastMove.to } : null}
-              arrows={preview ? (preview.arrows ?? []) : playLive ? [] : srsActive ? srs.arrows : puzzleActive ? puzzles.arrows : trainerActive ? trainer.arrows : arrows}
-              extraSquareStyles={srsActive ? srs.squareStyles : puzzleActive ? puzzles.squareStyles : trainerActive ? trainer.hintSquareStyles : reviewBadge}
-              shakeKey={trainer.shakeKey + puzzles.shakeKey}
-              onMove={playActive ? play.onBoardMove : srsActive ? srs.onBoardMove : puzzleActive ? puzzles.onBoardMove : trainerActive ? trainer.onBoardMove : gameApi.move}
+      <div className="main">
+        <TopBar title={title} sub={sub} onOpenPalette={() => setPaletteOpen(true)} onOpenMenu={() => setMenuOpen(true)} />
+        <UpdateBanner updates={updates} />
+        <main className="canvas">
+          {route === 'progress' ? (
+            <ProgressPanel
+              puzzleStats={puzzles.stats}
+              drillStats={trainer.stats}
+              srsDue={srs.dueCount}
+              srsTotal={srs.cards.length}
+              historyVersion={review.historyVersion}
+              onNavigate={go}
             />
-          </div>
-
-          {preview ? (
-            <div className="controls">
-              <span className="small-text">🎓 {preview.label}</span>
-              <span className="spacer" />
-              <button className="btn small" onClick={() => setBoardPreview(null)}>
-                Back to the game
-              </button>
-            </div>
-          ) : playActive ? (
-            <div className="controls">
-              <span className="small-text muted">
-                Playing {play.userColor === 'w' ? 'White' : 'Black'} vs {play.level.name}
-                {play.thinking ? ' · computer is thinking…' : ''}
-              </span>
-              <span className="spacer" />
-              <button className="btn small" onClick={play.takeBack} disabled={!play.canTakeBack}>
-                ↶ Take back
-              </button>
-              <button className="btn small" onClick={play.exit}>
-                Exit game
-              </button>
-            </div>
-          ) : srsActive ? (
-            <div className="controls">
-              <span className="small-text muted">Mistake review: find the best move</span>
-              <span className="spacer" />
-              <button className="btn small" onClick={srs.exit}>
-                Exit review
-              </button>
-            </div>
-          ) : puzzleActive ? (
-            <div className="controls">
-              <span className="small-text muted">Puzzle: {puzzles.puzzle?.motif.replace(/_/g, ' ')} · {puzzles.puzzle?.side === 'w' ? 'White' : 'Black'} to move</span>
-              <span className="spacer" />
-              <button className="btn small" onClick={puzzles.exit}>
-                Exit puzzles
-              </button>
-            </div>
-          ) : trainerActive ? (
-            <div className="controls">
-              <span className="small-text muted">
-                Opening trainer: {trainer.opening?.name}
-                {trainer.mode === 'drill' ? ' (drill)' : trainer.mode === 'auto' ? ' (autoplay)' : ' (step through)'}
-              </span>
-              <span className="spacer" />
-              <button
-                className="btn small"
-                onClick={() => setManualOrientation((o) => (o === 'white' ? 'black' : 'white'))}
-                disabled
-                title="The board faces the side you are studying"
-              >
-                ⇅ Flip
-              </button>
-              <button className="btn small" onClick={trainer.exit}>
-                Exit trainer
-              </button>
-            </div>
-          ) : (
-          <div className="controls">
-            <button className="btn" onClick={gameApi.undoMove} disabled={game.ply === 0} title="Undo (Left arrow)">
-              ← Undo
-            </button>
-            <button className="btn" onClick={gameApi.redoMove} disabled={isAtEnd(game)} title="Redo (Right arrow)">
-              Redo →
-            </button>
-            <button className="btn" onClick={() => gameApi.reset()} disabled={game.moves.length === 0 && game.ply === 0}>
-              Reset
-            </button>
-            <button
-              className="btn"
-              onClick={() => setManualOrientation((o) => (o === 'white' ? 'black' : 'white'))}
-              disabled={settings.autoFlip}
-              title={settings.autoFlip ? 'Turn off auto flip to flip manually' : 'Flip the board'}
-            >
-              ⇅ Flip
-            </button>
-            <label className="toggle">
-              <input type="checkbox" checked={settings.autoFlip} onChange={(e) => update({ autoFlip: e.target.checked })} />
-              Auto flip
-            </label>
-            <label className="toggle">
-              <input type="checkbox" checked={settings.legalDots} onChange={(e) => update({ legalDots: e.target.checked })} />
-              Move dots
-            </label>
-            <span className="spacer" />
-            <button className="btn small" onClick={openImport}>
-              Import PGN
-            </button>
-            <button className="btn small" onClick={openExport}>
-              Export PGN
-            </button>
-            <button className="btn small" onClick={() => copyText(fen, 'FEN')}>
-              Copy FEN
-            </button>
-            <button className="btn small" onClick={() => setSetupMode(true)}>
-              Set up position
-            </button>
-            <button
-              className="btn small"
-              onClick={savePositionCard}
-              disabled={!engine.getCached(fen)?.bestMove}
-              title="Add this position to your review deck; the engine's best move becomes the answer"
-            >
-              Save this position
-            </button>
-          </div>
-          )}
-
-          {playActive && play.result && (
-            <div className="banner">
-              <div>
-                <strong>{play.result.title}</strong>
-                <div className="small-text muted">{play.result.detail}</div>
-              </div>
-              <div className="actions">
-                <button className="btn primary" onClick={openReview}>
-                  Review game
-                </button>
-                <button className="btn" onClick={() => play.start(play.userColor, play.level.id, play.liveCoach)}>
-                  Play again
-                </button>
-              </div>
-            </div>
-          )}
-
-          {gameOver && !trainerActive && !puzzleActive && !srsActive && !playActive && (
-            <div className="banner">
-              <div>
-                <strong>{gameOver.title}</strong>
-                <div className="small-text muted">{gameOver.detail}</div>
-              </div>
-              <div className="actions">
-                <button className="btn primary" onClick={openReview}>
-                  Review game
-                </button>
-                <button className="btn" onClick={() => gameApi.reset()}>
-                  New game
-                </button>
-              </div>
-            </div>
-          )}
-
-          <MoveList
-            game={game}
-            onJump={(ply) => {
-              if (playActive) {
-                if (play.result) gameApi.jump(ply)
-              } else if (srsActive) {
-                if (!srs.userToMove) gameApi.jump(ply)
-              } else if (puzzleActive) {
-                if (puzzles.status !== 'playing') gameApi.jump(ply)
-              } else if (!trainerActive) gameApi.jump(ply)
-              else if (trainer.mode !== 'drill') trainer.goTo(ply)
-            }}
-            markerFor={
-              reviewResult
-                ? (i) => {
-                    const m = reviewResult.moves[i]
-                    if (!m || m.classification.cls === 'good' || m.classification.cls === 'great') return null
-                    return <span className={`cls cls-${m.classification.cls}`}>{CLASS_SYMBOL[m.classification.cls]}</span>
-                  }
-                : undefined
-            }
-          />
-        </section>
-
-        <aside className="panel">
-          <nav className="tabs">
-            {TABS.map((t) => (
-              <button key={t.id} className={'tab' + (tab === t.id ? ' active' : '')} onClick={() => setTab(t.id)}>
-                {t.label}
-                {t.id === 'cards' && srs.dueCount > 0 && <span className="badge">{srs.dueCount}</span>}
-              </button>
-            ))}
-          </nav>
-          <div className="panel-body">
-            {tab === 'analysis' && (
-              <AnalysisPanel fen={fen} onPlayLine={playLine}>
-                <TipsSection tips={tips} gameOver={!!gameOver} onTakeBack={(i) => gameApi.jump(i)} onSaveCard={saveAlertCard} />
-              </AnalysisPanel>
-            )}
-            {tab === 'play' && (
-              <PlayPanel play={play} engineReady={engine.status === 'ready'} onReview={openReview} onReviewSaved={reviewSavedGame} />
-            )}
-            {tab === 'openings' && <OpeningsPanel trainer={trainer} puzzles={puzzles} />}
-            {tab === 'puzzles' && <PuzzlesPanel puzzles={puzzles} />}
-            {tab === 'cards' && <SrsPanel srs={srs} notify={(title, kind) => notify({ kind: kind ?? 'info', title }, 4000)} />}
-            {tab === 'review' && (
-              <ReviewPanel
-                review={review}
-                game={game}
-                onJump={gameApi.jump}
-                onExport={openExport}
-                engineReady={engine.status === 'ready'}
-                preview={boardPreview}
-                onPreview={setBoardPreview}
-                onLoadChessCom={loadChessCom}
-                onAddCards={(result) => {
-                  const n = srs.addFromReview(game, result)
-                  notify({ kind: n ? 'good' : 'info', title: n ? `Added ${n} card${n === 1 ? '' : 's'} to your review deck` : 'Those positions are already in your deck' }, 4000)
+          ) : route === 'settings' ? (
+            <SettingsPanel engineInfo={engine.buildInfo} updates={updates} />
+          ) : setupMode && route === 'board' ? (
+            <div className="workspace">
+              <SetupPanel
+                initialFen={fen}
+                orientation={freeOrientation}
+                onStart={(newFen) => {
+                  free.reset(newFen)
+                  setSetupMode(false)
+                  notify({ kind: 'good', title: 'Playing from your position' }, 2500)
                 }}
+                onCancel={() => setSetupMode(false)}
               />
-            )}
-            {tab === 'progress' && (
-              <ProgressPanel
-                puzzleStats={puzzles.stats}
-                drillStats={trainer.stats}
-                srsDue={srs.dueCount}
-                srsTotal={srs.cards.length}
-                historyVersion={review.historyVersion}
-              />
-            )}
-            {tab === 'settings' && <SettingsPanel engineInfo={engine.buildInfo} updates={updates} />}
-          </div>
-        </aside>
-      </main>
+              <aside className="side-panel">
+                <div className="panel">
+                  <div className="panel-body">
+                    <h2>Build a position</h2>
+                    <p className="muted" style={{ marginTop: 8 }}>
+                      Drag pieces from the trays onto the board, or paste a FEN. The app checks that the position is legal
+                      before you start, then you play on from there with the engine watching.
+                    </p>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          ) : session ? (
+            <div className="workspace">
+              <section className="board-col" aria-label="Board">
+                <div className="board-row">
+                  {route === 'board' && settings.showAnalysis && <EvalBar score={evalScore} orientation={session.orientation} />}
+                  <Board
+                    fen={preview?.fen ?? session.game.fen}
+                    orientation={session.orientation}
+                    interactive={preview ? false : session.interactive}
+                    showLegalDots={settings.legalDots}
+                    lastMove={preview ? (preview.lastMove ?? null) : lastMoveOf(session.game)}
+                    arrows={preview ? (preview.arrows ?? []) : session.arrows}
+                    extraSquareStyles={session.id === 'free' && route === 'review' ? reviewBadge : session.squareStyles}
+                    shakeKey={session.shakeKey}
+                    onMove={session.onMove}
+                  />
+                </div>
+
+                {preview ? (
+                  <div className="controls">
+                    <span className="muted">{preview.label}</span>
+                    <span className="spacer" />
+                    <button className="btn small" onClick={() => setBoardPreview(null)}>
+                      <ArrowLeft /> Back to the game
+                    </button>
+                  </div>
+                ) : session.id === 'play' ? (
+                  <PlayStrip play={play} />
+                ) : session.id === 'free' ? (
+                  <div className="controls">
+                    <button className="btn small icon" onClick={free.undoMove} disabled={game.ply === 0} aria-label="Undo" title="Undo (Left arrow)">
+                      <Undo2 />
+                    </button>
+                    <button className="btn small icon" onClick={free.redoMove} disabled={isAtEnd(game)} aria-label="Redo" title="Redo (Right arrow)">
+                      <Redo2 />
+                    </button>
+                    <button
+                      className="btn small icon"
+                      onClick={flip}
+                      disabled={settings.autoFlip}
+                      aria-label="Flip board"
+                      title={settings.autoFlip ? 'Turn off auto flip in Settings to flip by hand' : 'Flip the board'}
+                    >
+                      <ArrowUpDown />
+                    </button>
+                    <button className="btn small" onClick={() => free.reset()} disabled={game.moves.length === 0 && game.ply === 0} aria-label="New game">
+                      <Plus /> <span className="btn-label">New game</span>
+                    </button>
+                    <span className="spacer" />
+                    {route === 'board' && (
+                      <button className="btn small" onClick={startReview} disabled={game.moves.length === 0 || engine.status !== 'ready'}>
+                        Review game
+                      </button>
+                    )}
+                    <MenuButton
+                      label="More game actions"
+                      items={[
+                        { label: 'Import PGN', icon: FileUp, onSelect: openImport },
+                        { label: 'Export PGN', icon: Download, onSelect: openExport, disabled: game.moves.length === 0 },
+                        { label: 'Copy FEN', icon: ClipboardCopy, onSelect: () => void copyText(fen, 'FEN') },
+                        { label: 'Set up a position', icon: Crosshair, onSelect: () => setSetupMode(true) },
+                        {
+                          label: 'Save position as a card',
+                          icon: Save,
+                          onSelect: savePositionCard,
+                          disabled: !engine.getCached(fen)?.bestMove,
+                          title: "Add this position to your cards; the engine's best move becomes the answer",
+                        },
+                      ]}
+                    >
+                      <Ellipsis /> <span className="btn-label">More</span>
+                    </MenuButton>
+                  </div>
+                ) : (
+                  <SessionStrip session={session} trainer={trainer} puzzles={puzzles} />
+                )}
+
+              </section>
+
+              <aside className="side-panel" aria-label={ROUTES[route].label}>
+                <div className="panel">
+                  {(session.id === 'free' || session.game.game.moves.length > 0) && (
+                  <div className="moves-section">
+                    {session.id === 'play' && play.result && (
+                      <div className="banner">
+                        <div>
+                          <strong>{play.result.title}</strong>
+                          <div className="muted">{play.result.detail}</div>
+                        </div>
+                        <div className="actions">
+                          <button className="btn small primary" onClick={reviewPlayedGame}>
+                            Review game
+                          </button>
+                          <button className="btn small" onClick={() => play.start(play.userColor, play.level.id, play.liveCoach)}>
+                            Play again
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {session.id === 'free' && gameOver && route === 'board' && (
+                      <div className="banner">
+                        <div>
+                          <strong>{gameOver.title}</strong>
+                          <div className="muted">{gameOver.detail}</div>
+                        </div>
+                        <div className="actions">
+                          <button className="btn small primary" onClick={startReview}>
+                            Review game
+                          </button>
+                          <button className="btn small" onClick={() => free.reset()}>
+                            New game
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    <MoveList
+                      game={session.game.game}
+                      onJump={(ply) => session.canBrowse && session.jump(ply)}
+                      markerFor={
+                        session.id === 'free' && reviewResult
+                          ? (i) => {
+                              const m = reviewResult.moves[i]
+                              if (!m || !isProblem(m.classification.cls)) return null
+                              return <span className={`cls cls-${m.classification.cls}`}>{CLASS_SYMBOL[m.classification.cls]}</span>
+                            }
+                          : undefined
+                      }
+                    />
+                  </div>
+                  )}
+                  <div className="panel-body">
+                    {route === 'board' && (
+                      <AnalysisPanel fen={fen} onPlayLine={playLine}>
+                        <TipsSection tips={tips} gameOver={!!gameOver} onTakeBack={(i) => free.jump(i)} onSaveCard={saveAlertCard} />
+                      </AnalysisPanel>
+                    )}
+                    {route === 'play' && (
+                      <PlayPanel play={play} engineReady={engine.status === 'ready'} onReview={reviewPlayedGame} onReviewSaved={reviewSavedGame} />
+                    )}
+                    {route === 'review' && (
+                      <ReviewPanel
+                        review={review}
+                        game={game}
+                        onJump={free.jump}
+                        onExport={openExport}
+                        engineReady={engine.status === 'ready'}
+                        preview={boardPreview}
+                        onPreview={setBoardPreview}
+                        onLoadChessCom={loadChessCom}
+                        onAddCards={(result) => {
+                          const n = srs.addFromReview(game, result)
+                          notify(
+                            { kind: n ? 'good' : 'info', title: n ? `Added ${n} card${n === 1 ? '' : 's'} to your mistake cards` : 'Those positions are already in your cards' },
+                            4000,
+                          )
+                        }}
+                      />
+                    )}
+                    {route === 'openings' && <OpeningsPanel trainer={trainerForPanel} puzzles={puzzles} />}
+                    {route === 'puzzles' && <PuzzlesPanel puzzles={puzzles} />}
+                    {route === 'cards' && <SrsPanel srs={srs} notify={(t, kind) => notify({ kind: kind ?? 'info', title: t }, 4000)} />}
+                  </div>
+                </div>
+              </aside>
+            </div>
+          ) : null}
+        </main>
+      </div>
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} commands={commands} />
 
       <Modal open={pgnModal === 'import'} title="Import PGN" onClose={() => setPgnModal(null)}>
-        <p className="small-text muted">Paste a PGN or a chess.com game link below. The moves will replace the current game.</p>
-        <textarea value={pgnText} onChange={(e) => setPgnText(e.target.value)} placeholder="1. e4 e5 2. Nf3 ..." />
+        <p className="muted" style={{ marginBottom: 10 }}>
+          Paste a PGN or a chess.com game link. The moves replace the game on the board.
+        </p>
+        <textarea value={pgnText} onChange={(e) => setPgnText(e.target.value)} placeholder="1. e4 e5 2. Nf3 Nc6 3. Bb5" aria-label="PGN text" />
         {pgnError && <div className="error-text">{pgnError}</div>}
         <div className="modal-actions">
           <button className="btn" onClick={() => setPgnModal(null)}>
@@ -631,16 +643,16 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
       </Modal>
 
       <Modal open={pgnModal === 'export'} title="Export PGN" onClose={() => setPgnModal(null)}>
-        <label className="toggle small-text" style={{ marginBottom: 8 }} title={reviewResult ? '' : 'Run a game review first to get classifications'}>
+        <label className="toggle" style={{ marginBottom: 10 }} title={reviewResult ? '' : 'Run a game review first to get move grades'}>
           <input
             type="checkbox"
             checked={includeClassifications && !!reviewResult}
             disabled={!reviewResult}
             onChange={(e) => setIncludeClassifications(e.target.checked)}
           />
-          Include move classifications as comments{reviewResult ? '' : ' (review the game first)'}
+          Include move grades as comments{reviewResult ? '' : ' (review the game first)'}
         </label>
-        <textarea value={exportText} readOnly />
+        <textarea value={exportText} readOnly aria-label="PGN text" />
         <div className="modal-actions">
           <button className="btn" onClick={() => setPgnModal(null)}>
             Close
@@ -648,7 +660,7 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
           <button className="btn" onClick={downloadPgn}>
             Download .pgn
           </button>
-          <button className="btn primary" onClick={() => copyText(exportText, 'PGN')}>
+          <button className="btn primary" onClick={() => void copyText(exportText, 'PGN')}>
             Copy
           </button>
         </div>
@@ -659,16 +671,96 @@ function Workspace({ gameApi }: { gameApi: GameApi }) {
   )
 }
 
-function Header({ status, engine, opening }: { status: string; engine: string; opening?: string }) {
+function lastMoveOf(game: GameApi) {
+  const m = lastMoveAt(game.game)
+  return m ? { from: m.from, to: m.to } : null
+}
+
+/** The line under the screen title: the state of whatever the screen is about. */
+function topBarSub(
+  route: RouteId,
+  ctx: {
+    tips: ReturnType<typeof useTips>
+    gameOver: GameApi['gameOver']
+    turn: 'w' | 'b'
+    trainer: TrainerApi
+    puzzles: PuzzlesApi
+    srs: SrsApi
+    play: PlayApi
+    settings: { openingDetection: boolean }
+  },
+): string | undefined {
+  const { tips, gameOver, turn, trainer, puzzles, srs, play, settings } = ctx
+  switch (route) {
+    case 'play':
+      return play.active ? `You play ${play.userColor === 'w' ? 'White' : 'Black'} against ${play.level.name}` : undefined
+    case 'board':
+    case 'review': {
+      const status = gameOver ? gameOver.title : `${turn === 'w' ? 'White' : 'Black'} to move`
+      const opening = settings.openingDetection && tips.opening ? `${tips.opening.eco} ${tips.opening.name}` : null
+      return opening ? `${status} · ${opening}` : status
+    }
+    case 'openings':
+      return trainer.opening ? `${trainer.opening.name}${trainer.line && trainer.line.key !== 'main' ? ` · ${trainer.line.name}` : ''}` : `${openings.length} openings`
+    case 'puzzles':
+      return puzzles.active && puzzles.puzzle ? `${puzzles.puzzle.side === 'w' ? 'White' : 'Black'} to move` : undefined
+    case 'cards':
+      return `${srs.dueCount} due of ${srs.cards.length}`
+    default:
+      return undefined
+  }
+}
+
+/** The control row under the board during a game against the computer. */
+function PlayStrip({ play }: { play: PlayApi }) {
+  if (!play.active) return <div className="controls"><span className="muted">Choose a level and a colour to start a game</span></div>
   return (
-    <header className="app-header">
-      <h1>♞ Mirror Gambit</h1>
-      {opening && <span className="muted small-text">{opening}</span>}
-      <div className="status">
-        <span>{status}</span>
-        <span>·</span>
-        <span>{engine}</span>
-      </div>
-    </header>
+    <div className="controls">
+      <span className="muted">{play.result ? 'Game over' : play.thinking ? 'The computer is thinking' : play.userToMove ? 'Your move' : 'Waiting for the computer'}</span>
+      <span className="spacer" />
+      {!play.result && (
+        <>
+          <button className="btn small" onClick={play.takeBack} disabled={!play.canTakeBack}>
+            <RotateCcw /> Take back
+          </button>
+          <button className="btn small" onClick={play.resign}>
+            <Flag /> Resign
+          </button>
+        </>
+      )}
+      <button className="btn small" onClick={play.exit}>
+        Exit game
+      </button>
+    </div>
+  )
+}
+
+/** The control row under the board when a practice mode owns it. */
+function SessionStrip({ session, trainer, puzzles }: { session: BoardSession; trainer: TrainerApi; puzzles: PuzzlesApi }) {
+  let text = ''
+  if (session.id === 'trainer') {
+    text = trainer.opening
+      ? `${trainer.mode === 'drill' ? 'Drill' : trainer.mode === 'auto' ? 'Autoplay' : 'Step through'} · move ${trainer.index} of ${trainer.moves.length}`
+      : 'Pick an opening to start'
+  } else if (session.id === 'puzzle') {
+    text = puzzles.puzzle ? `${motifGuide(puzzles.puzzle.motif).title} · ${puzzles.puzzle.solution.length > 1 ? `${Math.ceil(puzzles.puzzle.solution.length / 2)} moves to find` : 'one move to find'}` : 'Pick a set to start'
+  } else if (session.id === 'srs') {
+    text = session.interactive ? 'Find the best move' : 'Your mistake cards'
+  }
+  return (
+    <div className="controls">
+      <span className="muted">{text}</span>
+      <span className="spacer" />
+      {session.canBrowse && (
+        <>
+          <button className="btn small icon" onClick={() => session.step(-1)} aria-label="Previous move">
+            <Undo2 />
+          </button>
+          <button className="btn small icon" onClick={() => session.step(1)} aria-label="Next move">
+            <Redo2 />
+          </button>
+        </>
+      )}
+    </div>
   )
 }

@@ -78,9 +78,9 @@ export const CLASS_LABEL: Record<MoveClass, string> = {
 }
 
 export const CLASS_SYMBOL: Record<MoveClass, string> = {
-  best: '★',
+  best: '★', // taste-skill-ignore: annotation glyph; the UI shows grade dots and only renders the problem symbols
   great: '!',
-  good: '✓',
+  good: '✓', // taste-skill-ignore
   inaccuracy: '?!',
   mistake: '?',
   blunder: '??',

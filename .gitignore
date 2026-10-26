@@ -33,3 +33,6 @@ public/stockfish/
 # Local dev server log
 vite-dev.log
 
+
+# design inspector screenshots
+.taste-skill/

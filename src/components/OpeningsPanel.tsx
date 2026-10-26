@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from 'lucide-react'
 import type { PuzzlesApi } from '../hooks/usePuzzles'
 import type { TrainerApi } from '../hooks/useTrainer'
 import { GROUP_LABELS, openings, type Opening, type OpeningGroup } from '../openings'
@@ -35,7 +36,7 @@ function OpeningList({ trainer }: { trainer: TrainerApi }) {
                     <span className="rate" title="Drill success rate">
                       {rate}
                     </span>
-                    <span className="small-text muted">{o.side === 'white' ? '♔' : '♚'}</span>
+                    <span className={'side-chip ' + o.side} title={o.side === 'white' ? 'You play White' : 'You play Black'} />
                   </button>
                 )
               })}
@@ -58,7 +59,7 @@ function OpeningDetail({ trainer, opening, puzzles }: { trainer: TrainerApi; ope
     <div>
       <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
         <button className="btn small" onClick={trainer.exit}>
-          ← All openings
+          <ChevronLeft /> All openings
         </button>
         <span className="small-text muted">You play {opening.side === 'white' ? 'White' : 'Black'}</span>
       </div>
@@ -107,15 +108,15 @@ function OpeningDetail({ trainer, opening, puzzles }: { trainer: TrainerApi; ope
         <>
           <div className="row" style={{ marginBottom: 8 }}>
             <button className="btn" onClick={trainer.prev} disabled={index === 0}>
-              ◀ Prev
+              <ChevronLeft /> Previous
             </button>
             {atEnd && trapPuzzles.length > 0 ? (
               <button className="btn primary" onClick={startTraps}>
-                Traps step ▶
+                Traps <ChevronRight />
               </button>
             ) : (
               <button className="btn primary" onClick={trainer.next} disabled={atEnd}>
-                Next ▶
+                Next <ChevronRight />
               </button>
             )}
             <span className="small-text muted">
@@ -131,15 +132,15 @@ function OpeningDetail({ trainer, opening, puzzles }: { trainer: TrainerApi; ope
           <div className="row" style={{ marginBottom: 8 }}>
             {trainer.playing ? (
               <button className="btn primary" onClick={trainer.pause}>
-                ⏸ Pause
+                <Pause /> Pause
               </button>
             ) : (
               <button className="btn primary" onClick={trainer.play}>
-                ▶ {atEnd ? 'Replay' : index === 0 ? 'Play' : 'Resume'}
+                <Play /> {atEnd ? 'Replay' : index === 0 ? 'Play' : 'Resume'}
               </button>
             )}
             <button className="btn" onClick={() => trainer.goTo(0)} disabled={index === 0}>
-              ↺ Restart
+              <RotateCcw /> Restart
             </button>
             <span className="small-text muted">
               Move {index} of {moves.length}
@@ -168,16 +169,16 @@ function OpeningDetail({ trainer, opening, puzzles }: { trainer: TrainerApi; ope
               className={'btn small' + (trainer.drillSide === 'white' ? ' active' : '')}
               onClick={() => trainer.startDrill('white')}
             >
-              ♔ White
+              <span className="side-chip white" /> White
             </button>
             <button
               className={'btn small' + (trainer.drillSide === 'black' ? ' active' : '')}
               onClick={() => trainer.startDrill('black')}
             >
-              ♚ Black
+              <span className="side-chip black" /> Black
             </button>
             <button className="btn small" onClick={() => trainer.startDrill(trainer.drillSide)}>
-              ↺ Restart
+              <RotateCcw /> Restart
             </button>
           </div>
           <div className="small-text muted" style={{ marginBottom: 8 }}>

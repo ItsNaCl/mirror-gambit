@@ -204,11 +204,10 @@ export function EvalGraph({ evals, ply, onJump }: { evals: Score[]; ply: number;
 
   return (
     <svg className="eval-graph" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" onClick={handleClick} role="img" aria-label="Evaluation graph">
-      <rect x={0} y={0} width={W} height={H / 2} fill="#f0f0f0" opacity={0.12} />
-      <path d={area} fill="#ffffff" opacity={0.75} />
-      <path d={path} fill="none" stroke="#5b9cff" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
-      <line x1={0} x2={W} y1={H / 2} y2={H / 2} stroke="#5b9cff" strokeWidth={0.5} opacity={0.6} />
-      <line x1={cx} x2={cx} y1={0} y2={H} stroke="#ef6b6b" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      <path d={area} fill="#f4f4f5" opacity={0.85} />
+      <path d={path} fill="none" stroke="#f4f4f5" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      <line x1={0} x2={W} y1={H / 2} y2={H / 2} stroke="var(--control)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <line x1={cx} x2={cx} y1={0} y2={H} stroke="var(--accent)" strokeWidth={2} vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }
