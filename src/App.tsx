@@ -27,6 +27,7 @@ import { MenuButton } from './components/MenuButton'
 import { Modal } from './components/Modal'
 import { MoveList } from './components/MoveList'
 import { OpeningsPanel } from './components/OpeningsPanel'
+import { PositionNotes } from './components/PositionNotes'
 import { PlayPanel } from './components/PlayPanel'
 import { ProgressPanel } from './components/ProgressPanel'
 import { PuzzlesPanel } from './components/PuzzlesPanel'
@@ -55,6 +56,7 @@ import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
 import type { SavedGame } from './lib/play/savedGames'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
+import { explainMove } from './lib/coach/explain'
 import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
 import { freeSession, playSession, puzzleSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
@@ -163,6 +165,25 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     [notify, free],
   )
   const tips = useTips(free, { enabled: sessionId === 'free' && !setupMode, notify: onMoveAlert })
+
+  // The coach's reasons for the last alerted move: the engine's best move before it and its
+  // best reply after it, read from the evaluation cache the alert itself was built from.
+  const alert = tips.alert
+  const lastExplanation = useMemo(() => {
+    if (!alert) return null
+    const move = game.moves[alert.moveIndex]
+    if (!move) return null
+    const beforeFen = fenAt(game, alert.moveIndex)
+    return explainMove({
+      beforeFen,
+      uci: move.from + move.to + (move.promotion ?? ''),
+      classification: alert.classification,
+      bestUci: engine.getCached(beforeFen)?.bestMove ?? null,
+      replyUci: engine.getCached(move.after)?.bestMove ?? null,
+    })
+    // evalVersion: the cache fills in after the alert, so recompute when it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alert, game, engine.evalVersion])
 
   // What the board shows from the engine, only when analysis is switched on.
   const bestLine = settings.showAnalysis ? engine.analysis?.lines[0] : undefined
@@ -585,9 +606,18 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                   )}
                   <div className="panel-body">
                     {route === 'board' && (
-                      <AnalysisPanel fen={fen} onPlayLine={playLine}>
-                        <TipsSection tips={tips} gameOver={!!gameOver} onTakeBack={(i) => free.jump(i)} onSaveCard={saveAlertCard} />
-                      </AnalysisPanel>
+                      <>
+                        <PositionNotes fen={fen} score={evalScore} />
+                        <AnalysisPanel fen={fen} onPlayLine={playLine}>
+                          <TipsSection
+                            tips={tips}
+                            gameOver={!!gameOver}
+                            onTakeBack={(i) => free.jump(i)}
+                            onSaveCard={saveAlertCard}
+                            explanation={lastExplanation}
+                          />
+                        </AnalysisPanel>
+                      </>
                     )}
                     {route === 'play' && (
                       <PlayPanel play={play} engineReady={engine.status === 'ready'} onReview={reviewPlayedGame} onReviewSaved={reviewSavedGame} />

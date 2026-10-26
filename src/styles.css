@@ -2065,3 +2065,26 @@ abbr.gloss {
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* ---------- live coach ---------- */
+.position-notes {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.verdict {
+  color: var(--text);
+  font-weight: 500;
+}
+
+ul.notes {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+ul.notes li::marker {
+  color: var(--faint);
+}

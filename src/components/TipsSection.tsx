@@ -1,6 +1,7 @@
 import type { TipsState } from '../hooks/useTips'
 import { useSettings } from '../hooks/useSettings'
 import { CLASS_LABEL, isProblem } from '../lib/analysis/classify'
+import type { MoveExplanation } from '../lib/coach/explain'
 
 export interface TipsSectionProps {
   tips: TipsState
@@ -9,9 +10,11 @@ export interface TipsSectionProps {
   onTakeBack: (moveIndex: number) => void
   /** Save the position before the alerted move as a review card. */
   onSaveCard?: (moveIndex: number) => void
+  /** The coach's reasons for the last move, when the engine has seen enough to give them. */
+  explanation?: MoveExplanation | null
 }
 
-export function TipsSection({ tips, gameOver, onTakeBack, onSaveCard }: TipsSectionProps) {
+export function TipsSection({ tips, gameOver, onTakeBack, onSaveCard, explanation }: TipsSectionProps) {
   const { settings } = useSettings()
   const { opening, alert, principle, hint, hintLevel, requestHint, checkingMove } = tips
   const problem = alert ? isProblem(alert.classification.cls) : false
@@ -32,7 +35,15 @@ export function TipsSection({ tips, gameOver, onTakeBack, onSaveCard }: TipsSect
           <h3>
             {CLASS_LABEL[alert.classification.cls]}: {alert.san}
           </h3>
-          <p className={'small-text' + (problem ? '' : ' muted')}>{alert.text || 'That was the engine’s top choice.'}</p>
+          {explanation && explanation.points.length > 0 ? (
+            <ul className="notes">
+              {explanation.points.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className={'small-text' + (problem ? '' : ' muted')}>{alert.text || 'That was the engine’s top choice.'}</p>
+          )}
           {problem && (
             <div className="row" style={{ marginTop: 6 }}>
               {alert.classification.cls === 'blunder' && (

@@ -2,6 +2,7 @@ import { Chess, type Color, type Move, type PieceSymbol, type Square } from 'che
 import { CLASS_LABEL, isProblem } from '../analysis/classify'
 import { formatScore } from '../engine/uci'
 import type { ReviewedMove } from '../review/review'
+import { positionalReasons } from './explain'
 
 /**
  * The review coach: turns the engine's lines into plain-language lessons.
@@ -196,6 +197,8 @@ export function coachNote(move: ReviewedMove, fenBefore: string, fenAfter: strin
       if (m) body.push(`The danger: after ${allowed.steps[0]?.san}, ${m.charAt(0).toLowerCase()}${m.slice(1)}`)
     }
   }
+  // The reasons a line cannot show: structure, pins and king cover.
+  body.push(...positionalReasons(fenBefore, move.san, !playedBest && isProblem(cls)))
   body.push(`Evaluation after the move: ${formatScore(move.evalAfter)}.`)
   return { headline, body, better, allowed }
 }

@@ -76,15 +76,11 @@ export function AnalysisPanel({ fen, onPlayLine, children }: AnalysisPanelProps)
           </p>
         </>
       ) : (
-        <div className="card">
-          <h3>Analysis is hidden</h3>
-          <p className="small-text muted">
-            Work out your own move first. The engine keeps running in the background so blunder alerts and hints still
-            work. Flip the switch above whenever you want to see what it thinks.
-          </p>
-        </div>
+        <p className="small-text muted">
+          The engine's lines stay hidden so you work out your own move first. Move alerts, hints and the notes above still
+          use it.
+        </p>
       )}
-
     </div>
   )
 }
