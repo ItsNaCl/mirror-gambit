@@ -16,6 +16,10 @@ files:
   - build/icon.ico
   - package.json
   - "!node_modules/**"
+  # The desktop app is always cross-origin isolated (app:// sends COOP/COEP), so it
+  # always loads the multi-threaded engine; the single-threaded fallbacks (another
+  # 97 MB) are only for browsers without isolation.
+  - "!dist/stockfish/*-single.*"
 
 # Keep the engine files as plain files on disk (not inside app.asar) so the
 # worker and the 100 MB wasm are streamed straight from the filesystem.
