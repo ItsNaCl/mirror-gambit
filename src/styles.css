@@ -2259,3 +2259,26 @@ ul.notes li::marker {
     display: none;
   }
 }
+
+/* ---------- repertoire ---------- */
+.rep-row {
+  flex-wrap: nowrap;
+  min-height: 40px;
+  padding: 4px 0;
+}
+
+.rep-row + .rep-row {
+  border-top: 1px solid var(--line);
+}
+
+.gap-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.due-count {
+  color: var(--text);
+  font-weight: 600;
+}

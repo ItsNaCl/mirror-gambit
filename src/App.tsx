@@ -31,6 +31,7 @@ import { Modal } from './components/Modal'
 import { MoveList } from './components/MoveList'
 import { OpeningsPanel } from './components/OpeningsPanel'
 import { PositionNotes } from './components/PositionNotes'
+import { RepertoirePanel } from './components/RepertoirePanel'
 import { PlayPanel } from './components/PlayPanel'
 import { ProgressPanel } from './components/ProgressPanel'
 import { MyGamesPanel } from './components/MyGamesPanel'
@@ -54,6 +55,7 @@ import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useUpdates } from './hooks/useUpdates'
 import { useClaudeCoach } from './hooks/useClaudeCoach'
 import { useLibrary } from './hooks/useLibrary'
+import { useRepertoire } from './hooks/useRepertoire'
 import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
@@ -67,7 +69,7 @@ import { explainMove } from './lib/coach/explain'
 import { buildCoachContext, type CoachMode } from './lib/coach/claudeContext'
 import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
-import { freeSession, playSession, puzzleSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
+import { freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
 
 
 export default function App() {
@@ -76,10 +78,11 @@ export default function App() {
   // overwrites the game on the board.
   const free = useGame()
   const playGame = useGame()
+  const repGame = useGame()
   const trainerGame = useGame()
   const puzzleGame = useGame()
   const srsGame = useGame()
-  const games: Record<SessionId, GameApi> = { free, play: playGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame }
+  const games: Record<SessionId, GameApi> = { free, play: playGame, rep: repGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame }
   // Play and puzzles need the engine, so they live inside the provider; the workspace reports
   // which board is on screen and the engine follows it.
   const [engineFen, setEngineFen] = useState(free.fen)
@@ -108,6 +111,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const updates = useUpdates()
   const claude = useClaudeCoach(settings.claudeMonthlyCap)
   const library = useLibrary(engine)
+  const repertoire = useRepertoire(games.rep, engine, library.games)
   // The engine runs one search at a time, so the batch review only runs while My games is open.
   const stopBatch = library.cancel
   const batchRunning = !!library.progress
@@ -259,6 +263,8 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         return freeSession(free, { orientation: freeOrientation, arrows: route === 'board' ? analysisArrows : [] })
       case 'play':
         return playSession(play, games.play)
+      case 'rep':
+        return repertoireSession(repertoire, games.rep)
       case 'trainer':
         return trainerSession(trainer, games.trainer)
       case 'puzzle':
@@ -268,7 +274,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
       default:
         return null
     }
-  }, [sessionId, free, freeOrientation, route, analysisArrows, play, trainer, puzzles, srs, games])
+  }, [sessionId, free, freeOrientation, route, analysisArrows, play, repertoire, trainer, puzzles, srs, games])
 
   const boardFen = session?.game.fen ?? fen
   useEffect(() => onBoardFen(boardFen), [boardFen, onBoardFen])
@@ -744,6 +750,15 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                         }}
                       />
                     )}
+                    {route === 'repertoire' && (
+                      <RepertoirePanel
+                        rep={repertoire}
+                        fen={games.rep.fen}
+                        boardSans={game.moves.map((m) => m.san)}
+                        onBack={games.rep.undoMove}
+                        onStart={() => games.rep.reset()}
+                      />
+                    )}
                     {route === 'openings' && <OpeningsPanel trainer={trainerForPanel} puzzles={puzzles} />}
                     {route === 'puzzles' && <PuzzlesPanel puzzles={puzzles} />}
                     {route === 'cards' && <SrsPanel srs={srs} notify={(t, kind) => notify({ kind: kind ?? 'info', title: t }, 4000)} />}
@@ -865,6 +880,8 @@ function SessionStrip({ session, trainer, puzzles }: { session: BoardSession; tr
       : 'Pick an opening to start'
   } else if (session.id === 'puzzle') {
     text = puzzles.puzzle ? `${motifGuide(puzzles.puzzle.motif).title} · ${puzzles.puzzle.solution.length > 1 ? `${Math.ceil(puzzles.puzzle.solution.length / 2)} moves to find` : 'one move to find'}` : 'Pick a set to start'
+  } else if (session.id === 'rep') {
+    text = session.interactive ? (session.canBrowse ? 'Every move you play is added' : 'Your move') : 'Repertoire'
   } else if (session.id === 'srs') {
     text = session.interactive ? 'Find the best move' : 'Your mistake cards'
   }

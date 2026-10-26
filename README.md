@@ -38,6 +38,15 @@ Other commands:
 
 ## What is in the app
 
+**Repertoire (2.3).** Build your own opening repertoire for White or Black and drill it with spaced
+repetition, in the style of Chessreps. Every move you play on the board in Build is added (your side keeps
+one answer per position; transpositions are recognised), or add whole lines from a built-in opening, the
+game on the Board, or a pasted PGN. Drill plays the opponent's replies, weighted towards the ones your own
+opponents play in your imported games, and asks for your move with the same unlimited tries and hints as
+puzzles; each of your moves comes back on the same schedule as the mistake cards. Gaps lists the replies you
+have no answer for, from your games and, on request, from Stockfish.
+
+
 **My games (2.2).** Import your recent games from Lichess or chess.com by username (desktop app; the browser
 build can import from Lichess only, because chess.com's firewall turns away the dev proxy). A quick review
 (depth 12) goes through them one by one and builds your profile: where your mistakes happen (opening,

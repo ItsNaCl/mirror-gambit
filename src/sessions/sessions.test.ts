@@ -19,6 +19,7 @@ describe('sessionFor', () => {
 
   it('maps practice screens to their own sessions and pages without a board to none', () => {
     expect(sessionFor('play', noPuzzle)).toBe('play')
+    expect(sessionFor('repertoire', noPuzzle)).toBe('rep')
     expect(sessionFor('puzzles', noPuzzle)).toBe('puzzle')
     expect(sessionFor('cards', noPuzzle)).toBe('srs')
     expect(sessionFor('progress', noPuzzle)).toBeNull()

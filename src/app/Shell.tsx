@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { BookOpen, ChartLine, ChevronDown, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
+import { BookOpen, ChartLine, ChevronDown, GitBranch, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
 import { NAV, ROUTES, type RouteId } from './routes'
 
 export const ROUTE_ICONS: Record<RouteId, LucideIcon> = {
   play: Swords,
   games: Library,
+  repertoire: GitBranch,
   board: Grid3x3,
   review: ChartLine,
   openings: BookOpen,
