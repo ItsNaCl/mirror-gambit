@@ -149,7 +149,14 @@ export function SettingsPanel({ engineInfo, updates, claude }: { engineInfo?: st
         />
       </Section>
 
-      <Section title="Updates" about="New versions come from the project's GitHub releases and install when you restart.">
+      <Section
+        title="Updates"
+        about={
+          updates.web
+            ? 'New versions come from the project website and install when you reload.'
+            : "New versions come from the project's GitHub releases and install when you restart."
+        }
+      >
         <div className="setting-row">
           <div style={{ flex: 1 }}>
             <UpdateSettings updates={updates} />

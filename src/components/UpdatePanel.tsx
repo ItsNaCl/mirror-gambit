@@ -18,9 +18,9 @@ export function UpdateBanner({ updates }: { updates: UpdatesApi }) {
       {s.state === 'downloading' && <span>Downloading {s.version}… {s.percent ?? 0}%</span>}
       {s.state === 'downloaded' && (
         <>
-          <span>Version {s.version} is ready. Your progress is kept.</span>
+          <span>{s.version ? `Version ${s.version} is ready.` : 'A new version is ready.'} Your progress is kept.</span>
           <button className="btn small primary" onClick={updates.install}>
-            Restart and update
+            {updates.web ? 'Reload and update' : 'Restart and update'}
           </button>
         </>
       )}
@@ -30,15 +30,29 @@ export function UpdateBanner({ updates }: { updates: UpdatesApi }) {
 
 /** The "Updates" section of the Settings tab. */
 export function UpdateSettings({ updates }: { updates: UpdatesApi }) {
+  const install = updates.installable && (
+    <div className="setting-row">
+      <div>
+        <div className="label">Install as an app</div>
+        <div className="desc">Adds Mirror Gambit to your home screen or app list. It then opens in its own window and works offline.</div>
+      </div>
+      <button className="btn small primary" onClick={updates.installApp}>
+        Install
+      </button>
+    </div>
+  )
   if (!updates.available) {
     return (
-      <p className="small-text muted">
-        This is the browser version. The Windows app can update itself; download it from the{' '}
-        <a href={RELEASES_URL} target="_blank" rel="noreferrer">
-          releases page
-        </a>
-        .
-      </p>
+      <div>
+        {install}
+        <p className="small-text muted">
+          This is the browser version. The Windows app can update itself; download it from the{' '}
+          <a href={RELEASES_URL} target="_blank" rel="noreferrer">
+            releases page
+          </a>
+          .
+        </p>
+      </div>
     )
   }
   const s = updates.status
@@ -46,10 +60,11 @@ export function UpdateSettings({ updates }: { updates: UpdatesApi }) {
   const busy = s.state === 'checking' || s.state === 'downloading'
   return (
     <div>
+      {install}
       <div className="setting-row">
         <div>
           <div className="label">Version {s.current}</div>
-          <div className="desc">{describe(s)}</div>
+          <div className="desc">{describe(s, updates.web)}</div>
         </div>
         {s.state === 'available' ? (
           <button className="btn small primary" onClick={updates.download}>
@@ -57,7 +72,7 @@ export function UpdateSettings({ updates }: { updates: UpdatesApi }) {
           </button>
         ) : s.state === 'downloaded' ? (
           <button className="btn small primary" onClick={updates.install}>
-            Restart and update
+            {updates.web ? 'Reload and update' : 'Restart and update'}
           </button>
         ) : s.state === 'unsupported' ? (
           <a className="btn small" href={RELEASES_URL} target="_blank" rel="noreferrer">
@@ -78,10 +93,10 @@ export function UpdateSettings({ updates }: { updates: UpdatesApi }) {
   )
 }
 
-function describe(s: NonNullable<UpdatesApi['status']>): string {
+function describe(s: NonNullable<UpdatesApi['status']>, web: boolean): string {
   switch (s.state) {
     case 'checking':
-      return 'Looking for a newer version on GitHub…'
+      return web ? 'Looking for a newer version…' : 'Looking for a newer version on GitHub…'
     case 'available':
       return `Version ${s.version} is available.`
     case 'not-available':
@@ -89,12 +104,15 @@ function describe(s: NonNullable<UpdatesApi['status']>): string {
     case 'downloading':
       return `Downloading ${s.version}… ${s.percent ?? 0}%`
     case 'downloaded':
+      if (web) return `${s.version ? `Version ${s.version}` : 'A new version'} is downloaded. Reload to finish; your progress is kept.`
       return `Version ${s.version} is downloaded. Restart to finish; your progress is kept.`
     case 'error':
       return `Update check failed: ${s.message ?? 'unknown error'}`
     case 'unsupported':
       return s.message ?? 'Updates are not available in this version.'
     default:
-      return 'The app checks GitHub for new versions automatically.'
+      return web
+        ? 'New versions download by themselves while you are online. The app works offline.'
+        : 'The app checks GitHub for new versions automatically.'
   }
 }

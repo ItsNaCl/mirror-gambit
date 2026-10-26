@@ -6,8 +6,19 @@ background for analysis, blunder alerts, hints, an opening trainer
 with plain-language commentary, tactical puzzles, spaced-repetition review of your
 own mistakes, a full game review and a progress page.
 
-Everything runs in your browser. There is no backend and no account, and the app
-works offline once the dependencies are installed.
+Everything runs on your device. There is no backend and no account, and the app
+works offline.
+
+## On Android (and other phones)
+
+Open **https://itsnacl.github.io/mirror-gambit/** in Chrome and choose **Install app**
+(in the menu, or Settings → Updates → Install in Mirror Gambit). It then has its own icon,
+opens in its own window and works offline: the first visit stores about 6 MB on the phone,
+including the 2 MB engine that phones use by default. New versions download by themselves
+when you are online; the app shows **Reload and update** when one is ready.
+
+Progress is kept on the phone and is not shared with the Windows app. Game import works
+from Lichess and chess.com; chess.com game links and the Claude coach need the Windows app.
 
 ## Install and run
 
@@ -57,8 +68,8 @@ puzzles; each of your moves comes back on the same schedule as the mistake cards
 have no answer for, from your games and, on request, from Stockfish.
 
 
-**My games (2.2).** Import your recent games from Lichess or chess.com by username (desktop app; the browser
-build can import from Lichess only, because chess.com's firewall turns away the dev proxy). A quick review
+**My games (2.2).** Import your recent games from Lichess or chess.com by username (in the desktop app and
+the browser, including on a phone). A quick review
 (depth 12) goes through them one by one and builds your profile: where your mistakes happen (opening,
 middlegame, endgame), what goes wrong most often (missed forks, pieces left hanging, walking into pins,
 weakened king cover and more, each with the moves where it happened), and your score and accuracy with

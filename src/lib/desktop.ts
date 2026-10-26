@@ -102,7 +102,7 @@ export async function fetchChessComJson(kind: 'live' | 'daily', id: string): Pro
 
 /**
  * A player's most recent standard games from Lichess or chess.com, through the desktop shell or
- * the Vite dev proxy. Throws a readable Error.
+ * straight from the browser (both APIs allow cross-origin requests). Throws a readable Error.
  */
 export async function fetchRecentGames(source: GameSource, username: string, max: number): Promise<LibraryGame[]> {
   if (!USERNAME_RE.test(username)) throw new Error('That does not look like a username.')
@@ -110,28 +110,30 @@ export async function fetchRecentGames(source: GameSource, username: string, max
   let raw: string
   try {
     if (bridge) raw = await bridge.games.fetch(source, username, max)
-    else if (import.meta.env.DEV) raw = await fetchViaDevProxy(source, username, max)
-    else throw new Error('Importing games by username works in the desktop app.')
+    else raw = await fetchFromBrowser(source, username, max)
   } catch (e) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) throw new Error('You are offline. Importing games needs an internet connection.')
     throw new Error(cleanError(e))
   }
   return source === 'lichess' ? parseLichessNdjson(raw, username) : parseChessComGames(JSON.parse(raw) as unknown[], username)
 }
 
-async function fetchViaDevProxy(source: GameSource, username: string, max: number): Promise<string> {
+async function fetchFromBrowser(source: GameSource, username: string, max: number): Promise<string> {
   if (source === 'lichess') {
-    const res = await fetch(`/lichess/api/games/user/${username}?max=${max}&moves=true&opening=true`, { headers: { Accept: 'application/x-ndjson' } })
+    const res = await fetch(`https://lichess.org/api/games/user/${username}?max=${max}&moves=true&opening=true`, { headers: { Accept: 'application/x-ndjson' } })
     if (!res.ok) throw new Error(res.status === 404 ? 'Lichess has no player with that name.' : `Lichess answered ${res.status}.`)
     return res.text()
   }
-  const list = await fetch(`/chesscomapi/pub/player/${username.toLowerCase()}/games/archives`)
-  // chess.com's firewall turns away the dev proxy's requests; the desktop app gets through.
-  if (list.status === 403) throw new Error('chess.com blocks imports from the browser build. Use the desktop app, or import from Lichess.')
+  const list = await fetch(`https://api.chess.com/pub/player/${username.toLowerCase()}/games/archives`)
+  if (list.status === 403) throw new Error('chess.com turned the request away. Try again later, or import from Lichess.')
   if (!list.ok) throw new Error(list.status === 404 ? 'chess.com has no player with that name.' : `chess.com answered ${list.status}.`)
-  const months = (((await list.json()) as { archives?: string[] }).archives ?? []).reverse().slice(0, 6)
+  const months = (((await list.json()) as { archives?: string[] }).archives ?? [])
+    .filter((u) => u.startsWith('https://api.chess.com/'))
+    .reverse()
+    .slice(0, 6)
   const games: unknown[] = []
   for (const url of months) {
-    const res = await fetch(url.replace('https://api.chess.com', '/chesscomapi'))
+    const res = await fetch(url)
     if (!res.ok) continue
     games.unshift(...((((await res.json()) as { games?: unknown[] }).games) ?? []))
     if (games.length >= max) break

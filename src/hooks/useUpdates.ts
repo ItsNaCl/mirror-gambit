@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import { desktop, type UpdateStatus } from '../lib/desktop'
+import { applyWebUpdate, canInstall, checkWebUpdate, onWebChange, promptInstall, webAppEnabled, webStatus } from '../lib/pwa'
 
-/** Update status from the desktop shell; null in the browser build. */
+/** Update status from the desktop shell, or from the service worker in the installed web app; null otherwise. */
 export function useUpdates() {
   const bridge = desktop()
+  const web = !bridge && webAppEnabled()
   const [status, setStatus] = useState<UpdateStatus | null>(null)
+  const webState = useSyncExternalStore(onWebChange, webStatus)
+  const installable = useSyncExternalStore(onWebChange, canInstall)
 
   useEffect(() => {
     if (!bridge) return
@@ -21,11 +25,23 @@ export function useUpdates() {
 
   const check = useCallback(() => {
     if (bridge) void bridge.updates.check().then(setStatus)
-  }, [bridge])
+    else if (web) void checkWebUpdate()
+  }, [bridge, web])
   const download = useCallback(() => void bridge?.updates.download(), [bridge])
-  const install = useCallback(() => void bridge?.updates.install(), [bridge])
+  const install = useCallback(() => (bridge ? void bridge.updates.install() : applyWebUpdate()), [bridge])
+  const installApp = useCallback(() => void promptInstall(), [])
 
-  return { available: !!bridge, status, check, download, install }
+  return {
+    available: !!bridge || web,
+    web,
+    status: web ? webState : status,
+    check,
+    download,
+    install,
+    /** The browser offers to install the web app as an app (Android Chrome, desktop Chrome and Edge). */
+    installable,
+    installApp,
+  }
 }
 
 export type UpdatesApi = ReturnType<typeof useUpdates>

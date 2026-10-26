@@ -6,6 +6,7 @@ import '@fontsource/inter/600.css'
 import '@fontsource/jetbrains-mono/400.css'
 import App from './App'
 import { SettingsProvider } from './hooks/useSettings'
+import { registerWebApp } from './lib/pwa'
 import { hydrate } from './lib/store/kv'
 import './styles.css'
 
@@ -21,4 +22,5 @@ hydrate()
         </SettingsProvider>
       </StrictMode>,
     )
+    void registerWebApp()
   })

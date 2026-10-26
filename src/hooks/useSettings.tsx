@@ -23,6 +23,9 @@ export interface Settings {
   claudeMonthlyCap: 0 | 1 | 5 | 10 | 20
 }
 
+// Phones and tablets start on the 2 MB engine: the full one is a 95 MB download and needs more memory.
+const touchDevice = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches
+
 export const DEFAULT_SETTINGS: Settings = {
   showAnalysis: false,
   depth: 18,
@@ -32,7 +35,7 @@ export const DEFAULT_SETTINGS: Settings = {
   openingDetection: true,
   principleReminders: true,
   hints: true,
-  engineBuild: 'full',
+  engineBuild: touchDevice ? 'lite' : 'full',
   threads: 0,
   autoHintAfter: 0,
   overlayControl: false,
