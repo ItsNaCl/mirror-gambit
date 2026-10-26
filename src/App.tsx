@@ -3,8 +3,6 @@ import type { Arrow } from 'react-chessboard'
 import {
   ArrowLeft,
   ArrowUpDown,
-  Flag,
-  RotateCcw,
   BookOpen,
   ClipboardCopy,
   Crosshair,
@@ -718,16 +716,6 @@ function PlayStrip({ play }: { play: PlayApi }) {
     <div className="controls">
       <span className="muted">{play.result ? 'Game over' : play.thinking ? 'The computer is thinking' : play.userToMove ? 'Your move' : 'Waiting for the computer'}</span>
       <span className="spacer" />
-      {!play.result && (
-        <>
-          <button className="btn small" onClick={play.takeBack} disabled={!play.canTakeBack}>
-            <RotateCcw /> Take back
-          </button>
-          <button className="btn small" onClick={play.resign}>
-            <Flag /> Resign
-          </button>
-        </>
-      )}
       <button className="btn small" onClick={play.exit}>
         Exit game
       </button>

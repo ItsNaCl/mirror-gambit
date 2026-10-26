@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { RotateCcw, X } from 'lucide-react'
+import { Flag, RotateCcw, X } from 'lucide-react'
 import type { PlayApi } from '../hooks/usePlay'
 import { levelById, PLAY_LEVELS } from '../lib/play/levels'
 import { outcomeFor, recordByLevel, type SavedGame } from '../lib/play/savedGames'
@@ -169,7 +169,7 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
           </div>
         </div>
       )}
-      <div className="row">
+      <div className="row" style={{ marginBottom: 12 }}>
         <button className="btn" onClick={play.takeBack} disabled={!play.canTakeBack} title="Undo your last move and the computer's reply">
           <RotateCcw /> Take back
         </button>
@@ -184,7 +184,7 @@ function PlayInGame({ play, onReview }: { play: PlayApi; onReview: () => void })
           </>
         ) : (
           <button className="btn" onClick={() => setConfirmResign(true)}>
-            🏳 Resign
+            <Flag /> Resign
           </button>
         )}
       </div>
