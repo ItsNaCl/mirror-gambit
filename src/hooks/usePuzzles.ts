@@ -67,7 +67,7 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
   const { evaluate, setLiveSuspended } = engine
   const engineReady = engine.status === 'ready'
   const attempt = useAttempt()
-  const [choice, setChoice] = useState<PuzzleChoice | 'custom' | null>(null)
+  const [choice, setChoice] = useState<PuzzleChoice | 'custom' | 'rated' | null>(null)
   const [customList, setCustomList] = useState<Puzzle[]>([])
   const [label, setLabel] = useState<string>('')
   const [queue, setQueue] = useState<Puzzle[]>([])
@@ -149,6 +149,17 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
     [show],
   )
 
+  /** One rated puzzle; the rated hook (useRatedPuzzles) chooses the next one. */
+  const startRated = useCallback(
+    (p: Puzzle) => {
+      setChoice('rated')
+      setLabel('Rated')
+      setQueue([])
+      show(p)
+    },
+    [show],
+  )
+
   /** Puzzles whose latest result was a fail, for one set or for all sets. */
   const failedPuzzles = useCallback(
     (c: PuzzleChoice): Puzzle[] => {
@@ -167,7 +178,7 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
   )
 
   const next = useCallback(() => {
-    if (!choice) return
+    if (!choice || choice === 'rated') return
     if (queue.length === 0) {
       const list = choice === 'custom' ? customList : shuffle(puzzlesFor(choice))
       setQueue(list.slice(1))
@@ -387,6 +398,7 @@ export function usePuzzles(gameApi: GameApi, engine: EngineContextValue) {
     remaining: queue.length,
     start,
     startList,
+    startRated,
     failedPuzzles,
     retryFailed,
     next,

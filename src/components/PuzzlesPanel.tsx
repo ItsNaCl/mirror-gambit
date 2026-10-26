@@ -1,12 +1,50 @@
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 import type { PuzzlesApi } from '../hooks/usePuzzles'
+import type { RatedPuzzlesApi } from '../hooks/useRatedPuzzles'
+import { PROVISIONAL_GAMES, THEME_FILTERS, type ThemeFilter } from '../lib/puzzles/rated'
 import { OUTCOME_LABEL, solvedCount } from '../lib/practice/practice'
 import { loadPuzzles, motifGuide, PUZZLE_SETS, puzzlesFor, type PuzzleChoice } from '../lib/puzzles/puzzles'
 import { HintBar } from './HintBar'
 
-export function PuzzlesPanel({ puzzles }: { puzzles: PuzzlesApi }) {
-  if (!puzzles.active) return <PuzzleSetList puzzles={puzzles} />
-  return <PuzzlePlay puzzles={puzzles} />
+export function PuzzlesPanel({ puzzles, rated }: { puzzles: PuzzlesApi; rated?: RatedPuzzlesApi }) {
+  if (!puzzles.active)
+    return (
+      <>
+        {rated && <RatedCard rated={rated} />}
+        <PuzzleSetList puzzles={puzzles} />
+      </>
+    )
+  return <PuzzlePlay puzzles={puzzles} rated={rated?.active ? rated : undefined} />
+}
+
+/** Your puzzle rating and the way into rated puzzles. */
+function RatedCard({ rated }: { rated: RatedPuzzlesApi }) {
+  return (
+    <section className="rated-card">
+      <div className="panel-head" style={{ marginBottom: 4 }}>
+        <h2>Rated puzzles</h2>
+        <span className="rated-number tabular">{rated.rating}</span>
+      </div>
+      <p className="muted small-text" style={{ marginBottom: 12 }}>
+        {rated.provisional
+          ? `Provisional: ${rated.games} of ${PROVISIONAL_GAMES} puzzles played. It settles as you play.`
+          : `${rated.games} rated puzzles played.`}{' '}
+        Puzzles come from real Lichess games, picked near your rating. A clean solve raises it, retries or hints count half, giving up lowers it.
+      </p>
+      <div className="import-row">
+        <select value={rated.theme} onChange={(e) => rated.setTheme(e.target.value as ThemeFilter)} aria-label="Theme" style={{ flex: 1 }}>
+          {THEME_FILTERS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+        <button className="btn primary" onClick={() => void rated.next()} disabled={rated.loading}>
+          {rated.loading ? 'Loading' : 'Start'}
+        </button>
+      </div>
+    </section>
+  )
 }
 
 function PuzzleSetList({ puzzles }: { puzzles: PuzzlesApi }) {
@@ -56,10 +94,15 @@ function PuzzleSetList({ puzzles }: { puzzles: PuzzlesApi }) {
   )
 }
 
-export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
+export function PuzzlePlay({ puzzles, rated }: { puzzles: PuzzlesApi; rated?: RatedPuzzlesApi }) {
   const p = puzzles.puzzle!
   const guide = motifGuide(p.motif)
-  const setLabel = puzzles.choice === 'custom' ? puzzles.label : (PUZZLE_SETS.find((s) => s.id === p.set)?.label ?? p.set)
+  const setLabel = rated
+    ? `Rated ${p.difficulty}`
+    : puzzles.choice === 'custom'
+      ? puzzles.label
+      : (PUZZLE_SETS.find((s) => s.id === p.set)?.label ?? p.set)
+  const onNext = rated ? () => void rated.next() : puzzles.next
   const stats = puzzles.stats[p.set]
   const done = puzzles.status === 'solved' || puzzles.status === 'revealing'
   const sideName = p.side === 'w' ? 'White' : 'Black'
@@ -126,17 +169,28 @@ export function PuzzlePlay({ puzzles }: { puzzles: PuzzlesApi }) {
           </>
         )}
 
+        {done && rated && rated.lastDelta !== null && (
+          <p className="rated-delta">
+            Your rating: <strong className="tabular">{rated.rating}</strong>{' '}
+            <span className={rated.lastDelta > 0 ? 'cls-good' : rated.lastDelta < 0 ? 'cls-blunder' : 'muted'}>
+              ({rated.lastDelta > 0 ? '+' : ''}
+              {rated.lastDelta})
+            </span>
+          </p>
+        )}
         {done && (
           <div className="row" style={{ marginTop: 8 }}>
-            <button className="btn primary" onClick={puzzles.next}>
+            <button className="btn primary" onClick={onNext}>
               Next puzzle <ChevronRight />
             </button>
-            <button className="btn" onClick={puzzles.retry} title="Play the same puzzle again from the start">
-              <RotateCcw /> Retry puzzle
-            </button>
+            {!rated && (
+              <button className="btn" onClick={puzzles.retry} title="Play the same puzzle again from the start">
+                <RotateCcw /> Retry puzzle
+              </button>
+            )}
           </div>
         )}
-        {puzzles.status === 'playing' && (
+        {puzzles.status === 'playing' && !rated && (
           <div className="row" style={{ marginTop: 8 }}>
             <button className="btn small" onClick={puzzles.next} title="Move on without recording a result">
               Skip

@@ -26,6 +26,8 @@ export type PuzzleSetId =
   | 'opening-moves'
   | 'opening-traps'
   | 'longer'
+  /** Rated puzzles (src/lib/puzzles/rated.ts); not one of the browsable sets. */
+  | 'rated'
 
 export type PuzzleChoice = PuzzleSetId | 'mixed'
 
@@ -62,7 +64,10 @@ export interface DroppedPuzzle {
   reason: string
 }
 
-export const PUZZLE_SETS: { id: PuzzleSetId; label: string; motifKey: string }[] = [
+/** The sets listed on the Puzzles screen (rated puzzles are served separately). */
+export type BrowsableSetId = Exclude<PuzzleSetId, 'rated'>
+
+export const PUZZLE_SETS: { id: BrowsableSetId; label: string; motifKey: string }[] = [
   { id: 'forks', label: 'Forks', motifKey: 'fork' },
   { id: 'pins', label: 'Pins', motifKey: 'pin' },
   { id: 'skewers', label: 'Skewers', motifKey: 'skewer' },
@@ -74,7 +79,7 @@ export const PUZZLE_SETS: { id: PuzzleSetId; label: string; motifKey: string }[]
   { id: 'longer', label: 'Longer puzzles', motifKey: 'tactics' },
 ]
 
-const RAW: Record<PuzzleSetId, RawPuzzle[]> = {
+const RAW: Record<BrowsableSetId, RawPuzzle[]> = {
   forks: forks as RawPuzzle[],
   pins: pins as RawPuzzle[],
   skewers: skewers as RawPuzzle[],

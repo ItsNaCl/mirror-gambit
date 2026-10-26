@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
+export type RouteId = 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -22,6 +22,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
   review: { id: 'review', label: 'Game review', description: 'Every move of this game rated, with the turning points', keywords: 'analyse accuracy mistakes blunders' },
   games: { id: 'games', label: 'My games', description: 'Import your Lichess or chess.com games and see where your points go', keywords: 'import lichess chesscom profile weaknesses stats' },
   repertoire: { id: 'repertoire', label: 'Repertoire', description: 'Your own opening moves, drilled with spaced repetition', keywords: 'chessreps opening tree drill srs prepare' },
+  courses: { id: 'courses', label: 'Courses', description: 'Lessons on endgames and strategy, with positions to solve', keywords: 'learn lesson endgame strategy lucena philidor opposition outpost' },
   openings: { id: 'openings', label: 'Openings', description: 'Learn opening lines move by move and drill them', keywords: 'trainer drill repertoire lines traps' },
   puzzles: { id: 'puzzles', label: 'Puzzles', description: 'Forks, pins, mates and endgames', keywords: 'tactics' },
   cards: { id: 'cards', label: 'Mistake cards', description: 'Your own mistakes, brought back on a schedule', keywords: 'srs spaced repetition review deck' },
@@ -32,6 +33,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
 export const NAV: NavGroup[] = [
   { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
   { label: 'Train', routes: ['repertoire', 'puzzles', 'openings', 'cards'] },
+  { label: 'Learn', routes: ['courses'] },
   { label: 'You', routes: ['progress', 'settings'] },
 ]
 

@@ -4,13 +4,14 @@ import type { Arrow } from 'react-chessboard'
 import type { RouteId } from '../app/routes'
 import type { GameApi } from '../hooks/useGame'
 import type { PlayApi } from '../hooks/usePlay'
+import type { CourseApi } from '../hooks/useCourse'
 import type { RepertoireApi } from '../hooks/useRepertoire'
 import type { PuzzlesApi } from '../hooks/usePuzzles'
 import type { SrsApi } from '../hooks/useSrs'
 import type { TrainerApi } from '../hooks/useTrainer'
 import type { PromotionPiece } from '../lib/chess/game'
 
-export type SessionId = 'free' | 'play' | 'rep' | 'trainer' | 'puzzle' | 'srs'
+export type SessionId = 'free' | 'play' | 'rep' | 'course' | 'trainer' | 'puzzle' | 'srs'
 
 /**
  * Everything the board needs from whichever mode owns it. Exactly one session drives the
@@ -39,6 +40,8 @@ export function sessionFor(route: RouteId, puzzles: Pick<PuzzlesApi, 'active' | 
       return 'play'
     case 'repertoire':
       return 'rep'
+    case 'courses':
+      return 'course'
     case 'board':
     case 'review':
       return 'free'
@@ -122,6 +125,23 @@ export function repertoireSession(rep: RepertoireApi, game: GameApi): BoardSessi
     onMove: rep.onBuildMove,
     canBrowse: true,
     ...browse(game),
+  }
+}
+
+export function courseSession(course: CourseApi, game: GameApi): BoardSession {
+  return {
+    id: 'course',
+    game,
+    orientation: course.orientation,
+    interactive: course.userToMove,
+    arrows: course.arrows,
+    squareStyles: course.squareStyles,
+    shakeKey: course.shakeKey,
+    onMove: course.onBoardMove,
+    // Steps are moved through with Back and Next, not the move list.
+    canBrowse: false,
+    jump: noop,
+    step: noop,
   }
 }
 

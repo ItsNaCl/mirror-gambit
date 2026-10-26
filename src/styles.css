@@ -2282,3 +2282,33 @@ ul.notes li::marker {
   color: var(--text);
   font-weight: 600;
 }
+
+/* ---------- rated puzzles ---------- */
+.rated-card {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.rated-number {
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 500;
+}
+
+.rated-delta {
+  margin-top: 10px;
+}
+
+/* ---------- courses ---------- */
+.course-block + .course-block {
+  margin-top: 24px;
+}
+
+.lesson-summary {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
