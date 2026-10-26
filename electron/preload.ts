@@ -21,6 +21,9 @@ contextBridge.exposeInMainWorld('mirrorGambit', {
   chessCom: {
     fetchGame: (kind: string, id: string) => ipcRenderer.invoke('chesscom:fetch', kind, id),
   },
+  games: {
+    fetch: (source: string, username: string, max: number) => ipcRenderer.invoke('games:fetch', source, username, max),
+  },
   coach: {
     status: () => ipcRenderer.invoke('coach:status'),
     setKey: (key: string) => ipcRenderer.invoke('coach:setKey', key),

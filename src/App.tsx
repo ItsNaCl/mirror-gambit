@@ -33,6 +33,7 @@ import { OpeningsPanel } from './components/OpeningsPanel'
 import { PositionNotes } from './components/PositionNotes'
 import { PlayPanel } from './components/PlayPanel'
 import { ProgressPanel } from './components/ProgressPanel'
+import { MyGamesPanel } from './components/MyGamesPanel'
 import { PuzzlesPanel } from './components/PuzzlesPanel'
 import { ReviewPanel } from './components/ReviewPanel'
 import { SettingsPanel } from './components/SettingsPanel'
@@ -52,12 +53,14 @@ import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useUpdates } from './hooks/useUpdates'
 import { useClaudeCoach } from './hooks/useClaudeCoach'
+import { useLibrary } from './hooks/useLibrary'
 import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
 import { cleanError, fetchChessComJson } from './lib/desktop'
 import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
 import type { SavedGame } from './lib/play/savedGames'
+import { libraryGameState, type LibraryGame } from './lib/games/sources'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
 import { explainMove } from './lib/coach/explain'
@@ -104,6 +107,13 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const play = usePlay(games.play, engine)
   const updates = useUpdates()
   const claude = useClaudeCoach(settings.claudeMonthlyCap)
+  const library = useLibrary(engine)
+  // The engine runs one search at a time, so the batch review only runs while My games is open.
+  const stopBatch = library.cancel
+  const batchRunning = !!library.progress
+  useEffect(() => {
+    if (route !== 'games' && batchRunning) stopBatch()
+  }, [route, batchRunning, stopBatch])
   const sessionId = sessionFor(route, puzzles)
   const free = games.free
   const { game, fen, gameOver } = free
@@ -343,13 +353,18 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
 
   /** Reviews a game from another mode: it is copied onto the board, so the review and the move list match. */
   const reviewState = useCallback(
-    (state: GameApi['game'], orientation?: 'white' | 'black') => {
-      free.load(state)
+    (state: GameApi['game'], orientation?: 'white' | 'black', ply?: number) => {
+      free.load(ply === undefined ? state : { ...state, ply })
       if (orientation) setManualOrientation(orientation)
       go('review')
       void review.start(state)
     },
     [free, go, review],
+  )
+
+  const openLibraryGame = useCallback(
+    (g: LibraryGame, ply?: number) => reviewState(libraryGameState(g), g.userColor === 'w' ? 'white' : 'black', ply),
+    [reviewState],
   )
 
   const reviewPlayedGame = useCallback(() => reviewState(games.play.game, play.orientation), [reviewState, games.play.game, play.orientation])
@@ -488,7 +503,9 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         <TopBar title={title} sub={sub} onOpenPalette={() => setPaletteOpen(true)} onOpenMenu={() => setMenuOpen(true)} />
         <UpdateBanner updates={updates} />
         <main className="canvas">
-          {route === 'progress' ? (
+          {route === 'games' ? (
+            <MyGamesPanel library={library} engineReady={engine.status === 'ready'} onOpen={openLibraryGame} />
+          ) : route === 'progress' ? (
             <ProgressPanel
               puzzleStats={puzzles.stats}
               drillStats={trainer.stats}

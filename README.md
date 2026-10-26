@@ -38,6 +38,15 @@ Other commands:
 
 ## What is in the app
 
+**My games (2.2).** Import your recent games from Lichess or chess.com by username (desktop app; the browser
+build can import from Lichess only, because chess.com's firewall turns away the dev proxy). A quick review
+(depth 12) goes through them one by one and builds your profile: where your mistakes happen (opening,
+middlegame, endgame), what goes wrong most often (missed forks, pieces left hanging, walking into pins,
+weakened king cover and more, each with the moves where it happened), and your score and accuracy with
+each opening. Click any listed move to open that game in Game review at that moment. Games and reviews are
+saved on this computer.
+
+
 **The coach (2.1).** After each move the board explains it in words: what it gave away, the opponent's best
 answer, and what was better ("White answers Bxc4 and wins the queen. Qa5 was the move."). *What stands out*
 points at the few things a strong player would notice in the position (a loose piece, a pin, an uncastled

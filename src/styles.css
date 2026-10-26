@@ -2168,3 +2168,94 @@ ul.notes li::marker {
   flex: 1;
   min-width: 0;
 }
+
+/* ---------- My games ---------- */
+.span-5 {
+  grid-column: span 5;
+}
+.span-7 {
+  grid-column: span 7;
+}
+
+@media (max-width: 1024px) {
+  .span-5,
+  .span-7 {
+    grid-column: span 12;
+  }
+}
+
+.import-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.import-row input {
+  flex: 1 1 220px;
+  width: auto;
+}
+
+.import-row select {
+  width: auto;
+}
+
+.tag-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.4fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 0;
+}
+
+.tag-row + .tag-row {
+  border-top: 1px solid var(--line);
+}
+
+.tag-count {
+  text-align: right;
+  font-weight: 600;
+}
+
+.tag-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.move-chip {
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-chip);
+  background: var(--raised);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.move-chip:hover {
+  background: var(--raised-2);
+}
+
+.games-table td:nth-child(2),
+.games-table td:nth-child(4),
+.games-table th:nth-child(2),
+.games-table th:nth-child(4) {
+  text-align: left;
+}
+
+.truncate-cell {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .games-table th:nth-child(4),
+  .games-table td:nth-child(4) {
+    display: none;
+  }
+}

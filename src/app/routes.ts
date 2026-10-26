@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'play' | 'board' | 'review' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
+export type RouteId = 'play' | 'board' | 'review' | 'games' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -20,6 +20,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
   play: { id: 'play', label: 'Play the computer', description: 'A game against Stockfish at your level, with a coach if you want one', keywords: 'bot ai vs game opponent' },
   board: { id: 'board', label: 'Board', description: 'Play both sides with the engine watching', keywords: 'analysis play game pgn fen engine' },
   review: { id: 'review', label: 'Game review', description: 'Every move of this game rated, with the turning points', keywords: 'analyse accuracy mistakes blunders' },
+  games: { id: 'games', label: 'My games', description: 'Import your Lichess or chess.com games and see where your points go', keywords: 'import lichess chesscom profile weaknesses stats' },
   openings: { id: 'openings', label: 'Openings', description: 'Learn opening lines move by move and drill them', keywords: 'trainer drill repertoire lines traps' },
   puzzles: { id: 'puzzles', label: 'Puzzles', description: 'Forks, pins, mates and endgames', keywords: 'tactics' },
   cards: { id: 'cards', label: 'Mistake cards', description: 'Your own mistakes, brought back on a schedule', keywords: 'srs spaced repetition review deck' },
@@ -28,7 +29,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
 }
 
 export const NAV: NavGroup[] = [
-  { label: 'Play', routes: ['play', 'board', 'review'] },
+  { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
   { label: 'Train', routes: ['puzzles', 'openings', 'cards'] },
   { label: 'You', routes: ['progress', 'settings'] },
 ]

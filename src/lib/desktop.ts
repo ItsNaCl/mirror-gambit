@@ -1,3 +1,5 @@
+import { parseChessComGames, parseLichessNdjson, USERNAME_RE, type GameSource, type LibraryGame } from './games/sources'
+
 /**
  * Bridge to the Electron shell (electron/preload.ts). Undefined in the browser build,
  * so every caller must handle the web case.
@@ -36,6 +38,10 @@ export interface DesktopBridge {
   chessCom: {
     /** Raw JSON text of chess.com's game endpoint, fetched by the main process (no CORS there). */
     fetchGame(kind: 'live' | 'daily', id: string): Promise<string>
+  }
+  /** A player's recent games: Lichess NDJSON, or a JSON array of chess.com archive games. */
+  games: {
+    fetch(source: 'lichess' | 'chesscom', username: string, max: number): Promise<string>
   }
   /** The optional Claude coach (electron/coach.ts). */
   coach: {
@@ -92,6 +98,45 @@ export async function fetchChessComJson(kind: 'live' | 'daily', id: string): Pro
     return res.text()
   }
   throw new Error('Loading chess.com links works in the desktop app. Here, open the game on chess.com, choose Share, copy the PGN and use Import PGN.')
+}
+
+/**
+ * A player's most recent standard games from Lichess or chess.com, through the desktop shell or
+ * the Vite dev proxy. Throws a readable Error.
+ */
+export async function fetchRecentGames(source: GameSource, username: string, max: number): Promise<LibraryGame[]> {
+  if (!USERNAME_RE.test(username)) throw new Error('That does not look like a username.')
+  const bridge = desktop()
+  let raw: string
+  try {
+    if (bridge) raw = await bridge.games.fetch(source, username, max)
+    else if (import.meta.env.DEV) raw = await fetchViaDevProxy(source, username, max)
+    else throw new Error('Importing games by username works in the desktop app.')
+  } catch (e) {
+    throw new Error(cleanError(e))
+  }
+  return source === 'lichess' ? parseLichessNdjson(raw, username) : parseChessComGames(JSON.parse(raw) as unknown[], username)
+}
+
+async function fetchViaDevProxy(source: GameSource, username: string, max: number): Promise<string> {
+  if (source === 'lichess') {
+    const res = await fetch(`/lichess/api/games/user/${username}?max=${max}&moves=true&opening=true`, { headers: { Accept: 'application/x-ndjson' } })
+    if (!res.ok) throw new Error(res.status === 404 ? 'Lichess has no player with that name.' : `Lichess answered ${res.status}.`)
+    return res.text()
+  }
+  const list = await fetch(`/chesscomapi/pub/player/${username.toLowerCase()}/games/archives`)
+  // chess.com's firewall turns away the dev proxy's requests; the desktop app gets through.
+  if (list.status === 403) throw new Error('chess.com blocks imports from the browser build. Use the desktop app, or import from Lichess.')
+  if (!list.ok) throw new Error(list.status === 404 ? 'chess.com has no player with that name.' : `chess.com answered ${list.status}.`)
+  const months = (((await list.json()) as { archives?: string[] }).archives ?? []).reverse().slice(0, 6)
+  const games: unknown[] = []
+  for (const url of months) {
+    const res = await fetch(url.replace('https://api.chess.com', '/chesscomapi'))
+    if (!res.ok) continue
+    games.unshift(...((((await res.json()) as { games?: unknown[] }).games) ?? []))
+    if (games.length >= max) break
+  }
+  return JSON.stringify(games.slice(-max))
 }
 
 /** Errors from the desktop shell arrive as "Error invoking remote method 'x': Error: message". */

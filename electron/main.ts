@@ -276,6 +276,49 @@ function setupChessComImport() {
   })
 }
 
+// ---------- recent games by username (My games) ----------
+
+const USERNAME_RE = /^[A-Za-z0-9_-]{2,30}$/
+const API_HEADERS = { 'User-Agent': 'Mirror Gambit (open-source chess study app; github.com/ItsNaCl/mirror-gambit)' }
+
+/**
+ * Fetches a player's most recent games for the page: Lichess as NDJSON, chess.com as the
+ * newest games from the monthly archives (as a JSON array). Only these two public APIs, only a
+ * username and a count from the page, both checked here.
+ */
+function setupGameImport() {
+  ipcMain.handle('games:fetch', async (_e, source: unknown, username: unknown, max: unknown) => {
+    if ((source !== 'lichess' && source !== 'chesscom') || typeof username !== 'string' || !USERNAME_RE.test(username)) throw new Error('Invalid username')
+    if (typeof max !== 'number' || !Number.isInteger(max) || max < 1 || max > 100) throw new Error('Invalid number of games')
+    const user = encodeURIComponent(username)
+
+    if (source === 'lichess') {
+      const res = await net.fetch(`https://lichess.org/api/games/user/${user}?max=${max}&moves=true&opening=true&perfType=bullet,blitz,rapid,classical,correspondence`, {
+        headers: { ...API_HEADERS, Accept: 'application/x-ndjson' },
+      })
+      if (res.status === 404) throw new Error('Lichess has no player with that name.')
+      if (!res.ok) throw new Error(`Lichess answered ${res.status}.`)
+      return res.text()
+    }
+
+    const list = await net.fetch(`https://api.chess.com/pub/player/${user.toLowerCase()}/games/archives`, { headers: API_HEADERS })
+    if (list.status === 404) throw new Error('chess.com has no player with that name.')
+    if (!list.ok) throw new Error(`chess.com answered ${list.status}.`)
+    const archives = ((await list.json()) as { archives?: unknown }).archives
+    const months = Array.isArray(archives) ? archives.filter((u): u is string => typeof u === 'string' && u.startsWith('https://api.chess.com/pub/player/')) : []
+    const games: unknown[] = []
+    // Newest month first, until there are enough games (at most six months back).
+    for (const url of months.reverse().slice(0, 6)) {
+      const res = await net.fetch(url, { headers: API_HEADERS })
+      if (!res.ok) continue
+      const monthGames = ((await res.json()) as { games?: unknown[] }).games ?? []
+      games.unshift(...monthGames)
+      if (games.length >= max) break
+    }
+    return JSON.stringify(games.slice(-max))
+  })
+}
+
 // ---------- app lifecycle ----------
 
 if (!app.requestSingleInstanceLock()) {
@@ -321,6 +364,7 @@ if (!app.requestSingleInstanceLock()) {
 
     setupUpdater({ isDev, isPortable: !!portableDir, log })
     setupCoach(log)
+    setupGameImport()
     setupChessComImport()
     createWindow()
 
