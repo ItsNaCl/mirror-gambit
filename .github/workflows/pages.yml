@@ -1,11 +1,13 @@
 # Publishes the web app (the one phones install) to GitHub Pages at
-# https://itsnacl.github.io/mirror-gambit/ whenever a release is tagged, so phones and the
-# Windows app get the same versions. Installed copies pick up the new version on their own.
+# https://itsnacl.github.io/mirror-gambit/ on every push to main. Releases push main together
+# with their tag, so phones and the Windows app get the same versions. (It runs from main, not
+# from the tag, because the github-pages environment only lets main deploy.) Installed copies
+# pick up the new version on their own.
 name: Web app
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
   workflow_dispatch:
 
 permissions:
