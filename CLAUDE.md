@@ -1,6 +1,6 @@
 # Mirror Gambit
 
-Local chess study app for beginners: React 19 + Vite + TypeScript, Stockfish 19 (WASM, Web Worker), chess.js, react-chessboard. Ships as a web app and as a Windows Electron app (MSI + portable exe). No backend; all user data lives in `localStorage`.
+Local chess study app for beginners: React 19 + Vite + TypeScript, Stockfish 19 (WASM, Web Worker), chess.js, react-chessboard. Ships as a web app and as a Windows Electron app (NSIS installer + portable exe). No backend; user data lives in IndexedDB (`src/lib/store/kv.ts`), with the 1.x `localStorage` keys mirrored so older versions still read them.
 
 ## Commands
 
@@ -19,7 +19,8 @@ Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass
 
 ## Layout
 
-- `src/App.tsx`: the whole shell. One board shared by every mode; `Workspace` decides which mode drives it (setup, SRS cards, puzzles, opening trainer, play vs computer, or free play) and picks that mode's `interactive`, `onMove`, `arrows`, `orientation`.
+- `src/App.tsx`: the shell. Each mode has its own `useGame` (free board, play, trainer, puzzles, cards), so one mode never overwrites another's game. The route decides which mode owns the board (`sessionFor` in `src/sessions/sessions.ts`), and that mode's `BoardSession` supplies `interactive`, `onMove`, `arrows`, `orientation` and whether the move list may be browsed. The engine follows the board on screen. Reviewing a game from another mode copies it onto the free board first.
+- `src/app/`: `routes.ts` (hash routes and the sidebar groups) and `Shell.tsx` (sidebar, top bar). `src/components/CommandPalette.tsx` is the Ctrl+K palette.
 - `src/hooks/`: one hook per mode (`useTrainer`, `usePuzzles`, `useSrs`, `usePlay`, `useReview`, `useTips`) plus `useGame` (board state), `useEngine` (context), `useSettings` (context), `useAttempt` (shared tries/hints).
 - `src/lib/`: pure logic with tests next to it. Keep React out of `lib/`.
 - `src/components/`: one panel per tab, plus `Board`, `MoveList`, `HintBar`, `Modal`, `Toast`.
@@ -33,10 +34,11 @@ Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass
 
 - Game state is immutable: `GameState = { startFen, moves, ply }` (`src/lib/chess/game.ts`). Use `playMove`/`playUci`/`playSan`, which return a new state or `null` if the move is illegal. `ply` is a cursor, and moves after it are kept for redo.
 - Moves are UCI internally (`e2e4`, `e7e8q`) and SAN for display. Engine scores are always from **White's** point of view (`Score`, `scoreToCp`, `scoreFor`).
-- Only one mode drives the board at a time. When adding a mode, make it exit the others in `App.tsx` (see the `trainer`/`puzzles`/`srs`/`play` wrappers) and silence `useTips` while it is active.
+- When adding a mode: give it its own `useGame` in `App`, a route in `routes.ts`, a session builder in `sessions.ts`, and a case in `sessionFor`. Tips only run for the free board.
 - Practice exercises (puzzles, drills, cards) share `useAttempt` + `HintBar`: unlimited tries, 4 hint levels, Clean/Assisted/Failed scoring (`src/lib/practice/practice.ts`).
 - Move quality always goes through `classifyMove` (`src/lib/analysis/classify.ts`), the six-level beginner scale. Don't invent new thresholds.
-- localStorage keys are `mirror-gambit.<thing>.v<n>`. Wrap reads and writes in try/catch and normalise old shapes instead of discarding them.
+- Stored keys are `mirror-gambit.<thing>.v<n>`, read and written through `src/lib/store/kv.ts` (synchronous reads from a cache filled before the first render). Normalise old shapes instead of discarding them.
+- Design: `src/styles.css` tokens (zinc ground, flat surfaces separated by tone, colour only on the board and on data, Inter for text and JetBrains Mono only for SAN/FEN). Icons come from `lucide-react`; no emoji in the UI. Board colours live in `src/lib/ui/boardColors.ts`.
 - UI copy is plain language for beginners: short sentences, no jargon without a `Glossary` definition, no em dashes.
 - Comments explain *why*. Match the existing density, and add no comments that restate the code.
 

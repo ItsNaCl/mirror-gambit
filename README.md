@@ -38,6 +38,11 @@ Other commands:
 
 ## What is in the app
 
+**Version 2.0** brings a new interface: a sidebar with every screen, a Ctrl+K command bar to jump anywhere
+or run an action, and a darker, calmer design where colour is kept for the board and your move grades.
+Each mode now has its own board, so starting a puzzle or a game against the computer never overwrites the
+game you were analysing. Your saved data moves to IndexedDB on the first start (the old copy is kept).
+
 **Board (left side)**
 
 - Move pieces by dragging or by clicking a piece and then its target square.
