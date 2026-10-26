@@ -65,6 +65,29 @@ export const endgames: Course = {
       ],
     },
     {
+      id: 'wrong-rook-pawn',
+      title: 'The wrong rook pawn',
+      summary: 'Why an extra bishop and a rook pawn are often only a draw.',
+      steps: [
+        {
+          kind: 'read',
+          fen: '7k/8/7P/8/8/3B4/8/6K1 b - - 0 1',
+          text: 'White has a whole bishop and a pawn more, yet it is a draw. The pawn queens on h8, a dark square, and the bishop runs on light squares, so it can never drive the king out of the corner. This is called the wrong rook pawn.',
+          squares: ['h8'],
+          verdict: { result: 'draw' },
+        },
+        {
+          kind: 'task',
+          fen: '8/5k2/8/6KP/8/8/8/5B2 b - - 0 1',
+          prompt: 'Black to move. You are a bishop down. Find the saving plan: where must your king go?',
+          solution: ['f7g7'],
+          accept: ['f7g8'],
+          success: 'Kg7 heads for h8. Once the king reaches the corner, White can only stalemate it or give up the pawn. When you are behind, look for a drawn endgame instead of a fight you cannot win.',
+          verdict: { result: 'draw' },
+        },
+      ],
+    },
+    {
       id: 'lucena',
       title: 'Lucena: building a bridge',
       summary: 'Rook and pawn against rook, with your pawn on the seventh: the winning method.',

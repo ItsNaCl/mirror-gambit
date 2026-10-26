@@ -9,6 +9,10 @@ import { startEngine } from './engine-node.mjs'
 import { courses } from '../src/courses/index.ts'
 
 const DEPTH = Number(process.env.DEPTH ?? 20)
+/** In a won position any move that keeps a decisive advantage is as good as the best. */
+const DECISIVE_CP = 500
+/** Positions with this many pieces or fewer are judged by the Lichess tablebase, which is exact. */
+const TABLEBASE_PIECES = 7
 const MARGIN_CP = 30
 const WIN_CP = 250
 const DRAW_CP = 60
@@ -22,12 +26,55 @@ function whiteCp(line, turn) {
   if (line.mate !== null) return sign * (line.mate > 0 ? 100000 - line.mate : -100000 - line.mate)
   return sign * line.cp
 }
+// ---------- Lichess tablebase (exact for 7 pieces or fewer) ----------
+
+const tbCache = new Map()
+const pieceCount = (fen) => fen.split(' ')[0].replace(/[^a-zA-Z]/g, '').length
+
+/** 'win' | 'draw' | 'loss' for the side to move, or null when the tablebase cannot be asked. */
+async function tablebase(fen) {
+  if (pieceCount(fen) > TABLEBASE_PIECES) return null
+  if (tbCache.has(fen)) return tbCache.get(fen)
+  await new Promise((r) => setTimeout(r, 350)) // be polite to the public API
+  let result = null
+  try {
+    const res = await fetch(`https://tablebase.lichess.ovh/standard?fen=${encodeURIComponent(fen)}`, { headers: { 'User-Agent': 'Mirror Gambit course check' } })
+    if (res.ok) {
+      const c = (await res.json()).category
+      result = c === 'win' ? 'win' : c === 'loss' ? 'loss' : c === 'unknown' ? null : 'draw' // cursed wins and blessed losses are draws in practice
+    }
+  } catch {
+    result = null
+  }
+  tbCache.set(fen, result)
+  return result
+}
+
+/** The tablebase result for the side that just moved, after a move. */
+async function tablebaseAfter(fen, uci) {
+  const probe = new Chess(fen)
+  try {
+    probe.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] })
+  } catch {
+    return 'illegal'
+  }
+  if (probe.isCheckmate()) return 'win'
+  if (probe.isDraw()) return 'draw'
+  const r = await tablebase(probe.fen())
+  return r === 'win' ? 'loss' : r === 'loss' ? 'win' : r
+}
+
 /** White-side evaluation of a move: from the MultiPV lines, or by analysing the position after it. */
 async function moveCp(fen, uci, lines, turn) {
   const known = lines.find((l) => l.pv[0] === uci)
   if (known) return whiteCp(known, turn)
   const probe = new Chess(fen)
-  probe.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] })
+  try {
+    probe.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] })
+  } catch {
+    // An illegal move is reported as far worse than anything, so it shows up as a problem.
+    return turn === 'w' ? -1e9 : 1e9
+  }
   if (probe.isCheckmate()) return turn === 'w' ? 100000 : -100000
   if (probe.isGameOver()) return 0
   const after = await engine.analyse(probe.fen(), DEPTH, 1)
@@ -40,6 +87,12 @@ async function checkVerdict(fen, verdict) {
   if (!verdict) return null
   const chess = new Chess(fen)
   if (chess.isGameOver()) return null
+  const tb = await tablebase(fen)
+  if (tb) {
+    const whiteResult = chess.turn() === 'w' ? tb : tb === 'win' ? 'loss' : tb === 'loss' ? 'win' : 'draw'
+    const expected = verdict.result === 'draw' ? 'draw' : verdict.side === 'w' ? 'win' : 'loss'
+    return whiteResult === expected ? null : `said ${verdict.result === 'draw' ? 'draw' : (verdict.side === 'w' ? 'White' : 'Black') + ' wins'}, tablebase says ${whiteResult} for White`
+  }
   const a = await engine.analyse(fen, DEPTH, 1)
   const cp = whiteCp(a.lines[0], chess.turn())
   if (verdict.result === 'draw' && Math.abs(cp) > DRAW_CP) return `said draw, engine ${show(cp)}`
@@ -80,13 +133,21 @@ for (const course of courses) {
         const sideSign = turn === 'w' ? 1 : -1
         const top = a.lines.map((l) => `${l.pv[0]} ${show(whiteCp(l, turn))}`).join(', ')
         if (k % 2 === 0) {
-          // In quiet positions several moves are equal, so the test is "about as good as the best",
-          // not "in the top three".
-          const cp = await moveCp(fen, uci, a.lines, turn)
-          if (sideSign * (bestCp - cp) > MARGIN_CP) problems.push(`${where}: move ${k + 1} ${uci} (${show(cp)}) is worse than the engine's choices (${top})`)
-          for (const alt of k === 0 ? (step.accept ?? []) : []) {
-            const altCp = await moveCp(fen, alt, a.lines, turn)
-            if (sideSign * (bestCp - altCp) > MARGIN_CP) problems.push(`${where}: accepted ${alt} (${show(altCp)}) is not as good (${top})`)
+          const candidates = [uci, ...(k === 0 ? (step.accept ?? []) : [])]
+          const tbRoot = await tablebase(fen)
+          for (const [ci, move] of candidates.entries()) {
+            const label = ci === 0 ? `move ${k + 1} ${move}` : `accepted ${move}`
+            if (tbRoot) {
+              // Exact: the move must keep the best result available.
+              const after = await tablebaseAfter(fen, move)
+              if (after !== tbRoot) problems.push(`${where}: ${label} gives ${after} where ${tbRoot} was available (tablebase)`)
+              continue
+            }
+            // In quiet positions several moves are equal, so the test is "about as good as the best",
+            // not "in the top three"; in a won position, any move that keeps a decisive win.
+            const cp = await moveCp(fen, move, a.lines, turn)
+            const keepsDecisiveWin = sideSign * bestCp >= DECISIVE_CP && sideSign * cp >= DECISIVE_CP
+            if (!keepsDecisiveWin && sideSign * (bestCp - cp) > MARGIN_CP) problems.push(`${where}: ${label} (${show(cp)}) is worse than the engine's choices (${top})`)
           }
         } else if (best.pv[0] !== uci) {
           // A reply outside the top three can still be as good (in a dead draw every move is 0.00):

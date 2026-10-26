@@ -42,9 +42,10 @@ Other commands:
 about 500 to 2800, served near your own puzzle rating and optionally by theme (mates, forks, pins and
 skewers, discovered attacks, loose pieces, sacrifices, endgames, defence). A clean solve raises the rating,
 solving after wrong tries or hints counts half, giving up lowers it; the first 20 puzzles move it faster.
-Courses (under Learn) are short lessons that mix explanation with positions to solve: Endgame essentials
-(the square of the pawn, the opposition, Lucena, Philidor) and Middlegame strategy (outposts, open files,
-playing against the isolated pawn).
+Courses (under Learn) are short lessons that mix explanation with positions to solve: Attacking the king
+(the back rank, the smothered mate, the Greek gift Bxh7+), Endgame essentials (the square of the pawn, the
+opposition, the wrong rook pawn, Lucena, Philidor) and Middlegame strategy (outposts, open files, playing
+against the isolated pawn).
 
 
 **Repertoire (2.3).** Build your own opening repertoire for White or Black and drill it with spaced
@@ -382,7 +383,8 @@ src/data/           bundled Lichess opening names (CC0) and puzzle sets
 - The rated puzzles (`src/data/puzzles/rated.json`) are selected from the same Lichess puzzle database (CC0)
   by `scripts/build-rated-puzzles.mjs` (`npm run puzzles:rated <file>`); each entry starts with its Lichess id.
 - The course text (`src/courses/`) is written for this app. It is not by a titled player: every position,
-  solution and win or draw verdict in it is checked with Stockfish by `npm run courses:check`.
+  solution and win or draw verdict in it is checked with Stockfish by `npm run courses:check`; positions with
+  seven pieces or fewer are checked against the [Lichess tablebase](https://tablebase.lichess.ovh), which is exact.
 - [Chess Rocket](https://github.com/suvojit-0x55aa/chess_rocket) by suvojit-0x55aa, licensed under the
   GNU General Public License v3.0. Mirror Gambit used it as reference material and ported, in TypeScript,
   its six-level move classification scale, the SM-2 spaced-repetition scheduling (same intervals and ease
