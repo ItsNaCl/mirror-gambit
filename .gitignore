@@ -39,3 +39,6 @@ vite-dev.log
 
 # the current release installer, kept on this PC (about 260 MB, too big for git)
 installer/
+
+# copies of the desktop app's data (npm run backup); personal, never commit
+backups/

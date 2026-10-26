@@ -23,6 +23,7 @@
     "build:desktop": "npm run build && npm run build:main && electron-builder --win --x64 --config electron-builder.yml --publish never",
     "release:desktop": "npm run build && npm run build:main && electron-builder --win --x64 --config electron-builder.yml --publish always",
     "courses:check": "node scripts/check-courses.mjs",
+    "backup": "node scripts/backup-data.mjs",
     "puzzles:rated": "node scripts/build-rated-puzzles.mjs"
   },
   "dependencies": {

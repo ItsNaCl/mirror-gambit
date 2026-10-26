@@ -13,6 +13,7 @@ npx tsc -b              # type-check (npm run build does this too)
 npm run build           # tsc -b && vite build -> dist/
 npm run dev:desktop     # Electron + Vite dev server
 npm run build:desktop   # dist/ + dist-electron/ + release/ Setup.exe and portable exe (no publish)
+npm run backup          # copy %APPDATA%\Mirror Gambit into backups/<date> (gitignored; close the app first)
 ```
 
 Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass with no new errors.
