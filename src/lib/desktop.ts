@@ -37,6 +37,39 @@ export interface DesktopBridge {
     /** Raw JSON text of chess.com's game endpoint, fetched by the main process (no CORS there). */
     fetchGame(kind: 'live' | 'daily', id: string): Promise<string>
   }
+  /** The optional Claude coach (electron/coach.ts). */
+  coach: {
+    status(): Promise<CoachStatus>
+    setKey(key: string): Promise<{ ok: boolean; error?: string }>
+    clearKey(): Promise<{ ok: boolean }>
+    setModel(model: CoachModel): Promise<{ ok: boolean; error?: string }>
+    ask(request: CoachRequest): Promise<CoachAnswer | { ok: false; error: string }>
+  }
+}
+
+export type CoachModel = 'claude-opus-5-5' | 'claude-sonnet-5-5' | 'claude-haiku-5-5'
+
+export interface CoachStatus {
+  /** False when the operating system offers no secure key store. */
+  canStoreKey: boolean
+  hasKey: boolean
+  model: CoachModel
+  models: CoachModel[]
+}
+
+export interface CoachRequest {
+  mode: 'position' | 'move' | 'question' | 'game'
+  /** The position in words and numbers (src/lib/coach/claudeContext.ts). */
+  context: string
+  question?: string
+  history?: { role: 'user' | 'assistant'; text: string }[]
+}
+
+export interface CoachAnswer {
+  ok: true
+  text: string
+  model: string
+  usage: { input: number; output: number; cacheRead: number; cacheWrite: number }
 }
 
 export function desktop(): DesktopBridge | undefined {

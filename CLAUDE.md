@@ -27,8 +27,8 @@ Before finishing a change: `npm test`, `npx tsc -b` and `npm run lint` must pass
 - `src/openings/*.ts`: opening content, one file per opening, validated by `openings.test.ts`.
 - `src/data/puzzles/*.json`: puzzle sets (Chess Rocket format: `fen`, `solution_moves` in UCI, optional `solution_san`, `motif`, `explanation`). `from-games.json` exists but is not loaded.
 - `scripts/`: Node scripts. `engine-node.mjs` drives Stockfish from Node (`evaluate`, `analyse` with MultiPV); `extend-puzzles.mjs` lengthens puzzle solutions; `check-openings.mjs` evaluates opening lines.
-- `electron/main.ts`: desktop shell (`app://` scheme with COOP/COEP headers, strict CSP, sandbox). `electron/preload.ts` exposes `window.mirrorGambit` (typed in `src/lib/desktop.ts`): update controls from `electron/updater.ts` and a chess.com game fetch. Keep that surface minimal and validate every IPC argument in the main process.
-- `src/lib/coach/`: the review coach (pure). `src/components/CoachPanel.tsx` drives it and shows lines on the board through a `BoardPreview` held in `App.tsx`.
+- `electron/main.ts`: desktop shell (`app://` scheme with COOP/COEP headers, strict CSP, sandbox). `electron/preload.ts` exposes `window.mirrorGambit` (typed in `src/lib/desktop.ts`): update controls from `electron/updater.ts`, a chess.com game fetch, and the Claude coach from `electron/coach.ts` (the API key is encrypted with `safeStorage` and never reaches the page). Keep that surface minimal and validate every IPC argument in the main process.
+- `src/lib/coach/`: pure coaching logic. `coach.ts` is the review coach (walks engine lines for forks, free pieces, mates); `features.ts` reads a position from the board alone (loose pieces, pins, pawns, king cover, outposts, square control); `explain.ts` turns a move plus the engine's best move and reply into reasons and feeds both the live alerts and the review coach; `claudeContext.ts` writes a position as text for Claude; `usage.ts` prices Claude answers. `src/components/CoachPanel.tsx` drives the review coach and shows lines on the board through a `BoardPreview` held in `App.tsx`; `BoardOverlay.tsx` draws the board layers.
 
 ## Conventions
 

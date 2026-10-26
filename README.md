@@ -38,6 +38,21 @@ Other commands:
 
 ## What is in the app
 
+**The coach (2.1).** After each move the board explains it in words: what it gave away, the opponent's best
+answer, and what was better ("White answers Bxc4 and wins the queen. Qa5 was the move."). *What stands out*
+points at the few things a strong player would notice in the position (a loose piece, a pin, an uncastled
+king, weak pawns, an outpost), read from the board alone, so it works even with analysis hidden. The game
+review coach adds the same kind of reasons to each move. *Layers* under the board shades each square by
+who controls it, draws pins and skewers, and rings loose pieces.
+
+**Ask Claude (optional, desktop app).** Add your own Anthropic API key in Settings to ask Claude about any
+position or move, or for a summary of a reviewed game. Claude is told the engine's lines and the board
+reading, so its explanation stays tied to the analysis. Nothing is sent unless you press a coach button,
+the key is stored encrypted with Windows' key store and is only sent to Anthropic, and Settings shows the
+month's estimated spend with an optional monthly limit. A typical question costs about $0.02 on Claude Opus
+5.5, $0.01 on Sonnet 5.5 and well under a cent on Haiku 5.5.
+
+
 **Version 2.0** brings a new interface: a sidebar with every screen, a Ctrl+K command bar to jump anywhere
 or run an action, and a darker, calmer design where colour is kept for the board and your move grades.
 Each mode now has its own board, so starting a puzzle or a game against the computer never overwrites the

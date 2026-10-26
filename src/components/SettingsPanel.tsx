@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { DEFAULT_SETTINGS, useSettings, type Settings } from '../hooks/useSettings'
 import type { UpdatesApi } from '../hooks/useUpdates'
+import type { ClaudeCoachApi } from '../hooks/useClaudeCoach'
+import { ClaudeSettings } from './ClaudeSettings'
 import { UpdateSettings } from './UpdatePanel'
 
 interface SwitchRowProps {
@@ -41,7 +43,7 @@ function Section({ title, about, children }: { title: string; about: ReactNode; 
   )
 }
 
-export function SettingsPanel({ engineInfo, updates }: { engineInfo?: string; updates: UpdatesApi }) {
+export function SettingsPanel({ engineInfo, updates, claude }: { engineInfo?: string; updates: UpdatesApi; claude: ClaudeCoachApi }) {
   const { settings, update } = useSettings()
   const set = <K extends keyof Settings>(key: K) => (value: Settings[K]) => update({ [key]: value } as Partial<Settings>)
   const cores = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 2 : 2
@@ -153,6 +155,13 @@ export function SettingsPanel({ engineInfo, updates }: { engineInfo?: string; up
             <UpdateSettings updates={updates} />
           </div>
         </div>
+      </Section>
+
+      <Section
+        title="Claude coach"
+        about="Optional. Ask Claude to explain a position or a move in your own words. It uses your own Anthropic API key and is only called when you press a coach button."
+      >
+        <ClaudeSettings coach={claude} />
       </Section>
 
       <Section title="Practice" about="Puzzles, opening drills and mistake cards all follow these rules.">

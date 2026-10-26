@@ -2112,3 +2112,59 @@ ul.notes li::marker {
   box-shadow: none;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Crect width='14' height='14' rx='4' fill='black'/%3E%3C/svg%3E");
 }
+
+/* ---------- Claude coach ---------- */
+.claude-coach {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.thread {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.thread-q {
+  justify-self: end;
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: var(--radius-inner);
+  background: var(--raised-2);
+}
+
+.thread-a {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-inner);
+  background: var(--raised);
+  line-height: 21px;
+}
+
+.thinking::after {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+.ask-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ask-row input {
+  flex: 1;
+  min-width: 0;
+}

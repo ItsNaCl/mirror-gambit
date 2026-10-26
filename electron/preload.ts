@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 
-// The only surface the page gets from the shell: update controls and the chess.com game fetch.
+// The only surface the page gets from the shell: update controls, the chess.com game fetch and
+// the Claude coach (the API key itself stays in the main process).
 // Shape must match DesktopBridge in src/lib/desktop.ts.
 contextBridge.exposeInMainWorld('mirrorGambit', {
   desktop: true,
@@ -19,5 +20,12 @@ contextBridge.exposeInMainWorld('mirrorGambit', {
   },
   chessCom: {
     fetchGame: (kind: string, id: string) => ipcRenderer.invoke('chesscom:fetch', kind, id),
+  },
+  coach: {
+    status: () => ipcRenderer.invoke('coach:status'),
+    setKey: (key: string) => ipcRenderer.invoke('coach:setKey', key),
+    clearKey: () => ipcRenderer.invoke('coach:clearKey'),
+    setModel: (model: string) => ipcRenderer.invoke('coach:setModel', model),
+    ask: (request: unknown) => ipcRenderer.invoke('coach:ask', request),
   },
 })

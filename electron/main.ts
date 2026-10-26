@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, net, protocol, screen, session, shel
 import { appendFileSync, createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Readable } from 'node:stream'
+import { setupCoach } from './coach'
 import { setupUpdater } from './updater'
 
 /**
@@ -319,6 +320,7 @@ if (!app.requestSingleInstanceLock()) {
     })
 
     setupUpdater({ isDev, isPortable: !!portableDir, log })
+    setupCoach(log)
     setupChessComImport()
     createWindow()
 

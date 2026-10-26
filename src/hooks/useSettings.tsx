@@ -19,6 +19,8 @@ export interface Settings {
   overlayControl: boolean
   overlayLines: boolean
   overlayLoose: boolean
+  /** Monthly spending limit for the Claude coach in US dollars. 0 = no limit. */
+  claudeMonthlyCap: 0 | 1 | 5 | 10 | 20
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -36,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
   overlayControl: false,
   overlayLines: false,
   overlayLoose: false,
+  claudeMonthlyCap: 5,
 }
 
 const STORAGE_KEY = 'mirror-gambit.settings.v1'

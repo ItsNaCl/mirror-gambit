@@ -23,6 +23,7 @@ import type { BoardPreview } from './components/CoachPanel'
 import { moveBadgeStyle } from './components/moveBadge'
 import { Board } from './components/Board'
 import { BoardOverlay } from './components/BoardOverlay'
+import { ClaudeCoach } from './components/ClaudeCoach'
 import { CommandPalette, type Command } from './components/CommandPalette'
 import { EvalBar } from './components/EvalBar'
 import { MenuButton } from './components/MenuButton'
@@ -50,6 +51,7 @@ import { useSrs, type SrsApi } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useUpdates } from './hooks/useUpdates'
+import { useClaudeCoach } from './hooks/useClaudeCoach'
 import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
@@ -59,6 +61,7 @@ import type { SavedGame } from './lib/play/savedGames'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
 import { explainMove } from './lib/coach/explain'
+import { buildCoachContext, type CoachMode } from './lib/coach/claudeContext'
 import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
 import { freeSession, playSession, puzzleSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
@@ -100,6 +103,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const srs = useSrs(games.srs)
   const play = usePlay(games.play, engine)
   const updates = useUpdates()
+  const claude = useClaudeCoach(settings.claudeMonthlyCap)
   const sessionId = sessionFor(route, puzzles)
   const free = games.free
   const { game, fen, gameOver } = free
@@ -195,6 +199,44 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     if (!best || gameOver) return []
     return [{ startSquare: best.slice(0, 2), endSquare: best.slice(2, 4), color: ANSWER_ARROW }]
   }, [bestLine, gameOver])
+
+  /** The free board as text for Claude: the position on screen and the move that led to it. */
+  const coachContext = useCallback(
+    (mode: CoachMode) => {
+      const sanMoves = game.moves.slice(0, game.ply).map((m) => m.san)
+      const live = engine.analysis?.fen === fen ? engine.analysis : null
+      const cached = engine.getCached(fen)
+      const lines = live?.lines.length ? live.lines : (cached?.lines ?? [])
+      const depth = live?.depth ?? cached?.depth
+      let lastMove = null
+      if (route === 'review' && reviewResult && game.ply > 0) {
+        const m = reviewResult.moves[game.ply - 1]
+        if (m)
+          lastMove = {
+            san: m.san,
+            mover: m.mover,
+            classification: m.classification,
+            betterMove: m.betterMove,
+            bestReply: m.replyLine[0] ? uciToSan(fen, m.replyLine[0]) : null,
+          }
+      } else if (alert && alert.moveIndex === game.ply - 1) {
+        const move = game.moves[alert.moveIndex]
+        const reply = engine.getCached(move.after)?.bestMove
+        lastMove = { san: alert.san, mover: alert.mover, classification: alert.classification, betterMove: alert.betterMove, bestReply: reply ? uciToSan(move.after, reply) : null }
+      }
+      const opening = tips.opening ? `${tips.opening.eco} ${tips.opening.name}` : null
+      let text = buildCoachContext({ fen, sanMoves, startFen: game.startFen, opening, lines, depth, lastMove }, mode)
+      if (mode === 'game' && reviewResult) {
+        const moments = reviewResult.moves
+          .filter((m) => isProblem(m.classification.cls))
+          .slice(0, 12)
+          .map((m) => `- ${m.san} by ${m.mover === 'w' ? 'White' : 'Black'} (move ${Math.floor(m.index / 2) + 1}): ${CLASS_LABEL[m.classification.cls]}${m.betterMove ? `, better was ${m.betterMove}` : ''}`)
+        text += `\n\nThe whole game: ${sanMoves.length === game.moves.length ? '' : '(the board shows an earlier move) '}${game.moves.map((m) => m.san).join(' ')}\nMistakes found by the review:\n${moments.join('\n') || '- none'}`
+      }
+      return text
+    },
+    [game, fen, engine, route, reviewResult, alert, tips.opening],
+  )
 
   const layers = useMemo(
     () => ({ control: settings.overlayControl, lines: settings.overlayLines, loose: settings.overlayLoose }),
@@ -456,7 +498,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
               onNavigate={go}
             />
           ) : route === 'settings' ? (
-            <SettingsPanel engineInfo={engine.buildInfo} updates={updates} />
+            <SettingsPanel engineInfo={engine.buildInfo} updates={updates} claude={claude} />
           ) : setupMode && route === 'board' ? (
             <div className="workspace">
               <SetupPanel
@@ -630,6 +672,16 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                     {route === 'board' && (
                       <>
                         <PositionNotes fen={fen} score={evalScore} />
+                        <ClaudeCoach
+                          coach={claude}
+                          positionKey={fen}
+                          context={coachContext}
+                          actions={[
+                            { mode: 'position', label: 'Explain this position' },
+                            ...(alert && alert.moveIndex === game.ply - 1 ? [{ mode: 'move' as const, label: `Explain ${alert.san}` }] : []),
+                          ]}
+                          onOpenSettings={() => go('settings')}
+                        />
                         <AnalysisPanel fen={fen} onPlayLine={playLine}>
                           <TipsSection
                             tips={tips}
@@ -643,6 +695,18 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                     )}
                     {route === 'play' && (
                       <PlayPanel play={play} engineReady={engine.status === 'ready'} onReview={reviewPlayedGame} onReviewSaved={reviewSavedGame} />
+                    )}
+                    {route === 'review' && reviewResult && (
+                      <ClaudeCoach
+                        coach={claude}
+                        positionKey={fen}
+                        context={coachContext}
+                        actions={[
+                          ...(game.ply > 0 ? [{ mode: 'move' as const, label: `Explain ${game.moves[game.ply - 1].san}` }] : []),
+                          { mode: 'game', label: 'Summarise the game' },
+                        ]}
+                        onOpenSettings={() => go('settings')}
+                      />
                     )}
                     {route === 'review' && (
                       <ReviewPanel
