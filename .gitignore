@@ -36,3 +36,6 @@ vite-dev.log
 
 # design inspector screenshots
 .taste-skill/
+
+# the current release installer, kept on this PC (about 260 MB, too big for git)
+installer/
