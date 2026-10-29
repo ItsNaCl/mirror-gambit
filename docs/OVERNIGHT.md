@@ -36,7 +36,7 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - [x] Phase 2: over the board entry
 - [x] Phase 2: card grouping and Woodpecker cycles
 - [x] HANDOFF task 7, security audit
-- [ ] README and CLAUDE.md updated
+- [x] README and CLAUDE.md updated
 
 ## Decisions
 (append one line per decision taken without Daniel)

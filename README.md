@@ -1,10 +1,10 @@
 # Mirror Gambit
 
-A local chess study app for beginners. You play both sides yourself or a full game
-against the computer at six difficulty levels, with Stockfish running in the
-background for analysis, blunder alerts, hints, an opening trainer
-with plain-language commentary, tactical puzzles, spaced-repetition review of your
-own mistakes, a full game review and a progress page.
+A local chess study app for beginners, with a coach that plans each day's training from
+your own games. You play both sides yourself or a full game against the computer at six
+difficulty levels, with Stockfish running in the background for analysis, blunder alerts,
+hints, an opening trainer with plain-language commentary, tactical puzzles,
+spaced-repetition review of your own mistakes, a full game review and a progress page.
 
 Everything runs on your device. There is no backend and no account, and the app
 works offline.
@@ -48,6 +48,26 @@ Other commands:
 | `npm run puzzles:lichess -- <file>` | Rebuild `src/data/puzzles/lichess-longer.json` from a downloaded `lichess_db_puzzle.csv.zst` |
 
 ## What is in the app
+
+**The coach (3.0).** The app opens on Today: four figures (rating, pieces hung per game with the
+trend, minutes today, XP today) and the day's session as a row of quests on a rail. The coach knows
+the curriculum for four rating bands (what to train, how the week splits, the habit to repeat, what
+has to be true before moving up) and builds today's blocks from your own reviewed games: due mistake
+cards first, then unreviewed games, a slow game when the session is long enough, then study by what
+the week still owes. Each block opens its screen with one press and pays XP when it is done. Ranks
+run from Pawn to King, badges mark milestones, and the sidebar shows your rank; the Badges screen
+shows the ladder and every badge with its progress. Sounds are made with WebAudio (moves, captures,
+check, a clean solve, the streak, a new rank) and switch off in Settings. Four learning formats come
+with it: **Why not this move** (play your idea in a position from your own game, watch the engine
+answer it, then compare it with the better move and its line), **Guess the move** (play a strong
+player's side of a game in your opening from move 6, one guess per move, scored by how much it gives
+away against the move played), the **Narrated game** (the coach plays the computer and says what it
+is thinking after every move, in a direct, playful or calm voice; you predict its moves first) and
+**Enter a game** (type a game from your scoresheet, checked move by move, then review it or keep it
+with My games). Mistake cards are grouped by pattern and can be drilled as a fixed Woodpecker set,
+the same 30 positions solved four times over, each pass timed. Nothing here helps during a game on
+chess.com or Lichess: the coach only ever looks at games that are over.
+
 
 **Rated puzzles and courses (2.4).** Puzzles has a rated mode: 2,760 puzzles from real Lichess games, from
 about 500 to 2800, served near your own puzzle rating and optionally by theme (mates, forks, pins and
@@ -375,12 +395,16 @@ src/lib/srs/        SM-2 spaced repetition
 src/lib/review/     game review
 src/lib/progress/   review history for the progress page
 src/lib/play/       computer opponent levels and saved games
-src/lib/coach/      review coach: engine lines turned into plain-language lessons
+src/lib/coach/      review coach, and the coaching brain: curriculum, metrics, planner
+src/lib/game/       ranks, XP and badges
+src/lib/sound/      WebAudio sound effects
+src/lib/modes/      why not this move, guess the move, the narrated game, over the board entry
 src/lib/import/     chess.com game links
 electron/           desktop shell: main process, preload bridge, updater
 .github/workflows/  CI on every push, and the release build on version tags
 src/openings/       opening content (one file per opening), trap-puzzle matching, validation tests
-src/data/           bundled Lichess opening names (CC0) and puzzle sets
+src/data/           bundled Lichess opening names (CC0), puzzle sets and the model games for Guess the move
+docs/               the v3 plan, the handoff notes and the security audit
 ```
 
 ## Credits
@@ -393,6 +417,10 @@ src/data/           bundled Lichess opening names (CC0) and puzzle sets
   Each puzzle keeps its Lichess id in `source`.
 - The rated puzzles (`src/data/puzzles/rated.json`) are selected from the same Lichess puzzle database (CC0)
   by `scripts/build-rated-puzzles.mjs` (`npm run puzzles:rated <file>`); each entry starts with its Lichess id.
+- The model games for Guess the move (`src/data/model-games/games.json`) are selected from one month of the
+  [Lichess Elite Database](https://database.nikonoel.fr/) (CC0) by `scripts/build-model-games.mjs`: decisive games
+  between players rated 2400 or more in the app's openings, each checked with Stockfish so the side you play never
+  gave more than a pawn away. Each entry keeps its Lichess id and link.
 - The course text (`src/courses/`) is written for this app. It is not by a titled player: every position,
   solution and win or draw verdict in it is checked with Stockfish by `npm run courses:check`; positions with
   seven pieces or fewer are checked against the [Lichess tablebase](https://tablebase.lichess.ovh), which is exact.
