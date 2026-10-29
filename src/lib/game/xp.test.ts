@@ -37,5 +37,18 @@ describe('xp', () => {
   it('normalises old shapes', () => {
     expect(normaliseProgression(null).xp).toBe(0)
     expect(normaliseProgression({ xp: '12', badges: null }).xp).toBe(12)
+    const p = normaliseProgression({ blocks: 'x', reviews: -3, bestStreak: null, solves: 2.7, extra: 1, badges: { 'clean-10': '', 'slow-1': 0, 'first-session': '2026-10-29T00:00:00Z' } })
+    expect(p).toEqual({ ...EMPTY_PROGRESSION, solves: 2, badges: { 'first-session': '2026-10-29T00:00:00Z' } })
+    expect('extra' in p).toBe(false)
+  })
+
+  it('never stores NaN and keeps the streak badge and the streak XP on one number', () => {
+    const a = award(EMPTY_PROGRESSION, { type: 'block', minutes: undefined as unknown as number }, 1)
+    expect(a.gained).toBe(0)
+    expect(a.next.xp).toBe(0)
+    const b = award(EMPTY_PROGRESSION, { type: 'streak', days: 7 }, 6)
+    expect(b.gained).toBe(70)
+    expect(b.newBadges.map((x) => x.id)).toContain('streak-7')
+    expect(b.next.bestStreak).toBe(7)
   })
 })

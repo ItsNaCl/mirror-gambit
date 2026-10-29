@@ -128,8 +128,12 @@ export interface Award {
 }
 
 export function award(p: Progression, e: XpEvent, streak: number, nowIso: string = new Date().toISOString()): Award {
-  const gained = xpFor(e)
-  const next: Progression = { ...p, xp: p.xp + gained, badges: { ...p.badges }, bestStreak: Math.max(p.bestStreak, streak) }
+  // A missing field in an event (minutes, rating, grade) must not poison the stored XP with NaN.
+  const raw = xpFor(e)
+  const gained = Number.isFinite(raw) ? raw : 0
+  // A streak event carries the day count itself; the badges see the same number.
+  const days = e.type === 'streak' ? Math.max(streak, e.days) : streak
+  const next: Progression = { ...p, xp: p.xp + gained, badges: { ...p.badges }, bestStreak: Math.max(p.bestStreak, days) }
   switch (e.type) {
     case 'block':
       next.blocks++
@@ -154,19 +158,22 @@ export function award(p: Progression, e: XpEvent, streak: number, nowIso: string
   }
   const before = rankFor(p.xp)
   const after = rankFor(next.xp)
-  const newBadges = BADGES.filter((b) => !next.badges[b.id] && b.earned(next, streak))
+  const newBadges = BADGES.filter((b) => !next.badges[b.id] && b.earned(next, days))
   for (const b of newBadges) next.badges[b.id] = nowIso
   return { next, gained, newRank: after.id !== before.id ? after : null, newBadges }
 }
 
-/** Old or partial stored shapes get every field. */
+/** Old or partial stored shapes get every field: counters become whole non-negative numbers, unknown keys are dropped. */
 export function normaliseProgression(raw: unknown): Progression {
-  if (!raw || typeof raw !== 'object') return { ...EMPTY_PROGRESSION, badges: {} }
-  const r = raw as Partial<Progression>
-  return {
-    ...EMPTY_PROGRESSION,
-    ...r,
-    xp: Math.max(0, Number(r.xp) || 0),
-    badges: r.badges && typeof r.badges === 'object' ? { ...r.badges } : {},
+  const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const out = { ...EMPTY_PROGRESSION, badges: {} as Record<string, string> }
+  for (const key of Object.keys(EMPTY_PROGRESSION) as (keyof Progression)[]) {
+    if (key === 'badges') continue
+    out[key] = Math.max(0, Math.floor(Number(r[key]) || 0))
   }
+  const badges = r.badges
+  if (badges && typeof badges === 'object') {
+    for (const [id, at] of Object.entries(badges as Record<string, unknown>)) if (typeof at === 'string' && at) out.badges[id] = at
+  }
+  return out
 }

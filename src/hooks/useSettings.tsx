@@ -126,7 +126,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const el = document.documentElement
     el.dataset.accent = settings.accent
     el.dataset.board = settings.boardTheme
-    el.dataset.motion = motionLevel({ motion: settings.motion })
+    const apply = () => {
+      el.dataset.motion = motionLevel({ motion: settings.motion })
+    }
+    apply()
+    // 'auto' follows the system setting, which can change while the app is open.
+    if (settings.motion !== 'auto' || typeof matchMedia === 'undefined') return
+    const mq = matchMedia('(prefers-reduced-motion: reduce)')
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
   }, [settings.accent, settings.boardTheme, settings.motion])
   const update = useCallback((patch: Partial<Settings>) => setSettings((s) => ({ ...s, ...patch })), [])
   const value = useMemo(() => ({ settings, update }), [settings, update])
