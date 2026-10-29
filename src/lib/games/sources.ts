@@ -13,7 +13,8 @@ export type GameSource = 'lichess' | 'chesscom'
 export interface LibraryGame {
   /** "lichess:AbCd1234" or "chesscom:123456789". */
   id: string
-  source: GameSource
+  /** Imported from a site, or typed in from a scoresheet. */
+  source: GameSource | 'otb'
   url: string
   /** ISO date the game was played. */
   date: string
