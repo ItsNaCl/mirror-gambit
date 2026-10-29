@@ -19,6 +19,10 @@ import {
 import { ROUTE_ICONS, Sidebar, TopBar } from './app/Shell'
 import { NAV, ROUTES, useRoute, type RouteId } from './app/routes'
 import { AnalysisPanel } from './components/AnalysisPanel'
+import { CoachHome } from './components/CoachHome'
+import { useCoach } from './hooks/useCoach'
+import type { SessionBlock } from './lib/coach/planner'
+import type { ThemeFilter } from './lib/puzzles/rated'
 import type { BoardPreview } from './components/CoachPanel'
 import { moveBadgeStyle } from './components/moveBadge'
 import { Board } from './components/Board'
@@ -118,6 +122,14 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const claude = useClaudeCoach(settings.claudeMonthlyCap)
   const library = useLibrary(engine)
   const repertoire = useRepertoire(games.rep, engine, library.games)
+  const coach = useCoach({
+    analysed: library.analysed,
+    dueCards: srs.dueCount,
+    pendingGames: library.pending,
+    puzzleRating: rated.games > 0 ? rated.rating : null,
+    weeklyHours: settings.weeklyHours,
+    ratingOverride: settings.ratingOverride,
+  })
   // The engine runs one search at a time, so the batch review only runs while My games is open.
   const stopBatch = library.cancel
   const batchRunning = !!library.progress
@@ -151,6 +163,40 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
       navigate(id)
     },
     [navigate],
+  )
+
+  /** Opens the screen a coach block points at and starts the activity where one can be started. */
+  const openBlock = useCallback(
+    (block: SessionBlock) => {
+      switch (block.activity) {
+        case 'tactics':
+          go('puzzles')
+          void rated.next((block.theme as ThemeFilter | undefined) ?? 'any')
+          return
+        case 'cards':
+          go('cards')
+          srs.startReview()
+          return
+        case 'review':
+          go('games')
+          return
+        case 'play':
+          go('play')
+          return
+        case 'endgames':
+        case 'strategy': {
+          go('courses')
+          const c = course.courses.find((x) => x.id === block.course)
+          const first = c?.lessons.find((l) => !course.done[`${c.id}/${l.id}`]) ?? c?.lessons[0]
+          if (c && first) course.open(c.id, first.id)
+          return
+        }
+        case 'openings':
+          go('repertoire')
+          return
+      }
+    },
+    [go, rated, srs, course],
   )
 
   // Leaving an opening also stops its trap puzzles.
@@ -517,7 +563,9 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         <TopBar title={title} sub={sub} onOpenPalette={() => setPaletteOpen(true)} onOpenMenu={() => setMenuOpen(true)} />
         <UpdateBanner updates={updates} />
         <main className="canvas">
-          {route === 'games' ? (
+          {route === 'coach' ? (
+            <CoachHome coach={coach} onOpenBlock={openBlock} onNavigate={go} />
+          ) : route === 'games' ? (
             <MyGamesPanel library={library} engineReady={engine.status === 'ready'} onOpen={openLibraryGame} />
           ) : route === 'progress' ? (
             <ProgressPanel

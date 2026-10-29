@@ -21,6 +21,12 @@ export interface Settings {
   overlayLoose: boolean
   /** Monthly spending limit for the Claude coach in US dollars. 0 = no limit. */
   claudeMonthlyCap: 0 | 1 | 5 | 10 | 20
+  /** Hours a week the student can give to training. The coach sizes sessions from it. */
+  weeklyHours: number
+  /** The student's rapid rating when their imported games carry none. null = unknown. */
+  ratingOverride: number | null
+  /** How the coach talks. */
+  coachVoice: 'direct' | 'playful' | 'calm'
 }
 
 // Phones and tablets start on the 2 MB engine: the full one is a 95 MB download and needs more memory.
@@ -42,6 +48,9 @@ export const DEFAULT_SETTINGS: Settings = {
   overlayLines: false,
   overlayLoose: false,
   claudeMonthlyCap: 5,
+  weeklyHours: 7,
+  ratingOverride: null,
+  coachVoice: 'direct',
 }
 
 const STORAGE_KEY = 'mirror-gambit.settings.v1'

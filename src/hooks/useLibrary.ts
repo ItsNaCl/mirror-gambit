@@ -141,6 +141,7 @@ export function useLibrary(engine: EngineContextValue) {
     importing,
     progress,
     pending: games.length - analysed.length,
+    analysed,
     profile,
     importGames,
     reviewPending,

@@ -561,6 +561,113 @@ kbd {
   grid-column: span 12;
 }
 
+/* ---------- coach home ---------- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.plan-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-block {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.plan-block:first-child {
+  border-top: 0;
+}
+
+.plan-block.done .plan-text {
+  color: var(--faint);
+}
+
+.plan-block.current {
+  background: var(--raised);
+  margin: 0 -12px;
+  padding: 12px;
+  border-radius: var(--radius-inner);
+  border-top: 0;
+}
+
+.plan-mark {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--raised-2);
+  color: var(--muted);
+  flex: none;
+}
+
+.plan-block.done .plan-mark,
+.exit-list li.met .plan-mark {
+  background: var(--pill-positive-bg);
+  color: var(--positive);
+}
+
+.plan-mark svg {
+  width: 14px;
+  height: 14px;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.exit-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exit-list li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.exit-list .plan-mark {
+  width: 22px;
+  height: 22px;
+}
+
+.figure .value svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  color: var(--warning);
+}
+
+@media (max-width: 720px) {
+  .plan-block {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+  .plan-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
 /* ---------- buttons and inputs ---------- */
 
 .btn {

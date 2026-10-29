@@ -50,6 +50,51 @@ export function SettingsPanel({ engineInfo, updates, claude }: { engineInfo?: st
 
   return (
     <div className="page">
+      <Section title="Coach" about="How much time you have and where you stand. The coach sizes each session from this and from your imported games.">
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <label className="label" htmlFor="weeklyHours">
+              Hours a week: <span className="tabular">{settings.weeklyHours}</span>
+            </label>
+            <div className="desc">Spread over about five sessions. Six to ten hours is a serious improver's week.</div>
+            <input id="weeklyHours" type="range" min={1} max={15} value={settings.weeklyHours} onChange={(e) => update({ weeklyHours: Number(e.target.value) })} />
+          </div>
+        </div>
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <label className="label" htmlFor="ratingOverride">
+              Your rapid rating
+            </label>
+            <div className="desc">Only used when your imported games carry no rating. Leave it empty otherwise.</div>
+            <input
+              id="ratingOverride"
+              type="number"
+              inputMode="numeric"
+              min={100}
+              max={3000}
+              step={10}
+              placeholder="From your games"
+              value={settings.ratingOverride ?? ''}
+              onChange={(e) => update({ ratingOverride: e.target.value ? Math.max(100, Math.min(3000, Number(e.target.value))) : null })}
+              style={{ width: 160 }}
+            />
+          </div>
+        </div>
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <label className="label" htmlFor="coachVoice">
+              Coach voice
+            </label>
+            <div className="desc">How the coach talks when it explains a move. Direct is the default.</div>
+            <select id="coachVoice" value={settings.coachVoice} onChange={(e) => update({ coachVoice: e.target.value as Settings['coachVoice'] })}>
+              <option value="direct">Direct: short, plain, says what matters</option>
+              <option value="calm">Calm: patient, more explanation</option>
+              <option value="playful">Playful: jokes allowed, still honest</option>
+            </select>
+          </div>
+        </div>
+      </Section>
+
       <Section title="Board" about="How pieces move and which way the board faces.">
         <SwitchRow
           label="Show legal move dots"

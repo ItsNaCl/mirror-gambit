@@ -28,6 +28,8 @@ export interface LibraryGame {
   sans: string
   /** Opening name as the site reported it, when it did. */
   opening?: string
+  /** The player's rating in this game's pool at the time, when the site sent it. */
+  userRating?: number
 }
 
 export const USERNAME_RE = /^[A-Za-z0-9_-]{2,30}$/
@@ -45,6 +47,7 @@ export function libraryGameState(g: LibraryGame): GameState {
 
 interface LichessPlayer {
   user?: { name?: string; id?: string }
+  rating?: number
 }
 
 interface LichessGameJson {
@@ -61,6 +64,7 @@ interface LichessGameJson {
 }
 
 const sameName = (a: string | undefined, b: string) => !!a && a.toLowerCase() === b.toLowerCase()
+const ratingOf = (r: unknown): number | undefined => (typeof r === 'number' && r > 0 ? Math.round(r) : undefined)
 
 /** Lichess /api/games/user/{name} as NDJSON (one game per line). */
 export function parseLichessNdjson(text: string, username: string): LibraryGame[] {
@@ -90,6 +94,7 @@ export function parseLichessNdjson(text: string, username: string): LibraryGame[
       timeClass: g.speed ?? 'unknown',
       sans: g.moves.trim(),
       opening: g.opening?.name ? `${g.opening.eco ? g.opening.eco + ' ' : ''}${g.opening.name}` : undefined,
+      userRating: ratingOf(userColor === 'w' ? g.players?.white?.rating : g.players?.black?.rating),
     })
   }
   return out
@@ -98,6 +103,7 @@ export function parseLichessNdjson(text: string, username: string): LibraryGame[
 interface ChessComPlayer {
   username?: string
   result?: string
+  rating?: number
 }
 
 interface ChessComArchiveGame {
@@ -147,6 +153,7 @@ export function parseChessComGames(games: unknown[], username: string): LibraryG
       timeClass: raw.time_class ?? 'unknown',
       sans,
       opening: opening ? decodeURIComponent(opening).replace(/-/g, ' ').replace(/\.\.\./g, '') : undefined,
+      userRating: ratingOf(userColor === 'w' ? raw.white?.rating : raw.black?.rating),
     })
   }
   return out

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
+export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -17,6 +17,7 @@ export interface NavGroup {
 }
 
 export const ROUTES: Record<RouteId, RouteDef> = {
+  coach: { id: 'coach', label: 'Coach', description: "Today's session, picked from your games, with the habit to practise", keywords: 'home plan session today train streak' },
   play: { id: 'play', label: 'Play the computer', description: 'A game against Stockfish at your level, with a coach if you want one', keywords: 'bot ai vs game opponent' },
   board: { id: 'board', label: 'Board', description: 'Play both sides with the engine watching', keywords: 'analysis play game pgn fen engine' },
   review: { id: 'review', label: 'Game review', description: 'Every move of this game rated, with the turning points', keywords: 'analyse accuracy mistakes blunders' },
@@ -31,13 +32,14 @@ export const ROUTES: Record<RouteId, RouteDef> = {
 }
 
 export const NAV: NavGroup[] = [
+  { label: 'Coach', routes: ['coach'] },
   { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
   { label: 'Train', routes: ['repertoire', 'puzzles', 'openings', 'cards'] },
   { label: 'Learn', routes: ['courses'] },
   { label: 'You', routes: ['progress', 'settings'] },
 ]
 
-export const DEFAULT_ROUTE: RouteId = 'board'
+export const DEFAULT_ROUTE: RouteId = 'coach'
 
 export function parseHash(hash: string): RouteId {
   const id = hash.replace(/^#\/?/, '').split(/[/?]/)[0]
