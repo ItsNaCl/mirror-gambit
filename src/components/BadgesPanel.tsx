@@ -1,17 +1,12 @@
 import { Award, Check, Lock } from 'lucide-react'
 import type { ProgressionApi } from '../hooks/useProgression'
-import { BADGES, rankPlace, RANKS } from '../lib/game/xp'
+import { BADGES, earnedOn, rankPlace, RANKS } from '../lib/game/xp'
 import { PieceMark } from './PieceMark'
 
 export interface BadgesPanelProps {
   progression: ProgressionApi
   /** The training streak in days, for the streak badges' progress. */
   streak: number
-}
-
-function earnedDate(iso: string): string {
-  const t = Date.parse(iso)
-  return Number.isNaN(t) ? 'Earned' : `Earned ${new Date(t).toLocaleDateString()}`
 }
 
 /** The rank ladder and every badge, earned or still to come. */
@@ -90,7 +85,7 @@ export function BadgesPanel({ progression, streak }: BadgesPanelProps) {
                     <div className="muted small-text">{b.how}.</div>
                     <div className="faint small-text">
                       {at ? (
-                        earnedDate(at)
+                        (earnedOn(at) ?? 'Earned')
                       ) : prog.target > 1 ? (
                         <>
                           <span className="tabular">{Math.min(prog.value, prog.target)}</span> of <span className="tabular">{prog.target}</span>

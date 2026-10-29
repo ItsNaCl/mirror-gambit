@@ -32,9 +32,11 @@ describe('saved games', () => {
 
 describe('slow game rule', () => {
   it('counts a long game, or a shorter one that was played out', () => {
-    expect(countsAsSlowGame(40, true)).toBe(true)
-    expect(countsAsSlowGame(20, false)).toBe(true)
-    expect(countsAsSlowGame(20, true)).toBe(false)
-    expect(countsAsSlowGame(12, false)).toBe(false)
+    expect(countsAsSlowGame(40, true, 3)).toBe(true)
+    expect(countsAsSlowGame(20, false, 12)).toBe(true)
+    // Ten moves each in two minutes is a quick game, however it ended.
+    expect(countsAsSlowGame(20, false, 2)).toBe(false)
+    expect(countsAsSlowGame(20, true, 12)).toBe(false)
+    expect(countsAsSlowGame(12, false, 30)).toBe(false)
   })
 })

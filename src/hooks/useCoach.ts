@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { buildMetrics } from '../lib/coach/metrics'
 import { buildPlan, dayKey, exitProgress, streak, type SessionBlock, type SessionPlan, type SessionRecord } from '../lib/coach/planner'
 import type { AnalysedGame } from '../lib/games/profile'
 import * as kv from '../lib/store/kv'
+import { useLatest } from './useLatest'
 
 export const SESSIONS_KEY = 'mirror-gambit.sessions.v1'
 const ACTIVE_KEY = 'mirror-gambit.coach-session.v1'
@@ -43,10 +44,7 @@ export interface CoachInput {
 export function useCoach(input: CoachInput) {
   const { analysed, dueCards, pendingGames, puzzleRating, weeklyHours, ratingOverride, onBlockDone } = input
   // Kept in a ref so a new callback identity does not change `complete`.
-  const blockDone = useRef(onBlockDone)
-  useEffect(() => {
-    blockDone.current = onBlockDone
-  }, [onBlockDone])
+  const blockDone = useLatest(onBlockDone)
   const [log, setLog] = useState<SessionRecord[]>(() => kv.readJson(SESSIONS_KEY, []))
   const [active, setActive] = useState<ActiveSession | null>(() => kv.readJson(ACTIVE_KEY, null))
   const [budget, setBudget] = useState<number | null>(null)
@@ -96,7 +94,7 @@ export function useCoach(input: CoachInput) {
       saveLog(next)
       blockDone.current?.({ block, minutes, firstToday: rec.blocks.length === 0, streak: streak(next, today) })
     },
-    [log, today, saveLog],
+    [log, today, saveLog, blockDone],
   )
 
   /** Starts today's plan from its first block. A session from an earlier day is dropped. */

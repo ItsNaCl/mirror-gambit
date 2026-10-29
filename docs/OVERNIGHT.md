@@ -29,7 +29,7 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - [x] HANDOFF task 1
 - [x] HANDOFF task 2
 - [x] HANDOFF task 3
-- [ ] HANDOFF task 4
+- [x] HANDOFF task 4
 - [ ] Phase 2: why not this move
 - [ ] Phase 2: guess the move
 - [ ] Phase 2: narrated game
@@ -41,3 +41,5 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 ## Decisions
 (append one line per decision taken without Daniel)
 - Tasks 1 and 2 were already committed (2287baa, 00ac015) but unchecked here; verified the code is in place and marked them done instead of redoing them.
+- Board sounds key on the session game moving one ply forward, so opening a repertoire gap or switching an opening variation also clicks; the board shows a piece moving in those cases, so the click is kept.
+- The review asked for one plumbing style for XP events and a shared test factory; left as is (architecture, not a defect), the fixes went to the real bugs (import XP cap, batch review XP, slow game needs clock time, unknown stored band).

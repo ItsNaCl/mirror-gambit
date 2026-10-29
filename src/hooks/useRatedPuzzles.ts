@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLatest } from './useLatest'
 import { newRating, parseRated, pickRated, PROVISIONAL_GAMES, toPuzzle, updateRating, type PuzzleRating, type RatedEntry, type RatedPuzzle, type ThemeFilter } from '../lib/puzzles/rated'
 import type { Outcome } from '../lib/practice/practice'
 import * as kv from '../lib/store/kv'
@@ -27,10 +28,7 @@ export interface RatedOptions {
  */
 export function useRatedPuzzles(puzzles: PuzzlesApi, options: RatedOptions = {}) {
   // A ref, so the scoring effect does not depend on the callback's identity.
-  const onResult = useRef(options.onResult)
-  useEffect(() => {
-    onResult.current = options.onResult
-  }, [options.onResult])
+  const onResult = useLatest(options.onResult)
   const [pool, setPool] = useState<RatedPuzzle[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [rating, setRating] = useState<PuzzleRating>(() => kv.readJson(RATING_KEY, newRating()))
@@ -84,7 +82,7 @@ export function useRatedPuzzles(puzzles: PuzzlesApi, options: RatedOptions = {})
     kv.setItem(SEEN_KEY, JSON.stringify(nextSeen))
     setLastDelta(delta)
     onResult.current?.({ outcome, rating: current.rating, delta })
-  }, [finished, current, puzzles.status, puzzles.outcome, rating, seen])
+  }, [finished, current, puzzles.status, puzzles.outcome, rating, seen, onResult])
 
   const recent = useMemo(() => rating.history.slice(-30), [rating.history])
 

@@ -57,6 +57,7 @@ import { usePlay, type PlayApi } from './hooks/usePlay'
 import { usePuzzles, type PuzzlesApi } from './hooks/usePuzzles'
 import { useReview } from './hooks/useReview'
 import { useSettings } from './hooks/useSettings'
+import { useSfx } from './hooks/useSfx'
 import { useSrs, type SrsApi, type SrsOptions } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
@@ -75,6 +76,7 @@ import { countsAsSlowGame, outcomeFor, type SavedGame } from './lib/play/savedGa
 import { libraryGameState, type LibraryGame } from './lib/games/sources'
 import { outcome } from './lib/games/profile'
 import { SLOW } from './lib/coach/metrics'
+import { soundForMove } from './lib/sound/sfx'
 import type { XpEvent } from './lib/game/xp'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
@@ -86,6 +88,9 @@ import { courseSession, freeSession, playSession, puzzleSession, repertoireSessi
 
 /** On a first import, slow games from the last week count. */
 const RECENT_IMPORT_MS = 7 * 86_400_000
+/** Slow games paid per import and games paid per batch review, so a backlog is not a rank jump. */
+const MAX_IMPORT_PAY = 3
+const MAX_BATCH_PAY = 5
 
 export default function App() {
   const [route, navigate] = useRoute()
@@ -163,10 +168,10 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const playGame = games.play
   useEffect(() => {
     if (!play.active || !play.result || playAwarded.current === playGame.gameId) return
-    if (!countsAsSlowGame(playGame.game.moves.length, play.resigned)) return
+    if (!countsAsSlowGame(playGame.game.moves.length, play.resigned, (Date.now() - play.startedAt) / 60_000)) return
     playAwarded.current = playGame.gameId
     earn({ type: 'slowGame', result: outcomeFor(play.result.result, play.userColor) })
-  }, [play.active, play.result, play.resigned, play.userColor, playGame.game.moves.length, playGame.gameId, earn])
+  }, [play.active, play.result, play.resigned, play.startedAt, play.userColor, playGame.game.moves.length, playGame.gameId, earn])
 
   // Imported slow games count when they are new to the library and were played after every game
   // seen so far, so importing a history does not pay for old games, and clearing the library and
@@ -180,11 +185,15 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
       return
     }
     const since = known.newest || Date.now() - RECENT_IMPORT_MS
-    const fresh = library.games.filter((g) => !known.ids.has(g.id))
+    const fresh = library.games.filter((g) => !known.ids.has(g.id)).sort((a, b) => stamp(b) - stamp(a))
+    let paid = 0
     for (const g of fresh) {
       known.ids.add(g.id)
       known.newest = Math.max(known.newest, stamp(g))
-      if (SLOW.has(g.timeClass) && stamp(g) > since) earn({ type: 'slowGame', result: outcome(g) })
+      if (SLOW.has(g.timeClass) && stamp(g) > since && paid < MAX_IMPORT_PAY) {
+        paid++
+        earn({ type: 'slowGame', result: outcome(g) })
+      }
     }
   }, [library.games, earn])
 
@@ -201,6 +210,23 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   useEffect(() => {
     if (route !== 'games' && batchRunning) stopBatch()
   }, [route, batchRunning, stopBatch])
+  // Games the batch review analyses are reviewed games too, a few per run. Games analysed before start-up only seed the count.
+  const analysedCount = library.analysed.length
+  const batchPaid = useRef<{ seen: number; paid: number } | null>(null)
+  useEffect(() => {
+    const s = batchPaid.current
+    if (!s) {
+      batchPaid.current = { seen: analysedCount, paid: 0 }
+      return
+    }
+    if (!batchRunning) s.paid = 0
+    const fresh = Math.max(0, analysedCount - s.seen)
+    s.seen = analysedCount
+    for (let i = 0; i < fresh && s.paid < MAX_BATCH_PAY; i++) {
+      s.paid++
+      earn({ type: 'review' })
+    }
+  }, [analysedCount, batchRunning, earn])
   const sessionId = sessionFor(route, puzzles)
   const free = games.free
   const { game, fen, gameOver } = free
@@ -406,6 +432,45 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
 
   const boardFen = session?.game.fen ?? fen
   useEffect(() => onBoardFen(boardFen), [boardFen, onBoardFen])
+
+  // Sounds. A move on the board is heard when the session's game goes one ply forward: a move
+  // played, a reply from the computer or a step through the move list. A new or loaded game, or
+  // a jump back, is silent.
+  const sfx = useSfx()
+  const sessionGame = session?.game.game
+  const sessionGameId = session?.game.gameId
+  const heard = useRef<{ key: string; ply: number } | null>(null)
+  useEffect(() => {
+    if (!sessionGame || sessionGameId === undefined) {
+      heard.current = null
+      return
+    }
+    const key = `${sessionId}:${sessionGameId}`
+    const prev = heard.current
+    heard.current = { key, ply: sessionGame.ply }
+    if (!prev || prev.key !== key || sessionGame.ply !== prev.ply + 1) return
+    const move = sessionGame.moves[sessionGame.ply - 1]
+    if (move) sfx(soundForMove(move))
+  }, [sessionGame, sessionGameId, sessionId, sfx])
+
+  // Rewards: a clean solve or a card answered well, the streak bonus, and the new rank. The award
+  // that raised the rank plays only the rank's sound; the gains after it play their own.
+  const gain = progression.lastGain
+  const levelUp = progression.levelUp
+  const levelUpSeq = useRef(0)
+  useEffect(() => {
+    if (!levelUp) return
+    levelUpSeq.current = gain?.seq ?? 0
+    sfx('levelUp')
+    // gain: the award that raised the rank arrives in the same render as the rank; later gains are not it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelUp, sfx])
+  useEffect(() => {
+    if (!gain || gain.seq === levelUpSeq.current) return
+    const e = gain.event
+    if (e.type === 'streak') sfx('streak')
+    else if ((e.type === 'solve' && e.outcome === 'clean') || (e.type === 'card' && e.grade >= 5)) sfx('solve')
+  }, [gain, sfx])
 
   // In review, the reviewed move's grade sits as a badge on its square.
   const reviewedMove = route === 'review' && reviewResult && game.ply > 0 ? reviewResult.moves[game.ply - 1] : null

@@ -18,7 +18,9 @@ interface Meta {
 function normaliseMeta(raw: unknown, today: string): Meta {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Partial<Meta>
   const day = r.day && typeof r.day === 'object' && r.day.date === today ? { date: today, xp: Math.max(0, Number(r.day.xp) || 0) } : { date: today, xp: 0 }
-  return { day, bandId: typeof r.bandId === 'string' ? r.bandId : null }
+  // A band id this version does not know is forgotten, so it cannot read as a promotion later.
+  const bandId = typeof r.bandId === 'string' && BANDS.some((b) => b.id === r.bandId) ? r.bandId : null
+  return { day, bandId }
 }
 
 /** One award, shown briefly by the UI. `seq` changes on every gain, even for equal amounts. */

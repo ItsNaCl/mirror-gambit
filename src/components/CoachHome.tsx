@@ -8,7 +8,7 @@ import type { ProgressionApi } from '../hooks/useProgression'
 import { ACTIVITY_LABEL, nextBand } from '../lib/coach/curriculum'
 import { describeMetrics } from '../lib/coach/metrics'
 import type { SessionBlock } from '../lib/coach/planner'
-import { xpFor } from '../lib/game/xp'
+import { earnedOn, xpFor } from '../lib/game/xp'
 import { Confetti } from './Confetti'
 import { KnightMark } from './KnightMark'
 
@@ -23,11 +23,6 @@ export interface CoachHomeProps {
 }
 
 const BUDGETS = [20, 30, 45, 60]
-
-function earnedDate(iso: string): string {
-  const t = Date.parse(iso)
-  return Number.isNaN(t) ? '' : ` Earned ${new Date(t).toLocaleDateString()}.`
-}
 
 /** Today: the four numbers that matter, the session as a quest track, and the habit to carry into it. */
 export function CoachHome({ coach, progression, onOpenBlock, onNavigate, boardFen }: CoachHomeProps) {
@@ -153,7 +148,7 @@ export function CoachHome({ coach, progression, onOpenBlock, onNavigate, boardFe
             {badges.length ? (
               <div className="chips">
                 {badges.map((b) => (
-                  <span key={b.id} className="chip" title={`${b.how}.${earnedDate(b.earnedAt)}`}>
+                  <span key={b.id} className="chip" title={`${b.how}.${earnedOn(b.earnedAt) ? ` ${earnedOn(b.earnedAt)}.` : ''}`}>
                     <Award /> {b.label}
                   </span>
                 ))}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { isProblem } from '../lib/analysis/classify'
@@ -16,6 +16,7 @@ import {
   type SrsCard,
 } from '../lib/srs/srs'
 import { useAttempt, useHintDecorations } from './useAttempt'
+import { useLatest } from './useLatest'
 import type { GameApi } from './useGame'
 import * as kv from '../lib/store/kv'
 import { ANSWER_ARROW } from '../lib/ui/boardColors'
@@ -60,10 +61,7 @@ export interface SrsOptions {
 export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
   const { setGame } = gameApi
   const attempt = useAttempt()
-  const onGrade = useRef(options.onGrade)
-  useEffect(() => {
-    onGrade.current = options.onGrade
-  }, [options.onGrade])
+  const onGrade = useLatest(options.onGrade)
   const [cards, setCards] = useState<SrsCard[]>(loadCards)
   const [session, setSession] = useState<ReviewSession | null>(null)
   const [now, setNow] = useState(() => Date.now())
@@ -187,7 +185,7 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
             : `Assisted: ${rec.wrongTries} wrong ${rec.wrongTries === 1 ? 'try' : 'tries'}${rec.maxHintLevel ? `, hints up to level ${rec.maxHintLevel}` : ''}. ${comesBack}`,
       })
     },
-    [session, setGame, attempt],
+    [session, setGame, attempt, onGrade],
   )
 
   const onBoardMove = useCallback(

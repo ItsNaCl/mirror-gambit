@@ -14,15 +14,6 @@ const SUSPEND_OWNER = 'library'
 /** Lower than a single Game review (14): fast enough for dozens of games, still sees one- and two-move tactics. */
 export const BATCH_DEPTH = 12
 
-function load<T>(key: string, fallback: T): T {
-  try {
-    const raw = kv.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
-}
-
 export interface ImportAccount {
   source: GameSource
   username: string
@@ -40,9 +31,9 @@ export interface BatchProgress {
 
 /** Your own games from Lichess and chess.com, their batch review, and the weakness profile. */
 export function useLibrary(engine: EngineContextValue) {
-  const [games, setGames] = useState<LibraryGame[]>(() => load(GAMES_KEY, []))
-  const [analyses, setAnalyses] = useState<Record<string, GameAnalysis>>(() => load(ANALYSIS_KEY, {}))
-  const [account, setAccount] = useState<ImportAccount | null>(() => load(ACCOUNT_KEY, null))
+  const [games, setGames] = useState<LibraryGame[]>(() => kv.readJson(GAMES_KEY, []))
+  const [analyses, setAnalyses] = useState<Record<string, GameAnalysis>>(() => kv.readJson(ANALYSIS_KEY, {}))
+  const [account, setAccount] = useState<ImportAccount | null>(() => kv.readJson(ACCOUNT_KEY, null))
   const [importing, setImporting] = useState(false)
   const [progress, setProgress] = useState<BatchProgress | null>(null)
   const runId = useRef(0)

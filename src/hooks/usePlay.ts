@@ -49,6 +49,8 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
   const [coachAlert, setCoachAlert] = useState<CoachAlert | null>(null)
   // The gameId of the game this mode started, so loading another game (PGN import, reset) ends play mode.
   const [playGameId, setPlayGameId] = useState<number | null>(null)
+  // When the game started, so a finished game can be measured in clock time.
+  const [startedAt, setStartedAt] = useState(0)
   const savedFor = useRef<number | null>(null)
   const requestId = useRef(0)
   const { setLiveSuspended, evaluate } = engine
@@ -90,6 +92,7 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
       savedFor.current = null
       reset()
       setPlayGameId(gameId + 1) // reset() bumps gameId by one
+      setStartedAt(Date.now())
       setActive(true)
     },
     [reset, gameId],
@@ -241,6 +244,7 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
     userToMove,
     result,
     resigned,
+    startedAt,
     error,
     savedGames,
     canTakeBack,

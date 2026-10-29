@@ -19,9 +19,11 @@ export const MAX_SAVED_GAMES = 50
 
 /** The length a game against the computer needs to count as a slow game for the coach. */
 export const SLOW_GAME_PLIES = 40
-/** 20 moves each counts; a shorter game counts only when it was played out rather than resigned. */
-export function countsAsSlowGame(plies: number, resigned: boolean): boolean {
-  return plies >= SLOW_GAME_PLIES || (!resigned && plies >= SLOW_GAME_PLIES / 2)
+/** A shorter game counts only when it was played out, not resigned, and took real clock time. */
+export const SLOW_GAME_MINUTES = 10
+/** 20 moves each counts. 10 moves each counts when the game was played out and lasted at least SLOW_GAME_MINUTES. */
+export function countsAsSlowGame(plies: number, resigned: boolean, minutes: number): boolean {
+  return plies >= SLOW_GAME_PLIES || (!resigned && plies >= SLOW_GAME_PLIES / 2 && minutes >= SLOW_GAME_MINUTES)
 }
 
 export function outcomeFor(result: SavedGame['result'], userColor: 'w' | 'b'): PlayerOutcome {

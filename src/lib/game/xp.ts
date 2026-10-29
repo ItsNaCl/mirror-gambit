@@ -132,6 +132,12 @@ export function badgeEarned(b: Badge, p: Progression, streak: number): boolean {
   return value >= target
 }
 
+/** "Earned 29/10/2026" for the badge chips, or null when the stored date does not parse. */
+export function earnedOn(iso: string): string | null {
+  const t = Date.parse(iso)
+  return Number.isNaN(t) ? null : `Earned ${new Date(t).toLocaleDateString()}`
+}
+
 export interface Award {
   next: Progression
   gained: number
