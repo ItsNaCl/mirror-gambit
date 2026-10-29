@@ -92,6 +92,13 @@ export function motionLevel(s: Pick<Settings, 'motion'>): 'rich' | 'snappy' | 'r
   return touchDevice ? 'snappy' : 'rich'
 }
 
+/** The motion level in force, as the theme effect wrote it to <html>. */
+export function currentMotion(): 'rich' | 'snappy' | 'reduced' {
+  if (typeof document === 'undefined') return 'reduced'
+  const m = document.documentElement.dataset.motion
+  return m === 'snappy' || m === 'reduced' ? m : 'rich'
+}
+
 const STORAGE_KEY = 'mirror-gambit.settings.v1'
 
 function loadSettings(): Settings {

@@ -20,6 +20,7 @@ import { ROUTE_ICONS, Sidebar, TopBar } from './app/Shell'
 import { NAV, ROUTES, useRoute, type RouteId } from './app/routes'
 import { AnalysisPanel } from './components/AnalysisPanel'
 import { CoachHome } from './components/CoachHome'
+import { LevelUp } from './components/LevelUp'
 import { useCoach, type BlockDone } from './hooks/useCoach'
 import { useProgression } from './hooks/useProgression'
 import type { SessionBlock } from './lib/coach/planner'
@@ -636,7 +637,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         <UpdateBanner updates={updates} />
         <main className="canvas">
           {route === 'coach' ? (
-            <CoachHome coach={coach} onOpenBlock={openBlock} onNavigate={go} />
+            <CoachHome coach={coach} progression={progression} onOpenBlock={openBlock} onNavigate={go} boardFen={game.moves.length > 0 ? fen : undefined} />
           ) : route === 'games' ? (
             <MyGamesPanel library={library} engineReady={engine.status === 'ready'} onOpen={openLibraryGame} />
           ) : route === 'progress' ? (
@@ -942,6 +943,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
       </Modal>
 
       <ToastStack toasts={toasts} onDismiss={dismiss} />
+      <LevelUp rank={progression.levelUp} onDismiss={progression.dismissLevelUp} />
     </div>
   )
 }
