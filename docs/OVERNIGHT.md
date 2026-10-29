@@ -35,7 +35,7 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - [x] Phase 2: narrated game
 - [x] Phase 2: over the board entry
 - [x] Phase 2: card grouping and Woodpecker cycles
-- [ ] HANDOFF task 7, security audit
+- [x] HANDOFF task 7, security audit
 - [ ] README and CLAUDE.md updated
 
 ## Decisions
@@ -49,3 +49,4 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - The narrated game plays the coach as full strength Stockfish (depth 14, three candidates) against the existing play levels; Maia replaces the opponent in phase 3.
 - Over the board entry has no planner block: a real game is entered when it happens, not scheduled. The Today screen opens the narrated game screen without starting one, since the colour and level are chosen there.
 - The four phase 2 modes were reviewed together in one code review pass and committed one mode per commit, with the shared wiring (routes, sessions, planner, App) in the last of them, so each earlier commit still type-checks on its own.
+- Security audit: the security-audit skill was used in its quick, scoped form (three parallel source reviewers over the listed surfaces, each finding tied to a principal, an input, a control and a result); its ledger and report files were not produced, docs/SECURITY-AUDIT.md holds the findings and decisions as the handoff asked. Electron was bumped 44.7 to 44.10 for the one high advisory, which changed package-lock.json. Code signing of the installer stays open until a certificate exists.

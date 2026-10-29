@@ -48,7 +48,7 @@ export const DEFAULT_ROUTE: RouteId = 'coach'
 
 export function parseHash(hash: string): RouteId {
   const id = hash.replace(/^#\/?/, '').split(/[/?]/)[0]
-  return id in ROUTES ? (id as RouteId) : DEFAULT_ROUTE
+  return Object.hasOwn(ROUTES, id) ? (id as RouteId) : DEFAULT_ROUTE
 }
 
 /** A tiny hash router: the screen lives in the URL so links and the back button work. */

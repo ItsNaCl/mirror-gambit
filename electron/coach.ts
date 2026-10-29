@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { app, ipcMain, safeStorage } from 'electron'
+import { app, ipcMain, safeStorage, type IpcMainInvokeEvent } from 'electron'
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
@@ -125,7 +125,8 @@ async function ask(raw: unknown): Promise<CoachAnswer | CoachFailure> {
   const apiKey = readKey()
   if (!apiKey) return { ok: false, error: 'Add your Claude API key in Settings first.' }
   const model = readModel()
-  const client = new Anthropic({ apiKey, maxRetries: 2, timeout: 120_000 })
+  // The endpoint is pinned, so an ANTHROPIC_BASE_URL in the environment cannot redirect the key elsewhere.
+  const client = new Anthropic({ apiKey, baseURL: 'https://api.anthropic.com', maxRetries: 2, timeout: 120_000 })
 
   // The position description opens the conversation; follow-up questions build on it.
   const first = req.question ? `${req.context}\n\nQuestion: ${req.question}` : req.context
@@ -162,15 +163,23 @@ async function ask(raw: unknown): Promise<CoachAnswer | CoachFailure> {
   }
 }
 
-export function setupCoach(log: (line: string) => void) {
-  ipcMain.handle('coach:status', () => ({
-    canStoreKey: safeStorage.isEncryptionAvailable(),
-    hasKey: readKey() !== null,
-    model: readModel(),
-    models: COACH_MODELS,
-  }))
+export function setupCoach(log: (line: string) => void, fromApp: (e: IpcMainInvokeEvent) => boolean) {
+  const guard = (e: IpcMainInvokeEvent) => {
+    if (!fromApp(e)) throw new Error('Not allowed')
+  }
+  ipcMain.handle('coach:status', (e) => {
+    guard(e)
+    return {
+      canStoreKey: safeStorage.isEncryptionAvailable(),
+      // The key file's presence is enough here; the key itself is only decrypted for a request.
+      hasKey: existsSync(keyFile()),
+      model: readModel(),
+      models: COACH_MODELS,
+    }
+  })
 
-  ipcMain.handle('coach:setKey', (_e, key: unknown) => {
+  ipcMain.handle('coach:setKey', (e, key: unknown) => {
+    guard(e)
     if (typeof key !== 'string' || !/^sk-ant-[A-Za-z0-9_-]{20,250}$/.test(key.trim())) return { ok: false, error: 'That does not look like a Claude API key (it starts with sk-ant-).' }
     if (!safeStorage.isEncryptionAvailable()) return { ok: false, error: 'This computer cannot store the key securely.' }
     writeFileSync(keyFile(), safeStorage.encryptString(key.trim()))
@@ -178,19 +187,22 @@ export function setupCoach(log: (line: string) => void) {
     return { ok: true }
   })
 
-  ipcMain.handle('coach:clearKey', () => {
+  ipcMain.handle('coach:clearKey', (e) => {
+    guard(e)
     rmSync(keyFile(), { force: true })
     log('[coach] API key removed')
     return { ok: true }
   })
 
-  ipcMain.handle('coach:setModel', (_e, model: unknown) => {
+  ipcMain.handle('coach:setModel', (e, model: unknown) => {
+    guard(e)
     if (!COACH_MODELS.includes(model as CoachModel)) return { ok: false, error: 'Unknown model.' }
     writeFileSync(configFile(), JSON.stringify({ model }))
     return { ok: true }
   })
 
-  ipcMain.handle('coach:ask', async (_e, raw: unknown) => {
+  ipcMain.handle('coach:ask', async (e, raw: unknown) => {
+    guard(e)
     const answer = await ask(raw)
     log(answer.ok ? `[coach] ${answer.model} in=${answer.usage.input} out=${answer.usage.output} cacheRead=${answer.usage.cacheRead}` : `[coach] failed: ${answer.error}`)
     return answer

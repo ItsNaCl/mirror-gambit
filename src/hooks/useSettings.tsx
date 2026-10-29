@@ -105,8 +105,9 @@ function loadSettings(): Settings {
   try {
     const raw = kv.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_SETTINGS
-    const parsed = JSON.parse(raw) as Partial<Settings>
-    return { ...DEFAULT_SETTINGS, ...parsed }
+    const parsed = JSON.parse(raw) as unknown
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return DEFAULT_SETTINGS
+    return { ...DEFAULT_SETTINGS, ...(parsed as Partial<Settings>) }
   } catch {
     return DEFAULT_SETTINGS
   }

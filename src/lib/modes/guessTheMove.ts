@@ -62,7 +62,8 @@ export function parseModelGames(raw: unknown): ModelGameSet {
       console.warn(`[model games] dropped ${g.id}: the moves or the evaluations do not line up`)
       continue
     }
-    games.push(g)
+    // The link is shown as is, so only a Lichess game page is kept.
+    games.push({ ...g, url: typeof g.url === 'string' && /^https:\/\/lichess\.org\/[A-Za-z0-9]+$/.test(g.url) ? g.url : '' })
   }
   return {
     source: r.source ?? '',

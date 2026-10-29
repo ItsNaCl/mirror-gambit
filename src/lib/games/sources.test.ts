@@ -67,3 +67,32 @@ describe('mergeLibrary', () => {
     expect(mergeLibrary([], [g('a', '2026-10-01T00:00:00Z'), g('b', '2026-10-02T00:00:00Z')], 1).map((x) => x.id)).toEqual(['b'])
   })
 })
+
+describe('shaping of remote fields', () => {
+  it('keeps only strings for names, time class and opening, and skips a record that cannot be read', () => {
+    const line = JSON.stringify({
+      id: 'abcd1234',
+      moves: 'e4 e5',
+      createdAt: 1e20,
+      speed: { x: 1 },
+      winner: 'white',
+      players: { white: { user: { name: 'me' } }, black: { user: { name: { x: 1 } } } },
+      opening: { name: 'Italian Game', eco: 42 },
+    })
+    const [g] = parseLichessNdjson(line, 'me')
+    expect(g.black).toBe('Anonymous')
+    expect(g.timeClass).toBe('unknown')
+    expect(g.opening).toBe('Italian Game')
+    expect(g.date).toBe('1970-01-01T00:00:00.000Z')
+    expect(parseLichessNdjson(JSON.stringify({ id: 'x/y', moves: 'e4' }), 'me')).toEqual([])
+  })
+
+  it('needs a chess.com game url on www.chess.com and survives a bad opening escape', () => {
+    const base = { pgn: '[ECOUrl "https://www.chess.com/openings/Italian-%E0"]\n\n1. e4 e5 *', white: { username: 'me' }, black: { username: {} } }
+    expect(parseChessComGames([{ ...base, url: 'https://evil.example/game/1' }], 'me')).toEqual([])
+    const [g] = parseChessComGames([{ ...base, url: 'https://www.chess.com/game/live/123' }], 'me')
+    expect(g.id).toBe('chesscom:123')
+    expect(g.black).toBe('Anonymous')
+    expect(g.opening).toBeUndefined()
+  })
+})

@@ -65,6 +65,16 @@ interface LichessGameJson {
 }
 
 const sameName = (a: string | undefined, b: string) => !!a && a.toLowerCase() === b.toLowerCase()
+/** A remote field is used only when it is the string it should be. */
+const str = (v: unknown, fallback: string): string => (typeof v === 'string' ? v : fallback)
+const isoDate = (ms: unknown): string => {
+  const n = typeof ms === 'number' && Number.isFinite(ms) ? ms : 0
+  try {
+    return new Date(n).toISOString()
+  } catch {
+    return new Date(0).toISOString()
+  }
+}
 const ratingOf = (r: unknown): number | undefined => (typeof r === 'number' && r > 0 ? Math.round(r) : undefined)
 
 /** Lichess /api/games/user/{name} as NDJSON (one game per line). */
@@ -78,23 +88,23 @@ export function parseLichessNdjson(text: string, username: string): LibraryGame[
     } catch {
       continue
     }
-    if (!g.id || !g.moves || (g.variant && g.variant !== 'standard') || (g.initialFen && g.initialFen !== DEFAULT_POSITION)) continue
-    const white = g.players?.white?.user?.name ?? 'Anonymous'
-    const black = g.players?.black?.user?.name ?? 'Anonymous'
+    if (typeof g.id !== 'string' || !/^[A-Za-z0-9]+$/.test(g.id) || typeof g.moves !== 'string' || (g.variant && g.variant !== 'standard') || (g.initialFen && g.initialFen !== DEFAULT_POSITION)) continue
+    const white = str(g.players?.white?.user?.name, 'Anonymous')
+    const black = str(g.players?.black?.user?.name, 'Anonymous')
     const userColor = sameName(white, username) ? 'w' : sameName(black, username) ? 'b' : null
     if (!userColor) continue
     out.push({
       id: `lichess:${g.id}`,
       source: 'lichess',
       url: `https://lichess.org/${g.id}`,
-      date: new Date(g.createdAt ?? 0).toISOString(),
+      date: isoDate(g.createdAt),
       white,
       black,
       userColor,
       result: g.winner === 'white' ? '1-0' : g.winner === 'black' ? '0-1' : '1/2-1/2',
-      timeClass: g.speed ?? 'unknown',
+      timeClass: str(g.speed, 'unknown'),
       sans: g.moves.trim(),
-      opening: g.opening?.name ? `${g.opening.eco ? g.opening.eco + ' ' : ''}${g.opening.name}` : undefined,
+      opening: typeof g.opening?.name === 'string' ? `${typeof g.opening.eco === 'string' ? g.opening.eco + ' ' : ''}${g.opening.name}` : undefined,
       userRating: ratingOf(userColor === 'w' ? g.players?.white?.rating : g.players?.black?.rating),
     })
   }
@@ -122,10 +132,10 @@ interface ChessComArchiveGame {
 export function parseChessComGames(games: unknown[], username: string): LibraryGame[] {
   const out: LibraryGame[] = []
   for (const raw of games as ChessComArchiveGame[]) {
-    if (!raw?.url || !raw.pgn || (raw.rules && raw.rules !== 'chess')) continue
+    if (typeof raw?.url !== 'string' || !raw.url.startsWith('https://www.chess.com/') || typeof raw.pgn !== 'string' || (raw.rules && raw.rules !== 'chess')) continue
     if (raw.initial_setup && raw.initial_setup !== DEFAULT_POSITION) continue
-    const white = raw.white?.username ?? 'Anonymous'
-    const black = raw.black?.username ?? 'Anonymous'
+    const white = str(raw.white?.username, 'Anonymous')
+    const black = str(raw.black?.username, 'Anonymous')
     const userColor = sameName(white, username) ? 'w' : sameName(black, username) ? 'b' : null
     if (!userColor) continue
     let sans: string
@@ -140,20 +150,27 @@ export function parseChessComGames(games: unknown[], username: string): LibraryG
     const br = raw.black?.result
     // chess.com marks the winner "win"; every other ending (agreed, repetition, stalemate...) is a draw.
     const result = wr === 'win' ? '1-0' : br === 'win' ? '0-1' : '1/2-1/2'
-    const id = raw.url.split('/').pop() ?? raw.url
+    const id = raw.url.split('/').pop() || raw.url
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) continue
     const opening = /\[ECOUrl "https:\/\/www\.chess\.com\/openings\/([^"]+)"\]/.exec(raw.pgn)?.[1]
+    let openingName: string | undefined
+    try {
+      openingName = opening ? decodeURIComponent(opening).replace(/-/g, ' ').replace(/\.\.\./g, '') : undefined
+    } catch {
+      openingName = undefined
+    }
     out.push({
       id: `chesscom:${id}`,
       source: 'chesscom',
       url: raw.url,
-      date: new Date((raw.end_time ?? 0) * 1000).toISOString(),
+      date: isoDate(typeof raw.end_time === 'number' ? raw.end_time * 1000 : 0),
       white,
       black,
       userColor,
       result,
-      timeClass: raw.time_class ?? 'unknown',
+      timeClass: str(raw.time_class, 'unknown'),
       sans,
-      opening: opening ? decodeURIComponent(opening).replace(/-/g, ' ').replace(/\.\.\./g, '') : undefined,
+      opening: openingName,
       userRating: ratingOf(userColor === 'w' ? raw.white?.rating : raw.black?.rating),
     })
   }

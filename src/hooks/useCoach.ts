@@ -46,13 +46,28 @@ export interface CoachInput {
   onBlockDone?: (done: BlockDone) => void
 }
 
+const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
+const isBlock = (b: unknown): b is { activity: string; minutes: number } => isRecord(b) && typeof b.activity === 'string' && typeof b.minutes === 'number'
+
+/** Stored records are kept only in the shape the planner reads; anything else is dropped, not crashed on. */
+function storedLog(raw: unknown): SessionRecord[] {
+  if (!Array.isArray(raw)) return []
+  return raw.filter((r): r is SessionRecord => isRecord(r) && typeof r.date === 'string' && Array.isArray(r.blocks) && r.blocks.every(isBlock))
+}
+
+function storedActive(raw: unknown): ActiveSession | null {
+  if (!isRecord(raw) || typeof raw.date !== 'string' || !Array.isArray(raw.blocks) || !raw.blocks.every(isBlock) || typeof raw.index !== 'number') return null
+  const credited = Array.isArray(raw.credited) ? raw.credited.map((n) => (typeof n === 'number' && Number.isFinite(n) ? n : 0)) : []
+  return { date: raw.date, blocks: raw.blocks as ActiveSession['blocks'], index: raw.index, startedAt: typeof raw.startedAt === 'number' ? raw.startedAt : Date.now(), credited }
+}
+
 /** The coach: today's plan, the session in progress, the log and the streak. */
 export function useCoach(input: CoachInput) {
   const { analysed, dueCards, pendingGames, whyNotPositions = 0, modelGames = false, woodpeckerLeft = 0, puzzleRating, weeklyHours, ratingOverride, onBlockDone } = input
   // Kept in a ref so a new callback identity does not change `complete`.
   const blockDone = useLatest(onBlockDone)
-  const [log, setLog] = useState<SessionRecord[]>(() => kv.readJson(SESSIONS_KEY, []))
-  const [active, setActive] = useState<ActiveSession | null>(() => kv.readJson(ACTIVE_KEY, null))
+  const [log, setLog] = useState<SessionRecord[]>(() => storedLog(kv.readJson<unknown>(SESSIONS_KEY, [])))
+  const [active, setActive] = useState<ActiveSession | null>(() => storedActive(kv.readJson<unknown>(ACTIVE_KEY, null)))
   const [budget, setBudget] = useState<number | null>(null)
   const [today, setToday] = useState(() => dayKey(new Date()))
 

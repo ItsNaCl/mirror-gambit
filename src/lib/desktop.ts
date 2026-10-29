@@ -115,30 +115,54 @@ export async function fetchRecentGames(source: GameSource, username: string, max
     if (typeof navigator !== 'undefined' && !navigator.onLine) throw new Error('You are offline. Importing games needs an internet connection.')
     throw new Error(cleanError(e))
   }
-  return source === 'lichess' ? parseLichessNdjson(raw, username) : parseChessComGames(JSON.parse(raw) as unknown[], username)
+  if (source === 'lichess') return parseLichessNdjson(raw, username)
+  let list: unknown
+  try {
+    list = JSON.parse(raw)
+  } catch {
+    throw new Error('chess.com sent something that is not a game list.')
+  }
+  return parseChessComGames(Array.isArray(list) ? list : [], username)
+}
+
+/** The largest answer a game site may send to the browser build. */
+const MAX_RESPONSE_BYTES = 20 * 1024 * 1024
+const MAX_MONTH_GAMES = 500
+
+async function readBody(res: Response): Promise<string> {
+  const declared = Number(res.headers.get('content-length'))
+  if (Number.isFinite(declared) && declared > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
+  const text = await res.text()
+  if (text.length > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
+  return text
 }
 
 async function fetchFromBrowser(source: GameSource, username: string, max: number): Promise<string> {
+  const count = Math.min(100, Math.max(1, Math.floor(max) || 1))
+  // No redirects: the hosts are fixed here and the answers must come from them.
   if (source === 'lichess') {
-    const res = await fetch(`https://lichess.org/api/games/user/${username}?max=${max}&moves=true&opening=true`, { headers: { Accept: 'application/x-ndjson' } })
+    const res = await fetch(`https://lichess.org/api/games/user/${username}?max=${count}&moves=true&opening=true`, { headers: { Accept: 'application/x-ndjson' }, redirect: 'error' })
     if (!res.ok) throw new Error(res.status === 404 ? 'Lichess has no player with that name.' : `Lichess answered ${res.status}.`)
-    return res.text()
+    return readBody(res)
   }
-  const list = await fetch(`https://api.chess.com/pub/player/${username.toLowerCase()}/games/archives`)
+  const list = await fetch(`https://api.chess.com/pub/player/${username.toLowerCase()}/games/archives`, { redirect: 'error' })
   if (list.status === 403) throw new Error('chess.com turned the request away. Try again later, or import from Lichess.')
   if (!list.ok) throw new Error(list.status === 404 ? 'chess.com has no player with that name.' : `chess.com answered ${list.status}.`)
-  const months = (((await list.json()) as { archives?: string[] }).archives ?? [])
-    .filter((u) => u.startsWith('https://api.chess.com/'))
+  const archives = (JSON.parse(await readBody(list)) as { archives?: unknown }).archives
+  const months = (Array.isArray(archives) ? archives : [])
+    .filter((u): u is string => typeof u === 'string' && u.startsWith('https://api.chess.com/pub/player/'))
     .reverse()
     .slice(0, 6)
-  const games: unknown[] = []
+  let games: unknown[] = []
   for (const url of months) {
-    const res = await fetch(url)
+    const res = await fetch(url, { redirect: 'error' })
     if (!res.ok) continue
-    games.unshift(...((((await res.json()) as { games?: unknown[] }).games) ?? []))
-    if (games.length >= max) break
+    const monthGames = (JSON.parse(await readBody(res)) as { games?: unknown }).games
+    if (!Array.isArray(monthGames)) continue
+    games = monthGames.slice(0, MAX_MONTH_GAMES).concat(games)
+    if (games.length >= count) break
   }
-  return JSON.stringify(games.slice(-max))
+  return JSON.stringify(games.slice(-count))
 }
 
 /** Errors from the desktop shell arrive as "Error invoking remote method 'x': Error: message". */

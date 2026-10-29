@@ -29,11 +29,31 @@ export interface BatchProgress {
   current: LibraryGame | null
 }
 
+const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
+
+/** A stored game is kept only with the fields every screen reads; a damaged store cannot blank the app. */
+function storedGames(raw: unknown): LibraryGame[] {
+  if (!Array.isArray(raw)) return []
+  return raw.filter((g): g is LibraryGame => isRecord(g) && typeof g.id === 'string' && typeof g.sans === 'string' && typeof g.date === 'string' && (g.userColor === 'w' || g.userColor === 'b') && typeof g.white === 'string' && typeof g.black === 'string')
+}
+
+function storedAnalyses(raw: unknown): Record<string, GameAnalysis> {
+  if (!isRecord(raw)) return {}
+  const out: Record<string, GameAnalysis> = {}
+  for (const [id, a] of Object.entries(raw)) if (isRecord(a) && Array.isArray(a.mistakes) && typeof a.depth === 'number') out[id] = a as unknown as GameAnalysis
+  return out
+}
+
+function storedAccount(raw: unknown): ImportAccount | null {
+  if (!isRecord(raw) || (raw.source !== 'lichess' && raw.source !== 'chesscom') || typeof raw.username !== 'string') return null
+  return { source: raw.source, username: raw.username }
+}
+
 /** Your own games from Lichess and chess.com, their batch review, and the weakness profile. */
 export function useLibrary(engine: EngineContextValue) {
-  const [games, setGames] = useState<LibraryGame[]>(() => kv.readJson(GAMES_KEY, []))
-  const [analyses, setAnalyses] = useState<Record<string, GameAnalysis>>(() => kv.readJson(ANALYSIS_KEY, {}))
-  const [account, setAccount] = useState<ImportAccount | null>(() => kv.readJson(ACCOUNT_KEY, null))
+  const [games, setGames] = useState<LibraryGame[]>(() => storedGames(kv.readJson<unknown>(GAMES_KEY, [])))
+  const [analyses, setAnalyses] = useState<Record<string, GameAnalysis>>(() => storedAnalyses(kv.readJson<unknown>(ANALYSIS_KEY, {})))
+  const [account, setAccount] = useState<ImportAccount | null>(() => storedAccount(kv.readJson<unknown>(ACCOUNT_KEY, null)))
   const [importing, setImporting] = useState(false)
   const [progress, setProgress] = useState<BatchProgress | null>(null)
   const runId = useRef(0)

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
 import { autoUpdater, type ProgressInfo, type UpdateInfo } from 'electron-updater'
 
 /**
@@ -22,7 +22,10 @@ interface UpdateStatus {
 const FIRST_CHECK_DELAY_MS = 10_000
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000
 
-export function setupUpdater({ isDev, isPortable, log }: { isDev: boolean; isPortable: boolean; log: (line: string) => void }) {
+export function setupUpdater({ isDev, isPortable, log, fromApp }: { isDev: boolean; isPortable: boolean; log: (line: string) => void; fromApp: (e: IpcMainInvokeEvent) => boolean }) {
+  const guard = (e: IpcMainInvokeEvent) => {
+    if (!fromApp(e)) throw new Error('Not allowed')
+  }
   const current = app.getVersion()
   let status: UpdateStatus = { state: 'idle', current }
   const supported = !isDev && !isPortable && app.isPackaged
@@ -68,9 +71,16 @@ export function setupUpdater({ isDev, isPortable, log }: { isDev: boolean; isPor
     return status
   }
 
-  ipcMain.handle('updates:get', () => status)
-  ipcMain.handle('updates:check', () => check())
-  ipcMain.handle('updates:download', async () => {
+  ipcMain.handle('updates:get', (e) => {
+    guard(e)
+    return status
+  })
+  ipcMain.handle('updates:check', (e) => {
+    guard(e)
+    return check()
+  })
+  ipcMain.handle('updates:download', async (e) => {
+    guard(e)
     if (!supported || status.state !== 'available') return
     publish({ state: 'downloading', version: status.version, percent: 0 })
     try {
@@ -79,7 +89,8 @@ export function setupUpdater({ isDev, isPortable, log }: { isDev: boolean; isPor
       publish({ state: 'error', version: status.version, message: friendlyError(e) })
     }
   })
-  ipcMain.handle('updates:install', () => {
+  ipcMain.handle('updates:install', (e) => {
+    guard(e)
     if (!supported || status.state !== 'downloaded') return
     log(`[updater] restarting to install ${status.version}`)
     // Silent install, then start the new version.

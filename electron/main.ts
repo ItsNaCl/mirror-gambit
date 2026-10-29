@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, net, protocol, screen, session, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, net, protocol, screen, session, shell, type IpcMainInvokeEvent } from 'electron'
 import { appendFileSync, createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Readable } from 'node:stream'
@@ -176,8 +176,33 @@ function saveWindowState(win: BrowserWindow) {
 
 function isAllowedUrl(url: string): boolean {
   if (url.startsWith(APP_ORIGIN + '/')) return true
-  if (isDev && DEV_SERVER_URL && url.startsWith(DEV_SERVER_URL)) return true
+  if (isDev && DEV_SERVER_URL) {
+    try {
+      return new URL(url).origin === new URL(DEV_SERVER_URL).origin
+    } catch {
+      return false
+    }
+  }
   return false
+}
+
+/** Only the app's own page may call into the main process. Every handler checks its caller. */
+export function fromApp(e: IpcMainInvokeEvent): boolean {
+  return isAllowedUrl(e.senderFrame?.url ?? '')
+}
+
+/** The largest answer a game site may send; anything bigger is refused, not read. */
+const MAX_RESPONSE_BYTES = 20 * 1024 * 1024
+/** Games read from one chess.com month. */
+const MAX_MONTH_GAMES = 500
+
+/** Reads a response body, refusing one that is too large to hold. */
+async function readBody(res: Response): Promise<string> {
+  const declared = Number(res.headers.get('content-length'))
+  if (Number.isFinite(declared) && declared > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
+  const text = await res.text()
+  if (text.length > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
+  return text
 }
 
 function openExternal(url: string) {
@@ -268,11 +293,13 @@ function createWindow() {
 // The page cannot call chess.com itself (CORS and the strict CSP), so the main process
 // fetches exactly one kind of URL for it: a game's public JSON by numeric id.
 function setupChessComImport() {
-  ipcMain.handle('chesscom:fetch', async (_e, kind: unknown, id: unknown) => {
+  ipcMain.handle('chesscom:fetch', async (e, kind: unknown, id: unknown) => {
+    if (!fromApp(e)) throw new Error('Not allowed')
     if ((kind !== 'live' && kind !== 'daily') || typeof id !== 'string' || !/^\d{1,15}$/.test(id)) throw new Error('Invalid chess.com game')
-    const res = await net.fetch(`https://www.chess.com/callback/${kind}/game/${id}`, { headers: { Accept: 'application/json' } })
+    // No redirects: the host is fixed here and the answer must come from it.
+    const res = await net.fetch(`https://www.chess.com/callback/${kind}/game/${id}`, { headers: { Accept: 'application/json' }, redirect: 'error' })
     if (!res.ok) throw new Error(res.status === 404 ? 'chess.com could not find that game.' : `chess.com answered ${res.status}.`)
-    return res.text()
+    return readBody(res)
   })
 }
 
@@ -287,7 +314,8 @@ const API_HEADERS = { 'User-Agent': 'Mirror Gambit (open-source chess study app;
  * username and a count from the page, both checked here.
  */
 function setupGameImport() {
-  ipcMain.handle('games:fetch', async (_e, source: unknown, username: unknown, max: unknown) => {
+  ipcMain.handle('games:fetch', async (e, source: unknown, username: unknown, max: unknown) => {
+    if (!fromApp(e)) throw new Error('Not allowed')
     if ((source !== 'lichess' && source !== 'chesscom') || typeof username !== 'string' || !USERNAME_RE.test(username)) throw new Error('Invalid username')
     if (typeof max !== 'number' || !Number.isInteger(max) || max < 1 || max > 100) throw new Error('Invalid number of games')
     const user = encodeURIComponent(username)
@@ -295,24 +323,26 @@ function setupGameImport() {
     if (source === 'lichess') {
       const res = await net.fetch(`https://lichess.org/api/games/user/${user}?max=${max}&moves=true&opening=true&perfType=bullet,blitz,rapid,classical,correspondence`, {
         headers: { ...API_HEADERS, Accept: 'application/x-ndjson' },
+        redirect: 'error',
       })
       if (res.status === 404) throw new Error('Lichess has no player with that name.')
       if (!res.ok) throw new Error(`Lichess answered ${res.status}.`)
-      return res.text()
+      return readBody(res)
     }
 
-    const list = await net.fetch(`https://api.chess.com/pub/player/${user.toLowerCase()}/games/archives`, { headers: API_HEADERS })
+    const list = await net.fetch(`https://api.chess.com/pub/player/${user.toLowerCase()}/games/archives`, { headers: API_HEADERS, redirect: 'error' })
     if (list.status === 404) throw new Error('chess.com has no player with that name.')
     if (!list.ok) throw new Error(`chess.com answered ${list.status}.`)
-    const archives = ((await list.json()) as { archives?: unknown }).archives
+    const archives = (JSON.parse(await readBody(list)) as { archives?: unknown }).archives
     const months = Array.isArray(archives) ? archives.filter((u): u is string => typeof u === 'string' && u.startsWith('https://api.chess.com/pub/player/')) : []
-    const games: unknown[] = []
+    let games: unknown[] = []
     // Newest month first, until there are enough games (at most six months back).
     for (const url of months.reverse().slice(0, 6)) {
-      const res = await net.fetch(url, { headers: API_HEADERS })
+      const res = await net.fetch(url, { headers: API_HEADERS, redirect: 'error' })
       if (!res.ok) continue
-      const monthGames = ((await res.json()) as { games?: unknown[] }).games ?? []
-      games.unshift(...monthGames)
+      const monthGames = (JSON.parse(await readBody(res)) as { games?: unknown }).games
+      if (!Array.isArray(monthGames)) continue
+      games = monthGames.slice(0, MAX_MONTH_GAMES).concat(games)
       if (games.length >= max) break
     }
     return JSON.stringify(games.slice(-max))
@@ -362,8 +392,8 @@ if (!app.requestSingleInstanceLock()) {
       contents.on('will-attach-webview', (e) => e.preventDefault())
     })
 
-    setupUpdater({ isDev, isPortable: !!portableDir, log })
-    setupCoach(log)
+    setupUpdater({ isDev, isPortable: !!portableDir, log, fromApp })
+    setupCoach(log, fromApp)
     setupGameImport()
     setupChessComImport()
     createWindow()

@@ -30,6 +30,7 @@ describe('parseModelGames', () => {
     })
     expect(set.games.map((g) => g.id)).toEqual(['abc'])
     expect(set.depth).toBe(10)
+    expect(parseModelGames({ games: [{ ...game, url: 'javascript:alert(1)' }] }).games[0].url).toBe('')
   })
 
   it('survives junk', () => {
