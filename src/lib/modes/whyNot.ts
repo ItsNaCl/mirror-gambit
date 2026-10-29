@@ -154,6 +154,7 @@ export function verdict(c: Comparison): string {
   if (!c.best) return c.sameAsGame ? 'That is the move, and it is what you played in the game.' : 'That is the move. In the game you played something else.'
   const same = c.sameAsGame ? ' It is what you played in the game.' : ''
   const pawns = (c.tried.lossCp / 100).toFixed(1)
+  if (c.tried.cls === 'best') return `${c.tried.san} is as good as ${c.best.san}, the engine's first choice.${same}`
   if (c.tried.cls === 'great') return `${c.tried.san} is nearly as good as ${c.best.san}, the engine's choice.${same}`
   if (c.tried.cls === 'good') return `${c.tried.san} is fine. ${c.best.san} is a shade better, about ${pawns} pawns.${same}`
   const how = c.tried.cls === 'blunder' ? 'loses' : c.tried.cls === 'mistake' ? 'gives up' : 'costs'

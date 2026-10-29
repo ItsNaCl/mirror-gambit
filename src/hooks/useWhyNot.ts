@@ -19,8 +19,8 @@ export interface Playback {
 
 const STEP_MS = 1100
 const OWNER = 'whynot'
-/** A search that takes longer than this was replaced by another mode's; the question is asked again. */
-const THINK_TIMEOUT_MS = 30_000
+/** A search that takes longer than this was replaced by another mode's; the question is asked again. Generous, for the single-threaded engine on phones. */
+const THINK_TIMEOUT_MS = 120_000
 
 /**
  * Why not this move. The student plays an idea in a position from their own game, the engine
@@ -115,6 +115,8 @@ export function useWhyNot(gameApi: GameApi, engine: EngineContextValue) {
       setStage('thinking')
       setError(null)
       const id = ++runId.current
+      // Suspended here as well as by the stage effect: the search must not be queued behind a live one.
+      setLiveSuspended(true, OWNER)
       void (async () => {
         try {
           // One search after the other: a second evaluate() would replace the first.
@@ -142,7 +144,7 @@ export function useWhyNot(gameApi: GameApi, engine: EngineContextValue) {
       })()
       return true
     },
-    [item, stage, game, setGame, evaluate],
+    [item, stage, game, setGame, evaluate, setLiveSuspended],
   )
 
   /** Puts a line on the board from the start position and plays it out. */
