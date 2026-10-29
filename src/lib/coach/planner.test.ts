@@ -156,6 +156,25 @@ describe('planner', () => {
     expect(plan.minutes).toBe(60)
   })
 
+  it('carves why not this move out of a long tactics block once there are own mistakes to replay', () => {
+    const plan = buildPlan({ ...base, budget: 30, whyNotPositions: 5 })
+    const kinds = plan.blocks.map((b) => b.activity)
+    expect(kinds.indexOf('whynot')).toBe(kinds.indexOf('tactics') + 1)
+    const tactics = plan.blocks.find((b) => b.activity === 'tactics')!
+    const whynot = plan.blocks.find((b) => b.activity === 'whynot')!
+    expect(whynot.minutes).toBeGreaterThanOrEqual(5)
+    expect(tactics.minutes).toBeGreaterThan(whynot.minutes)
+    expect(plan.minutes).toBe(30)
+    // Too few positions, or no tactics block long enough: no why-not block.
+    expect(buildPlan({ ...base, budget: 30, whyNotPositions: 2 }).blocks.some((b) => b.activity === 'whynot')).toBe(false)
+  })
+
+  it('counts why not this move minutes as tactics time for the week', () => {
+    const log: SessionRecord[] = [{ date: '2026-10-28', blocks: [{ activity: 'whynot', minutes: 500 }] }]
+    const plan = buildPlan({ ...base, log, whyNotPositions: 5 })
+    expect(plan.weekRemaining.tactics).toBeUndefined()
+  })
+
   it('is deterministic', () => {
     const input = { ...base, dueCards: 3, metrics: buildMetrics([game(1, { rating: 700 })]) }
     expect(buildPlan(input)).toEqual(buildPlan(input))

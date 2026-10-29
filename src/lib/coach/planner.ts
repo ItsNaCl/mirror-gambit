@@ -53,6 +53,8 @@ export interface PlannerInput {
   dueCards: number
   /** Imported games the batch review has not analysed yet. */
   pendingGames: number
+  /** Positions ready for Why not this move (the student's own mistakes with a better move). */
+  whyNotPositions?: number
   puzzleRating: number | null
   weeklyMinutes: number
   /** Minutes the student has today, or null to let the coach size it. */
@@ -68,6 +70,8 @@ export const MAX_SESSION = 60
 export const GAME_MINUTES = 40
 export const REVIEW_MINUTES = 10
 export const TRAINING_DAYS = 5
+/** Own mistakes needed before the planner schedules Why not this move. */
+export const WHY_NOT_MIN = 3
 
 const TAG_THEME: Partial<Record<MistakeTag, string>> = {
   'hung-piece': 'hanging',
@@ -122,8 +126,15 @@ export function streak(log: SessionRecord[], today: string): number {
 
 function doneThisWeek(log: SessionRecord[], today: string): Record<Activity, number> {
   const week = new Set(weekOf(today))
-  const done: Record<Activity, number> = { tactics: 0, play: 0, review: 0, endgames: 0, strategy: 0, openings: 0, cards: 0 }
-  for (const r of log) if (week.has(r.date)) for (const b of r.blocks) done[b.activity] += b.minutes
+  const done: Record<Activity, number> = { tactics: 0, play: 0, review: 0, endgames: 0, strategy: 0, openings: 0, cards: 0, whynot: 0 }
+  for (const r of log)
+    if (week.has(r.date))
+      for (const b of r.blocks) {
+        if (!(b.activity in done)) continue
+        done[b.activity] += b.minutes
+        // Why not this move is tactics time spent on the student's own games.
+        if (b.activity === 'whynot') done.tactics += b.minutes
+      }
   return done
 }
 
@@ -160,6 +171,7 @@ export function buildPlan(input: PlannerInput): SessionPlan {
     strategy: input.weeklyMinutes * band.split.strategy,
     openings: input.weeklyMinutes * band.split.openings,
     cards: 0,
+    whynot: 0,
   }
   const deficit = (a: Activity) => Math.max(0, target[a] - done[a])
 
@@ -208,9 +220,22 @@ export function buildPlan(input: PlannerInput): SessionPlan {
     left = 0
   }
 
+  // A third of a long enough tactics block goes to the student's own mistakes, once there are a few.
+  const tactics = blocks.findIndex((b) => b.activity === 'tactics')
+  if (tactics >= 0 && blocks[tactics].minutes >= 15 && (input.whyNotPositions ?? 0) >= WHY_NOT_MIN) {
+    const mins = round5(blocks[tactics].minutes / 3)
+    blocks[tactics] = { ...blocks[tactics], minutes: blocks[tactics].minutes - mins }
+    blocks.splice(tactics + 1, 0, {
+      activity: 'whynot',
+      minutes: mins,
+      reason: 'Your own mistakes, replayed: play your move, watch what it allowed, then see the better move and its line.',
+    })
+  }
+
   const weekRemaining: Partial<Record<Activity, number>> = {}
   for (const a of study.concat('play', 'review')) {
-    const after = deficit(a) - (blocks.find((b) => b.activity === a)?.minutes ?? 0)
+    const counts = (b: SessionBlock) => b.activity === a || (a === 'tactics' && b.activity === 'whynot')
+    const after = deficit(a) - blocks.filter(counts).reduce((s, b) => s + b.minutes, 0)
     if (after > 0) weekRemaining[a] = Math.round(after)
   }
 

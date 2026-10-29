@@ -9,9 +9,10 @@ import type { RepertoireApi } from '../hooks/useRepertoire'
 import type { PuzzlesApi } from '../hooks/usePuzzles'
 import type { SrsApi } from '../hooks/useSrs'
 import type { TrainerApi } from '../hooks/useTrainer'
+import type { WhyNotApi } from '../hooks/useWhyNot'
 import type { PromotionPiece } from '../lib/chess/game'
 
-export type SessionId = 'free' | 'play' | 'rep' | 'course' | 'trainer' | 'puzzle' | 'srs'
+export type SessionId = 'free' | 'play' | 'rep' | 'course' | 'trainer' | 'puzzle' | 'srs' | 'whynot'
 
 /**
  * Everything the board needs from whichever mode owns it. Exactly one session drives the
@@ -52,6 +53,8 @@ export function sessionFor(route: RouteId, puzzles: Pick<PuzzlesApi, 'active' | 
       return 'puzzle'
     case 'cards':
       return 'srs'
+    case 'whynot':
+      return 'whynot'
     default:
       return null
   }
@@ -190,6 +193,22 @@ export function srsSession(srs: SrsApi, game: GameApi): BoardSession {
     squareStyles: srs.squareStyles,
     shakeKey: 0,
     onMove: srs.onBoardMove,
+    canBrowse,
+    ...(canBrowse ? browse(game) : { jump: noop, step: noop }),
+  }
+}
+
+export function whyNotSession(whyNot: WhyNotApi, game: GameApi): BoardSession {
+  // While a line plays out the move list follows it; before the move the board is the question.
+  const canBrowse = whyNot.canBrowse
+  return {
+    id: 'whynot',
+    game,
+    orientation: whyNot.orientation,
+    interactive: whyNot.userToMove,
+    arrows: whyNot.arrows,
+    shakeKey: 0,
+    onMove: whyNot.onBoardMove,
     canBrowse,
     ...(canBrowse ? browse(game) : { jump: noop, step: noop }),
   }

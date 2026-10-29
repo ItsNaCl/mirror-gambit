@@ -49,6 +49,7 @@ import { SettingsPanel } from './components/SettingsPanel'
 import { SetupPanel } from './components/SetupPanel'
 import { SrsPanel } from './components/SrsPanel'
 import { TipsSection } from './components/TipsSection'
+import { WhyNotPanel } from './components/WhyNotPanel'
 import { ToastStack, useToasts } from './components/Toast'
 import { UpdateBanner } from './components/UpdatePanel'
 import { EngineProvider, useEngine } from './hooks/useEngine'
@@ -61,6 +62,7 @@ import { useSfx } from './hooks/useSfx'
 import { useSrs, type SrsApi, type SrsOptions } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
+import { useWhyNot } from './hooks/useWhyNot'
 import { useUpdates } from './hooks/useUpdates'
 import { useClaudeCoach } from './hooks/useClaudeCoach'
 import { useLibrary } from './hooks/useLibrary'
@@ -76,6 +78,7 @@ import { countsAsSlowGame, outcomeFor, type SavedGame } from './lib/play/savedGa
 import { libraryGameState, type LibraryGame } from './lib/games/sources'
 import { outcome } from './lib/games/profile'
 import { SLOW } from './lib/coach/metrics'
+import { whyNotItems } from './lib/modes/whyNot'
 import { soundForMove } from './lib/sound/sfx'
 import type { XpEvent } from './lib/game/xp'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
@@ -84,7 +87,7 @@ import { explainMove } from './lib/coach/explain'
 import { buildCoachContext, type CoachMode } from './lib/coach/claudeContext'
 import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
-import { courseSession, freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
+import { courseSession, freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, whyNotSession, type BoardSession, type SessionId } from './sessions/sessions'
 
 /** On a first import, slow games from the last week count. */
 const RECENT_IMPORT_MS = 7 * 86_400_000
@@ -103,7 +106,8 @@ export default function App() {
   const trainerGame = useGame()
   const puzzleGame = useGame()
   const srsGame = useGame()
-  const games: Record<SessionId, GameApi> = { free, play: playGame, rep: repGame, course: courseGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame }
+  const whyNotGame = useGame()
+  const games: Record<SessionId, GameApi> = { free, play: playGame, rep: repGame, course: courseGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame, whynot: whyNotGame }
   // Play and puzzles need the engine, so they live inside the provider; the workspace reports
   // which board is on screen and the engine follows it.
   const [engineFen, setEngineFen] = useState(free.fen)
@@ -142,6 +146,8 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const claude = useClaudeCoach(settings.claudeMonthlyCap)
   const library = useLibrary(engine)
   const repertoire = useRepertoire(games.rep, engine, library.games)
+  const whyNot = useWhyNot(games.whynot, engine)
+  const whyNotList = useMemo(() => whyNotItems(library.analysed), [library.analysed])
   const onBlockDone = useCallback(
     (d: BlockDone) => {
       award({ type: 'block', minutes: d.minutes }, d.streak)
@@ -153,6 +159,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     analysed: library.analysed,
     dueCards: srs.dueCount,
     pendingGames: library.pending,
+    whyNotPositions: whyNotList.length,
     puzzleRating: rated.games > 0 ? rated.rating : null,
     weeklyHours: settings.weeklyHours,
     ratingOverride: settings.ratingOverride,
@@ -294,9 +301,14 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         case 'openings':
           go('repertoire')
           return
+        case 'whynot':
+          go('whynot')
+          // The panel's Start takes over when the engine is still loading or a run is already on.
+          if (engine.status === 'ready' && !whyNot.active) whyNot.start(whyNotList)
+          return
       }
     },
-    [go, rated, srs, course],
+    [go, rated, srs, course, whyNot, whyNotList, engine.status],
   )
 
   // Leaving an opening also stops its trap puzzles.
@@ -425,10 +437,12 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         return puzzleSession(puzzles, games.puzzle)
       case 'srs':
         return srsSession(srs, games.srs)
+      case 'whynot':
+        return whyNotSession(whyNot, games.whynot)
       default:
         return null
     }
-  }, [sessionId, free, freeOrientation, route, analysisArrows, play, repertoire, course, trainer, puzzles, srs, games])
+  }, [sessionId, free, freeOrientation, route, analysisArrows, play, repertoire, course, trainer, puzzles, srs, whyNot, games])
 
   const boardFen = session?.game.fen ?? fen
   useEffect(() => onBoardFen(boardFen), [boardFen, onBoardFen])
@@ -961,6 +975,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                     {route === 'openings' && <OpeningsPanel trainer={trainerForPanel} puzzles={puzzles} />}
                     {route === 'puzzles' && <PuzzlesPanel puzzles={puzzles} rated={rated} />}
                     {route === 'cards' && <SrsPanel srs={srs} notify={(t, kind) => notify({ kind: kind ?? 'info', title: t }, 4000)} />}
+                    {route === 'whynot' && <WhyNotPanel whyNot={whyNot} items={whyNotList} engineReady={engine.status === 'ready'} onNavigate={go} />}
                   </div>
                 </div>
               </aside>
@@ -1086,6 +1101,8 @@ function SessionStrip({ session, trainer, puzzles }: { session: BoardSession; tr
     text = session.interactive ? (session.canBrowse ? 'Every move you play is added' : 'Your move') : 'Repertoire'
   } else if (session.id === 'srs') {
     text = session.interactive ? 'Find the best move' : 'Your mistake cards'
+  } else if (session.id === 'whynot') {
+    text = session.interactive ? 'Play the move you would choose' : session.canBrowse ? 'Step through the line' : 'Why not this move'
   }
   return (
     <div className="controls">

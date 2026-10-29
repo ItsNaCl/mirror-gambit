@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'badges' | 'settings'
+export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'whynot' | 'cards' | 'progress' | 'badges' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -26,6 +26,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
   courses: { id: 'courses', label: 'Courses', description: 'Lessons on endgames and strategy, with positions to solve', keywords: 'learn lesson endgame strategy lucena philidor opposition outpost' },
   openings: { id: 'openings', label: 'Openings', description: 'Learn opening lines move by move and drill them', keywords: 'trainer drill repertoire lines traps' },
   puzzles: { id: 'puzzles', label: 'Puzzles', description: 'Forks, pins, mates and endgames', keywords: 'tactics' },
+  whynot: { id: 'whynot', label: 'Why not this move', description: 'Play your idea in a position from your own game, then see what it allowed and the better move', keywords: 'compare mistake refute own games idea lines' },
   cards: { id: 'cards', label: 'Mistake cards', description: 'Your own mistakes, brought back on a schedule', keywords: 'srs spaced repetition review deck' },
   progress: { id: 'progress', label: 'Progress', description: 'Accuracy over time and practice stats', keywords: 'stats history' },
   badges: { id: 'badges', label: 'Badges', description: 'Your rank, the XP to the next one, and every badge you can earn', keywords: 'rank xp level rewards achievements' },
@@ -35,7 +36,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
 export const NAV: NavGroup[] = [
   { label: 'Coach', routes: ['coach'] },
   { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
-  { label: 'Train', routes: ['repertoire', 'puzzles', 'openings', 'cards'] },
+  { label: 'Train', routes: ['repertoire', 'puzzles', 'whynot', 'openings', 'cards'] },
   { label: 'Learn', routes: ['courses'] },
   { label: 'You', routes: ['progress', 'badges', 'settings'] },
 ]

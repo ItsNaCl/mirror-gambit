@@ -30,7 +30,7 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - [x] HANDOFF task 2
 - [x] HANDOFF task 3
 - [x] HANDOFF task 4
-- [ ] Phase 2: why not this move
+- [x] Phase 2: why not this move
 - [ ] Phase 2: guess the move
 - [ ] Phase 2: narrated game
 - [ ] Phase 2: over the board entry
@@ -43,3 +43,4 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - Tasks 1 and 2 were already committed (2287baa, 00ac015) but unchecked here; verified the code is in place and marked them done instead of redoing them.
 - Board sounds key on the session game moving one ply forward, so opening a repertoire gap or switching an opening variation also clicks; the board shows a piece moving in those cases, so the click is kept.
 - The review asked for one plumbing style for XP events and a shared test factory; left as is (architecture, not a defect), the fixes went to the real bugs (import XP cap, batch review XP, slow game needs clock time, unknown stored band).
+- Why not this move: the compare view shows the engine evaluation of both lines; the Maia percentage of players who find each move needs the phase 3 server and is left for then. Source positions are the students own mistakes and blunders with a known better move; model games join as a source once guess the move ships its game set. The planner carves a why-not block out of a tactics block of 15 minutes or more once three such positions exist.
