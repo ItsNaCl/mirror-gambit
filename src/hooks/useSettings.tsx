@@ -126,7 +126,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const el = document.documentElement
     el.dataset.accent = settings.accent
     el.dataset.board = settings.boardTheme
-    el.dataset.motion = motionLevel(settings)
+    el.dataset.motion = motionLevel({ motion: settings.motion })
   }, [settings.accent, settings.boardTheme, settings.motion])
   const update = useCallback((patch: Partial<Settings>) => setSettings((s) => ({ ...s, ...patch })), [])
   const value = useMemo(() => ({ settings, update }), [settings, update])
