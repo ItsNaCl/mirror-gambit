@@ -1,46 +1,57 @@
 /* Mirror Gambit design system.
-   Style: true-black flat (taste-skill app sheet, seed 316273731) on the user's zinc ground.
-   Elevation by lightness only: ground #09090b, surface #18181b, raised #222225. No borders or
-   shadows on resting cards, no gradients, no glass. Colour goes on the board and on data
-   (move grades, the eval, arrows); the chrome stays neutral. Active nav = label #b4b4b4 -> #fff.
-   The primary control is an inverted white pill. Inter for text, JetBrains Mono for SAN and FEN. */
+   Style: a game launcher for chess. Near black violet ground, elevation by lightness only
+   (ground #0B0A12, surface #15131F, raised #1E1B2C), no gradients, no glass. One accent
+   (violet by default, the student picks another in Settings) for controls, active nav, the
+   knight and progress. Magenta is XP and rewards, gold is the best move and a win, and the
+   move grades keep their own hues. Sora for display numbers and headings, Inter for reading,
+   JetBrains Mono for SAN and FEN. */
 
 :root {
   color-scheme: dark;
 
-  --ground: #09090b;
-  --surface: #18181b;
-  --raised: #222225;
-  --raised-2: #2c2c30;
-  --rule: #1f1f23; /* structural lines between shell regions */
-  --line: #27272a; /* row rules inside panels */
-  --control: #3f3f46; /* outlined controls: brighter so they read as clickable */
+  --ground: #0b0a12;
+  --surface: #15131f;
+  --raised: #1e1b2c;
+  --raised-2: #2a2740;
+  --rule: #1a1826; /* structural lines between shell regions */
+  --line: #242136; /* row rules inside panels */
+  --control: #3b375c; /* outlined controls: brighter so they read as clickable */
 
-  --text: #fafafa;
-  --muted: #b4b4b4;
-  --faint: #949494;
+  --text: #e7e5f2;
+  --muted: #9a95b0;
+  --faint: #6f6a8a;
 
-  /* The one data hue: the engine's choice, the best move, a correct answer. Also --positive. */
-  --accent: #9fd35a;
-  --accent-ink: #0b1205;
-  --positive: var(--accent);
-  --warning: #e5a93b;
-  --mistake: #f0883e;
-  --negative: #ef6b7e;
-  --pill-positive-bg: #1c2814;
-  --pill-warning-bg: #2b2414;
-  --pill-mistake-bg: #2d1f14;
-  --pill-negative-bg: #2e1a20;
-  --pill-neutral-bg: #27272a;
+  /* The accent: controls, active nav, the knight, progress. Swapped by [data-accent]. */
+  --accent: #8b5cf6;
+  --accent-ink: #0b0a12;
+  --accent-text: #c4b5fd;
+  --accent-soft: #2a1f52;
+  /* XP and rewards. */
+  --reward: #e879f9;
+  --reward-soft: #3a1a44;
+  /* The best move, a correct answer, a win. */
+  --gold: #f5c542;
+  --gold-soft: #3a2e0a;
 
-  --primary: #fafafa;
-  --primary-ink: #09090b;
+  --positive: #5dd6a9;
+  --warning: #f2b64e;
+  --mistake: #f0997b;
+  --negative: #f06b8a;
+  --pill-positive-bg: #143327;
+  --pill-warning-bg: #3a2a10;
+  --pill-mistake-bg: #3a2016;
+  --pill-negative-bg: #3a1a26;
+  --pill-neutral-bg: #2a2740;
 
-  /* Walnut board: the one large field of colour, and the screen's face. */
-  --board-light: #e3d6bf;
-  --board-dark: #9c8466;
-  --board-coord: #5d4c37;
+  --primary: var(--accent);
+  --primary-ink: var(--accent-ink);
 
+  /* Violet board by default; [data-board] switches it. */
+  --board-light: #6e6a92;
+  --board-dark: #3b375c;
+  --board-coord: #c4b5fd;
+
+  --font-display: 'Sora', 'Inter', system-ui, sans-serif;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace; /* taste-skill-ignore: SAN and FEN only, the user's choice */
   --fs-title: 20px;
@@ -68,6 +79,22 @@
   font-size: var(--fs-body);
   line-height: 20px;
 }
+
+[data-accent='cyan'] { --accent: #22d3ee; --accent-text: #a5f3fc; --accent-soft: #0e3a44; --reward: #f472b6; --reward-soft: #3f1a30; }
+[data-accent='emerald'] { --accent: #34d399; --accent-text: #a7f3d0; --accent-soft: #0f3a2c; --reward: #c084fc; --reward-soft: #2f1a44; }
+[data-accent='amber'] { --accent: #fbbf24; --accent-text: #fde68a; --accent-soft: #3f2f0a; --reward: #f472b6; --reward-soft: #3f1a30; }
+[data-accent='rose'] { --accent: #fb7185; --accent-text: #fecdd3; --accent-soft: #44162a; --reward: #a78bfa; --reward-soft: #2a1f52; }
+[data-accent='blue'] { --accent: #60a5fa; --accent-text: #bfdbfe; --accent-soft: #15284a; --reward: #f472b6; --reward-soft: #3f1a30; }
+[data-accent='orange'] { --accent: #fb923c; --accent-text: #fed7aa; --accent-soft: #42220c; --reward: #c084fc; --reward-soft: #2f1a44; }
+
+[data-board='classic'] { --board-light: #eeeed2; --board-dark: #769656; --board-coord: #4a5c2a; }
+[data-board='walnut'] { --board-light: #e3d6bf; --board-dark: #9c8466; --board-coord: #5d4c37; }
+[data-board='slate'] { --board-light: #8b93a7; --board-dark: #4b5366; --board-coord: #d6dae6; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-press: 0ms; --t-hover: 0ms; --t-ui: 0ms; }
+}
+[data-motion='reduced'] { --t-press: 0ms; --t-hover: 0ms; --t-ui: 0ms; }
 
 *,
 *::before,
@@ -268,6 +295,11 @@ table,
 .nav-item[aria-current='page'] {
   color: var(--text);
   font-weight: 500;
+  background: var(--raised);
+}
+
+.nav-item[aria-current='page'] svg {
+  color: var(--accent);
 }
 
 .nav-item .count {
@@ -559,6 +591,50 @@ kbd {
 }
 .span-12 {
   grid-column: span 12;
+}
+
+/* ---------- display type ---------- */
+
+.topbar h1,
+.brand,
+.panel h2,
+.card h3,
+.figure .value,
+.settings-section .about h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* ---------- look settings ---------- */
+
+.swatches {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--t-press) var(--ease-out);
+}
+
+.swatch.board {
+  border-radius: 8px;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch.on {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--ground);
 }
 
 /* ---------- coach home ---------- */

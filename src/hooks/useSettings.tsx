@@ -27,7 +27,34 @@ export interface Settings {
   ratingOverride: number | null
   /** How the coach talks. */
   coachVoice: 'direct' | 'playful' | 'calm'
+  /** The accent colour, see [data-accent] in styles.css. */
+  accent: Accent
+  boardTheme: BoardTheme
+  /** 'auto' follows the device: rich on a pointer device, snappy on touch. */
+  motion: 'auto' | 'rich' | 'snappy' | 'reduced'
+  sound: boolean
+  soundVolume: number
 }
+
+export type Accent = 'violet' | 'cyan' | 'emerald' | 'amber' | 'rose' | 'blue' | 'orange'
+export type BoardTheme = 'violet' | 'classic' | 'walnut' | 'slate'
+
+export const ACCENTS: { id: Accent; label: string; swatch: string }[] = [
+  { id: 'violet', label: 'Violet', swatch: '#8b5cf6' },
+  { id: 'cyan', label: 'Cyan', swatch: '#22d3ee' },
+  { id: 'emerald', label: 'Emerald', swatch: '#34d399' },
+  { id: 'amber', label: 'Amber', swatch: '#fbbf24' },
+  { id: 'rose', label: 'Rose', swatch: '#fb7185' },
+  { id: 'blue', label: 'Blue', swatch: '#60a5fa' },
+  { id: 'orange', label: 'Orange', swatch: '#fb923c' },
+]
+
+export const BOARD_THEMES: { id: BoardTheme; label: string; light: string; dark: string }[] = [
+  { id: 'violet', label: 'Violet', light: '#6e6a92', dark: '#3b375c' },
+  { id: 'classic', label: 'Classic green', light: '#eeeed2', dark: '#769656' },
+  { id: 'walnut', label: 'Walnut', light: '#e3d6bf', dark: '#9c8466' },
+  { id: 'slate', label: 'Slate', light: '#8b93a7', dark: '#4b5366' },
+]
 
 // Phones and tablets start on the 2 MB engine: the full one is a 95 MB download and needs more memory.
 const touchDevice = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches
@@ -51,6 +78,18 @@ export const DEFAULT_SETTINGS: Settings = {
   weeklyHours: 7,
   ratingOverride: null,
   coachVoice: 'direct',
+  accent: 'violet',
+  boardTheme: 'violet',
+  motion: 'auto',
+  sound: true,
+  soundVolume: 0.6,
+}
+
+/** Rich motion on a pointer device, snappy on touch, unless the student chose. */
+export function motionLevel(s: Pick<Settings, 'motion'>): 'rich' | 'snappy' | 'reduced' {
+  if (s.motion !== 'auto') return s.motion
+  if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return 'reduced'
+  return touchDevice ? 'snappy' : 'rich'
 }
 
 const STORAGE_KEY = 'mirror-gambit.settings.v1'
@@ -82,6 +121,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       /* storage may be unavailable; settings just will not persist */
     }
   }, [settings])
+  // The theme lives on <html> so every screen, the board and the shell pick it up from CSS.
+  useEffect(() => {
+    const el = document.documentElement
+    el.dataset.accent = settings.accent
+    el.dataset.board = settings.boardTheme
+    el.dataset.motion = motionLevel(settings)
+  }, [settings.accent, settings.boardTheme, settings.motion])
   const update = useCallback((patch: Partial<Settings>) => setSettings((s) => ({ ...s, ...patch })), [])
   const value = useMemo(() => ({ settings, update }), [settings, update])
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

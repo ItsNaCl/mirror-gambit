@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { DEFAULT_SETTINGS, useSettings, type Settings } from '../hooks/useSettings'
+import { ACCENTS, BOARD_THEMES, DEFAULT_SETTINGS, useSettings, type Settings } from '../hooks/useSettings'
 import type { UpdatesApi } from '../hooks/useUpdates'
 import type { ClaudeCoachApi } from '../hooks/useClaudeCoach'
 import { ClaudeSettings } from './ClaudeSettings'
@@ -50,6 +50,73 @@ export function SettingsPanel({ engineInfo, updates, claude }: { engineInfo?: st
 
   return (
     <div className="page">
+      <Section title="Look" about="The accent colour runs through controls, the active screen and the knight. Pick the one you like looking at.">
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <div className="label">Accent</div>
+            <div className="swatches" role="radiogroup" aria-label="Accent colour">
+              {ACCENTS.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={settings.accent === a.id}
+                  aria-label={a.label}
+                  title={a.label}
+                  className={'swatch' + (settings.accent === a.id ? ' on' : '')}
+                  style={{ background: a.swatch }}
+                  onClick={() => update({ accent: a.id })}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <div className="label">Board</div>
+            <div className="desc">Violet matches the app. Classic green is what you play on at Chess.com, so patterns transfer.</div>
+            <div className="swatches" role="radiogroup" aria-label="Board colours">
+              {BOARD_THEMES.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={settings.boardTheme === b.id}
+                  aria-label={b.label}
+                  title={b.label}
+                  className={'swatch board' + (settings.boardTheme === b.id ? ' on' : '')}
+                  style={{ background: `linear-gradient(135deg, ${b.light} 50%, ${b.dark} 50%)` }}
+                  onClick={() => update({ boardTheme: b.id })}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <label className="label" htmlFor="motion">
+              Motion
+            </label>
+            <div className="desc">Rich adds page transitions, gliding pieces and celebrations. Snappy keeps the quick feedback only. Auto is rich on a computer and snappy on a phone.</div>
+            <select id="motion" value={settings.motion} onChange={(e) => update({ motion: e.target.value as Settings['motion'] })}>
+              <option value="auto">Auto</option>
+              <option value="rich">Rich</option>
+              <option value="snappy">Snappy</option>
+              <option value="reduced">Reduced, no animation</option>
+            </select>
+          </div>
+        </div>
+        <SwitchRow label="Sound" desc="Piece moves, captures and check, plus clean solves, streaks and level ups." value={settings.sound} onChange={set('sound')} />
+        <div className="setting-row">
+          <div style={{ flex: 1 }}>
+            <label className="label" htmlFor="volume">
+              Volume: <span className="tabular">{Math.round(settings.soundVolume * 100)}%</span>
+            </label>
+            <input id="volume" type="range" min={0} max={100} value={Math.round(settings.soundVolume * 100)} onChange={(e) => update({ soundVolume: Number(e.target.value) / 100 })} disabled={!settings.sound} />
+          </div>
+        </div>
+      </Section>
+
       <Section title="Coach" about="How much time you have and where you stand. The coach sizes each session from this and from your imported games.">
         <div className="setting-row">
           <div style={{ flex: 1 }}>
