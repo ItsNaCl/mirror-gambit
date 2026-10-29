@@ -11,7 +11,7 @@
 export type BandId = 'b1' | 'b2' | 'b3' | 'b4'
 
 /** The kinds of work the planner can schedule. */
-export type Activity = 'tactics' | 'play' | 'review' | 'endgames' | 'strategy' | 'openings' | 'cards' | 'whynot'
+export type Activity = 'tactics' | 'play' | 'review' | 'endgames' | 'strategy' | 'openings' | 'cards' | 'whynot' | 'guess' | 'narrated'
 
 export const ACTIVITY_LABEL: Record<Activity, string> = {
   tactics: 'Tactics',
@@ -22,6 +22,8 @@ export const ACTIVITY_LABEL: Record<Activity, string> = {
   openings: 'Openings',
   cards: 'Mistake cards',
   whynot: 'Why not this move',
+  guess: 'Guess the move',
+  narrated: 'Narrated game',
 }
 
 export interface Habit {
@@ -45,8 +47,8 @@ export interface Band {
   /** Chess.com rapid rating range, upper bound exclusive. The last band has no upper bound. */
   from: number
   to: number | null
-  /** Share of weekly time per activity. Sums to 1. "cards" and "whynot" are folded into tactics here and split out by the planner. */
-  split: Record<Exclude<Activity, 'cards' | 'whynot'>, number>
+  /** Share of weekly time per activity. Sums to 1. "cards" and "whynot" are folded into tactics here, "guess" into openings, "narrated" into play, and split out by the planner. */
+  split: Record<Exclude<Activity, 'cards' | 'whynot' | 'guess' | 'narrated'>, number>
   habits: Habit[]
   exit: ExitCriterion[]
   /** The time control the coach wants the player's main games in. */

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Award, BookOpen, ChartLine, ChevronDown, Compass, GitBranch, GitCompare, GraduationCap, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
+import { Award, BookOpen, ChartLine, ChevronDown, Compass, GitBranch, GitCompare, GraduationCap, Lightbulb, MessageSquare, PenLine, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
 import { PieceMark } from '../components/PieceMark'
 import type { ProgressionApi } from '../hooks/useProgression'
 import { rankPlace, RANKS } from '../lib/game/xp'
@@ -8,6 +8,8 @@ import { NAV, ROUTES, type RouteId } from './routes'
 export const ROUTE_ICONS: Record<RouteId, LucideIcon> = {
   coach: Compass,
   play: Swords,
+  narrated: MessageSquare,
+  otb: PenLine,
   games: Library,
   repertoire: GitBranch,
   courses: GraduationCap,
@@ -16,6 +18,7 @@ export const ROUTE_ICONS: Record<RouteId, LucideIcon> = {
   openings: BookOpen,
   puzzles: Puzzle,
   whynot: GitCompare,
+  guess: Lightbulb,
   cards: Layers,
   progress: TrendingUp,
   badges: Award,

@@ -157,7 +157,9 @@ describe('planner', () => {
   })
 
   it('carves why not this move out of a long tactics block once there are own mistakes to replay', () => {
-    const plan = buildPlan({ ...base, budget: 30, whyNotPositions: 5 })
+    // The week's play is covered, so the whole short session is study.
+    const log: SessionRecord[] = [{ date: '2026-10-28', blocks: [{ activity: 'play', minutes: 300 }] }]
+    const plan = buildPlan({ ...base, log, budget: 30, whyNotPositions: 5 })
     const kinds = plan.blocks.map((b) => b.activity)
     expect(kinds.indexOf('whynot')).toBe(kinds.indexOf('tactics') + 1)
     const tactics = plan.blocks.find((b) => b.activity === 'tactics')!
@@ -166,7 +168,37 @@ describe('planner', () => {
     expect(tactics.minutes).toBeGreaterThan(whynot.minutes)
     expect(plan.minutes).toBe(30)
     // Too few positions, or no tactics block long enough: no why-not block.
-    expect(buildPlan({ ...base, budget: 30, whyNotPositions: 2 }).blocks.some((b) => b.activity === 'whynot')).toBe(false)
+    expect(buildPlan({ ...base, log, budget: 30, whyNotPositions: 2 }).blocks.some((b) => b.activity === 'whynot')).toBe(false)
+  })
+
+  it('splits an openings block with a model game to guess when model games exist', () => {
+    const log: SessionRecord[] = [{ date: '2026-10-28', blocks: [{ activity: 'tactics', minutes: 300 }, { activity: 'play', minutes: 300 }, { activity: 'endgames', minutes: 300 }] }]
+    const plan = buildPlan({ ...base, log, budget: 30, modelGames: true })
+    const kinds = plan.blocks.map((b) => b.activity)
+    expect(kinds.indexOf('guess')).toBe(kinds.indexOf('openings') + 1)
+    expect(plan.minutes).toBe(30)
+    expect(buildPlan({ ...base, log, budget: 30 }).blocks.some((b) => b.activity === 'guess')).toBe(false)
+  })
+
+  it('offers a narrated game when the session is too short for a slow game the week still owes', () => {
+    const plan = buildPlan({ ...base, budget: 30 })
+    const kinds = plan.blocks.map((b) => b.activity)
+    expect(kinds).toContain('narrated')
+    expect(kinds).not.toContain('play')
+    expect(plan.minutes).toBe(30)
+    // The week's play is covered: no stand-in either.
+    const log: SessionRecord[] = [{ date: '2026-10-28', blocks: [{ activity: 'play', minutes: 300 }] }]
+    expect(buildPlan({ ...base, budget: 30, log }).blocks.some((b) => b.activity === 'narrated')).toBe(false)
+  })
+
+  it('gives the cards block time for a Woodpecker pass, even with nothing due', () => {
+    const plan = buildPlan({ ...base, dueCards: 0, woodpeckerLeft: 20 })
+    const cards = plan.blocks.find((b) => b.activity === 'cards')!
+    expect(cards.minutes).toBe(7)
+    expect(cards.reason).toMatch(/20 cards left in your Woodpecker pass/)
+    const both = buildPlan({ ...base, dueCards: 8, woodpeckerLeft: 20 }).blocks.find((b) => b.activity === 'cards')!
+    expect(both.minutes).toBe(12)
+    expect(both.reason).toMatch(/8 of your own mistakes are due/)
   })
 
   it('counts why not this move minutes as tactics time for the week', () => {

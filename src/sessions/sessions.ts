@@ -10,9 +10,12 @@ import type { PuzzlesApi } from '../hooks/usePuzzles'
 import type { SrsApi } from '../hooks/useSrs'
 import type { TrainerApi } from '../hooks/useTrainer'
 import type { WhyNotApi } from '../hooks/useWhyNot'
+import type { GuessApi } from '../hooks/useGuess'
+import type { NarratedApi } from '../hooks/useNarrated'
+import type { OtbApi } from '../hooks/useOtb'
 import type { PromotionPiece } from '../lib/chess/game'
 
-export type SessionId = 'free' | 'play' | 'rep' | 'course' | 'trainer' | 'puzzle' | 'srs' | 'whynot'
+export type SessionId = 'free' | 'play' | 'rep' | 'course' | 'trainer' | 'puzzle' | 'srs' | 'whynot' | 'guess' | 'narrated' | 'otb'
 
 /**
  * Everything the board needs from whichever mode owns it. Exactly one session drives the
@@ -55,6 +58,12 @@ export function sessionFor(route: RouteId, puzzles: Pick<PuzzlesApi, 'active' | 
       return 'srs'
     case 'whynot':
       return 'whynot'
+    case 'guess':
+      return 'guess'
+    case 'narrated':
+      return 'narrated'
+    case 'otb':
+      return 'otb'
     default:
       return null
   }
@@ -211,5 +220,52 @@ export function whyNotSession(whyNot: WhyNotApi, game: GameApi): BoardSession {
     onMove: whyNot.onBoardMove,
     canBrowse,
     ...(canBrowse ? browse(game) : { jump: noop, step: noop }),
+  }
+}
+
+export function guessSession(guess: GuessApi, game: GameApi): BoardSession {
+  // The moves ahead are the answers, so the list is only browsable once the game is over.
+  const canBrowse = guess.stage === 'done'
+  return {
+    id: 'guess',
+    game,
+    orientation: guess.orientation,
+    interactive: guess.userToMove,
+    arrows: guess.arrows,
+    shakeKey: 0,
+    onMove: guess.onBoardMove,
+    canBrowse,
+    ...(canBrowse ? browse(game) : { jump: noop, step: noop }),
+  }
+}
+
+export function narratedSession(narrated: NarratedApi, game: GameApi): BoardSession {
+  // The board is the live game until it ends; the student's prediction never moves a piece.
+  const canBrowse = narrated.stage === 'done'
+  return {
+    id: 'narrated',
+    game,
+    orientation: narrated.orientation,
+    interactive: narrated.userToMove,
+    arrows: narrated.arrows,
+    shakeKey: 0,
+    onMove: narrated.onBoardMove,
+    canBrowse,
+    ...(canBrowse ? browse(game) : { jump: noop, step: noop }),
+  }
+}
+
+export function otbSession(otb: OtbApi, game: GameApi): BoardSession {
+  // Entering a game: every move played on the board is written to the scoresheet text.
+  return {
+    id: 'otb',
+    game,
+    orientation: otb.orientation,
+    interactive: otb.interactive,
+    arrows: [],
+    shakeKey: 0,
+    onMove: otb.onBoardMove,
+    canBrowse: true,
+    ...browse(game),
   }
 }

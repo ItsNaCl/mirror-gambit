@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { isProblem } from '../lib/analysis/classify'
@@ -15,6 +15,20 @@ import {
   type NewCardInput,
   type SrsCard,
 } from '../lib/srs/srs'
+import { groupCards, groupQueue, type CardGroup } from '../lib/srs/groups'
+import {
+  buildWoodpeckerSet,
+  currentCycle,
+  cycleTrend,
+  normaliseWoodpecker,
+  recordWoodpecker,
+  remaining,
+  setCards as woodpeckerCards,
+  startCycle,
+  summariseCycles,
+  WOODPECKER_CYCLES,
+  type WoodpeckerSet,
+} from '../lib/srs/woodpecker'
 import { useAttempt, useHintDecorations } from './useAttempt'
 import { useLatest } from './useLatest'
 import type { GameApi } from './useGame'
@@ -22,6 +36,15 @@ import * as kv from '../lib/store/kv'
 import { ANSWER_ARROW } from '../lib/ui/boardColors'
 
 const CARDS_KEY = 'mirror-gambit.srs-cards.v1'
+const WOODPECKER_KEY = 'mirror-gambit.woodpecker.v1'
+
+/** What is being drilled: the due cards, one pattern, or a pass of the Woodpecker set. */
+export interface ReviewQueue {
+  kind: 'due' | 'group' | 'woodpecker'
+  label: string
+  /** Cards still to show, in order. */
+  ids: string[]
+}
 
 function loadCards(): SrsCard[] {
   try {
@@ -64,6 +87,10 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
   const onGrade = useLatest(options.onGrade)
   const [cards, setCards] = useState<SrsCard[]>(loadCards)
   const [session, setSession] = useState<ReviewSession | null>(null)
+  const [queue, setQueue] = useState<ReviewQueue | null>(null)
+  const [woodpecker, setWoodpecker] = useState<WoodpeckerSet | null>(() => normaliseWoodpecker(kv.readJson<unknown>(WOODPECKER_KEY, null)))
+  // When the card on screen was shown, for the time a Woodpecker pass takes.
+  const shownAt = useRef(0)
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
@@ -81,6 +108,17 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
   }, [])
 
   const due = useMemo(() => dueCards(cards, now), [cards, now])
+  const groups = useMemo<CardGroup[]>(() => groupCards(cards, now), [cards, now])
+
+  const saveWoodpecker = useCallback((set: WoodpeckerSet | null) => {
+    setWoodpecker(set)
+    try {
+      if (set) kv.setItem(WOODPECKER_KEY, JSON.stringify(set))
+      else kv.removeItem(WOODPECKER_KEY)
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   const addCard = useCallback(
     (input: NewCardInput): SrsCard | null => {
@@ -143,24 +181,69 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
     (card: SrsCard) => {
       setSession({ card, status: 'asking', outcome: null, grade: null, message: null })
       attempt.reset()
+      shownAt.current = Date.now()
       setGame(newGame(card.fen))
     },
     [setGame, attempt],
   )
 
+  /** Starts a drill through the given cards, first one on the board. */
+  const startQueue = useCallback(
+    (q: ReviewQueue) => {
+      const byId = new Map(cards.map((c) => [c.id, c]))
+      const ids = q.ids.filter((id) => byId.has(id))
+      const first = ids[0] ? byId.get(ids[0]) : undefined
+      if (!first) return
+      setQueue({ ...q, ids: ids.slice(1) })
+      showCard(first)
+    },
+    [cards, showCard],
+  )
+
   const startReview = useCallback(() => {
-    const next = dueCards(cards)[0]
-    if (next) showCard(next)
-  }, [cards, showCard])
+    startQueue({ kind: 'due', label: 'Due cards', ids: dueCards(cards).map((c) => c.id) })
+  }, [cards, startQueue])
+
+  /** Drills one pattern: its due cards first, then the rest. */
+  const startGroup = useCallback(
+    (key: string) => {
+      const g = groups.find((x) => x.key === key)
+      if (g) startQueue({ kind: 'group', label: g.label, ids: groupQueue(g) })
+    },
+    [groups, startQueue],
+  )
+
+  /** Continues the Woodpecker pass under way, or opens the next one; builds the set the first time. */
+  const startWoodpecker = useCallback(() => {
+    const base = woodpecker ?? buildWoodpeckerSet(cards)
+    if (!base) return
+    if (!currentCycle(base) && base.cycles.filter((c) => c.finishedAt).length >= WOODPECKER_CYCLES) return
+    const set = startCycle(base)
+    if (set !== woodpecker) saveWoodpecker(set)
+    startQueue({ kind: 'woodpecker', label: `Woodpecker pass ${set.cycles.length}`, ids: remaining(set, cards) })
+  }, [woodpecker, cards, saveWoodpecker, startQueue])
+
+  /** Throws the set away so a new one is built from the newest mistakes. */
+  const resetWoodpecker = useCallback(() => saveWoodpecker(null), [saveWoodpecker])
 
   const nextCard = useCallback(() => {
-    const current = session?.card.id
-    const next = dueCards(cards).find((c) => c.id !== current) ?? null
-    if (next) showCard(next)
-    else setSession(null)
-  }, [cards, session, showCard])
+    const byId = new Map(cards.map((c) => [c.id, c]))
+    // The due drill picks up cards that came due meanwhile; a group or a pass keeps its list.
+    const ids = queue?.kind === 'due' || !queue ? dueCards(cards).filter((c) => c.id !== session?.card.id).map((c) => c.id) : queue.ids
+    const next = ids.map((id) => byId.get(id)).find((c): c is SrsCard => !!c)
+    if (next) {
+      setQueue((q) => (q ? { ...q, ids: ids.filter((id) => id !== next.id) } : q))
+      showCard(next)
+    } else {
+      setSession(null)
+      setQueue(null)
+    }
+  }, [cards, queue, session, showCard])
 
-  const exit = useCallback(() => setSession(null), [])
+  const exit = useCallback(() => {
+    setSession(null)
+    setQueue(null)
+  }, [])
 
   /** Grades the card with SM-2 and shows the result. */
   const finish = useCallback(
@@ -171,6 +254,10 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
       const outcome = outcomeOf(rec)
       setCards((list) => list.map((c) => (c.id === session.card.id ? sm2Update(c, grade) : c)))
       onGrade.current?.(grade, session.card)
+      if (queue?.kind === 'woodpecker' && woodpecker) {
+        const seconds = Math.min(600, Math.max(0, Math.round((Date.now() - shownAt.current) / 1000)))
+        saveWoodpecker(recordWoodpecker(woodpecker, cards, session.card.id, outcome, seconds))
+      }
       if (gaveUp) setGame((g) => playSan(g, session.card.bestMove) ?? g)
       const comesBack = grade < 3 ? 'It comes back in 4 hours.' : 'It moves to a longer interval.'
       setSession({
@@ -185,7 +272,7 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
             : `Assisted: ${rec.wrongTries} wrong ${rec.wrongTries === 1 ? 'try' : 'tries'}${rec.maxHintLevel ? `, hints up to level ${rec.maxHintLevel}` : ''}. ${comesBack}`,
       })
     },
-    [session, setGame, attempt, onGrade],
+    [session, setGame, attempt, onGrade, queue, woodpecker, cards, saveWoodpecker],
   )
 
   const onBoardMove = useCallback(
@@ -225,11 +312,42 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
     return [{ startSquare: expected.slice(0, 2), endSquare: expected.slice(2, 4), color: ANSWER_ARROW }]
   }, [session, expected])
 
+  const canBuildWoodpecker = useMemo(() => buildWoodpeckerSet(cards) !== null, [cards])
+
+  const woodpeckerView = useMemo(() => {
+    if (!woodpecker) return null
+    const cycle = currentCycle(woodpecker)
+    const size = woodpeckerCards(woodpecker, cards).length
+    const finished = woodpecker.cycles.filter((c) => c.finishedAt).length
+    // The method is a fixed number of passes; after them the set is done until it is rebuilt.
+    const complete = !cycle && finished >= WOODPECKER_CYCLES
+    return {
+      set: woodpecker,
+      size,
+      pass: woodpecker.cycles.length,
+      /** Cards left in the pass under way, the whole set before the next pass, nothing once the set is complete. */
+      left: cycle ? remaining(woodpecker, cards).length : complete ? 0 : size,
+      inProgress: cycle !== null,
+      complete,
+      cycles: summariseCycles(woodpecker),
+      trend: cycleTrend(woodpecker),
+    }
+  }, [woodpecker, cards])
+
   return {
     cards,
     due,
     dueCount: due.length,
     session,
+    queue,
+    /** Cards still to come in the current drill. */
+    queueLeft: queue?.ids.length ?? 0,
+    groups,
+    woodpecker: woodpeckerView,
+    canBuildWoodpecker,
+    startGroup,
+    startWoodpecker,
+    resetWoodpecker,
     active: session !== null,
     orientation,
     attempt,

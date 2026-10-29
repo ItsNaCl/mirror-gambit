@@ -50,6 +50,9 @@ import { SetupPanel } from './components/SetupPanel'
 import { SrsPanel } from './components/SrsPanel'
 import { TipsSection } from './components/TipsSection'
 import { WhyNotPanel } from './components/WhyNotPanel'
+import { GuessPanel } from './components/GuessPanel'
+import { NarratedPanel } from './components/NarratedPanel'
+import { OtbPanel } from './components/OtbPanel'
 import { ToastStack, useToasts } from './components/Toast'
 import { UpdateBanner } from './components/UpdatePanel'
 import { EngineProvider, useEngine } from './hooks/useEngine'
@@ -63,6 +66,9 @@ import { useSrs, type SrsApi, type SrsOptions } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useWhyNot } from './hooks/useWhyNot'
+import { useGuess } from './hooks/useGuess'
+import { useNarrated } from './hooks/useNarrated'
+import { useOtb } from './hooks/useOtb'
 import { useUpdates } from './hooks/useUpdates'
 import { useClaudeCoach } from './hooks/useClaudeCoach'
 import { useLibrary } from './hooks/useLibrary'
@@ -87,7 +93,7 @@ import { explainMove } from './lib/coach/explain'
 import { buildCoachContext, type CoachMode } from './lib/coach/claudeContext'
 import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
-import { courseSession, freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, whyNotSession, type BoardSession, type SessionId } from './sessions/sessions'
+import { courseSession, freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, whyNotSession, guessSession, narratedSession, otbSession, type BoardSession, type SessionId } from './sessions/sessions'
 
 /** On a first import, slow games from the last week count. */
 const RECENT_IMPORT_MS = 7 * 86_400_000
@@ -107,7 +113,10 @@ export default function App() {
   const puzzleGame = useGame()
   const srsGame = useGame()
   const whyNotGame = useGame()
-  const games: Record<SessionId, GameApi> = { free, play: playGame, rep: repGame, course: courseGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame, whynot: whyNotGame }
+  const guessGame = useGame()
+  const narratedGame = useGame()
+  const otbGame = useGame()
+  const games: Record<SessionId, GameApi> = { free, play: playGame, rep: repGame, course: courseGame, trainer: trainerGame, puzzle: puzzleGame, srs: srsGame, whynot: whyNotGame, guess: guessGame, narrated: narratedGame, otb: otbGame }
   // Play and puzzles need the engine, so they live inside the provider; the workspace reports
   // which board is on screen and the engine follows it.
   const [engineFen, setEngineFen] = useState(free.fen)
@@ -148,6 +157,14 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const repertoire = useRepertoire(games.rep, engine, library.games)
   const whyNot = useWhyNot(games.whynot, engine)
   const whyNotList = useMemo(() => whyNotItems(library.analysed), [library.analysed])
+  const guess = useGuess(games.guess, engine)
+  const narrated = useNarrated(games.narrated, engine, settings.coachVoice)
+  const otb = useOtb(games.otb)
+  // The narrated game waits while another screen is open, so its searches never replace that screen's.
+  const pauseNarrated = narrated.setPaused
+  useEffect(() => {
+    pauseNarrated(route !== 'narrated')
+  }, [route, pauseNarrated])
   const onBlockDone = useCallback(
     (d: BlockDone) => {
       award({ type: 'block', minutes: d.minutes }, d.streak)
@@ -160,6 +177,8 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     dueCards: srs.dueCount,
     pendingGames: library.pending,
     whyNotPositions: whyNotList.length,
+    modelGames: (guess.set?.games.length ?? 0) > 0,
+    woodpeckerLeft: srs.woodpecker?.left ?? 0,
     puzzleRating: rated.games > 0 ? rated.rating : null,
     weeklyHours: settings.weeklyHours,
     ratingOverride: settings.ratingOverride,
@@ -306,9 +325,17 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
           // The panel's Start takes over when the engine is still loading or a run is already on.
           if (engine.status === 'ready' && !whyNot.active) whyNot.start(whyNotList)
           return
+        case 'guess':
+          go('guess')
+          if (engine.status === 'ready' && !guess.active) void guess.start('any')
+          return
+        case 'narrated':
+          // The student picks the colour and the level on the screen.
+          go('narrated')
+          return
       }
     },
-    [go, rated, srs, course, whyNot, whyNotList, engine.status],
+    [go, rated, srs, course, whyNot, whyNotList, guess, engine.status],
   )
 
   // Leaving an opening also stops its trap puzzles.
@@ -439,10 +466,16 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         return srsSession(srs, games.srs)
       case 'whynot':
         return whyNotSession(whyNot, games.whynot)
+      case 'guess':
+        return guessSession(guess, games.guess)
+      case 'narrated':
+        return narratedSession(narrated, games.narrated)
+      case 'otb':
+        return otbSession(otb, games.otb)
       default:
         return null
     }
-  }, [sessionId, free, freeOrientation, route, analysisArrows, play, repertoire, course, trainer, puzzles, srs, whyNot, games])
+  }, [sessionId, free, freeOrientation, route, analysisArrows, play, repertoire, course, trainer, puzzles, srs, whyNot, guess, narrated, otb, games])
 
   const boardFen = session?.game.fen ?? fen
   useEffect(() => onBoardFen(boardFen), [boardFen, onBoardFen])
@@ -976,6 +1009,28 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
                     {route === 'puzzles' && <PuzzlesPanel puzzles={puzzles} rated={rated} />}
                     {route === 'cards' && <SrsPanel srs={srs} notify={(t, kind) => notify({ kind: kind ?? 'info', title: t }, 4000)} />}
                     {route === 'whynot' && <WhyNotPanel whyNot={whyNot} items={whyNotList} engineReady={engine.status === 'ready'} onNavigate={go} />}
+                    {route === 'guess' && <GuessPanel guess={guess} engineReady={engine.status === 'ready'} />}
+                    {route === 'otb' && (
+                      <OtbPanel
+                        otb={otb}
+                        engineReady={engine.status === 'ready'}
+                        onReview={(g) => openLibraryGame(g)}
+                        onSave={(g) => {
+                          const added = library.addGame(g)
+                          notify({ kind: added ? 'good' : 'info', title: added ? 'Kept with My games' : 'That game is already in My games' }, 3000)
+                          openLibraryGame(g)
+                        }}
+                      />
+                    )}
+                    {route === 'narrated' && (
+                      <NarratedPanel
+                        narrated={narrated}
+                        voice={settings.coachVoice}
+                        engineReady={engine.status === 'ready'}
+                        onReview={() => reviewState(games.narrated.game, narrated.orientation)}
+                        onNavigate={go}
+                      />
+                    )}
                   </div>
                 </div>
               </aside>
@@ -1103,6 +1158,12 @@ function SessionStrip({ session, trainer, puzzles }: { session: BoardSession; tr
     text = session.interactive ? 'Find the best move' : 'Your mistake cards'
   } else if (session.id === 'whynot') {
     text = session.interactive ? 'Play the move you would choose' : session.canBrowse ? 'Step through the line' : 'Why not this move'
+  } else if (session.id === 'guess') {
+    text = session.interactive ? 'Your guess' : session.canBrowse ? 'The whole game' : 'Guess the move'
+  } else if (session.id === 'otb') {
+    text = session.interactive ? 'Play the moves here or type them' : 'Fix the move list to go on'
+  } else if (session.id === 'narrated') {
+    text = session.interactive ? 'Predict the coach\'s move' : session.canBrowse ? 'Game over' : 'The coach is playing'
   }
   return (
     <div className="controls">

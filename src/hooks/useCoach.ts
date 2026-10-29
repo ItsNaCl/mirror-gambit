@@ -36,6 +36,10 @@ export interface CoachInput {
   pendingGames: number
   /** Positions ready for Why not this move. */
   whyNotPositions?: number
+  /** Whether model games for Guess the move are available. */
+  modelGames?: boolean
+  /** Cards left in the Woodpecker pass. */
+  woodpeckerLeft?: number
   puzzleRating: number | null
   weeklyHours: number
   ratingOverride: number | null
@@ -44,7 +48,7 @@ export interface CoachInput {
 
 /** The coach: today's plan, the session in progress, the log and the streak. */
 export function useCoach(input: CoachInput) {
-  const { analysed, dueCards, pendingGames, whyNotPositions = 0, puzzleRating, weeklyHours, ratingOverride, onBlockDone } = input
+  const { analysed, dueCards, pendingGames, whyNotPositions = 0, modelGames = false, woodpeckerLeft = 0, puzzleRating, weeklyHours, ratingOverride, onBlockDone } = input
   // Kept in a ref so a new callback identity does not change `complete`.
   const blockDone = useLatest(onBlockDone)
   const [log, setLog] = useState<SessionRecord[]>(() => kv.readJson(SESSIONS_KEY, []))
@@ -68,13 +72,15 @@ export function useCoach(input: CoachInput) {
         dueCards,
         pendingGames,
         whyNotPositions,
+        modelGames,
+        woodpeckerLeft,
         puzzleRating,
         weeklyMinutes: Math.max(60, Math.round(weeklyHours * 60)),
         budget,
         log,
         today,
       }),
-    [metrics, ratingOverride, dueCards, pendingGames, whyNotPositions, puzzleRating, weeklyHours, budget, log, today],
+    [metrics, ratingOverride, dueCards, pendingGames, whyNotPositions, modelGames, woodpeckerLeft, puzzleRating, weeklyHours, budget, log, today],
   )
 
   const saveLog = useCallback((next: SessionRecord[]) => {

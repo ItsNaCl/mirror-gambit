@@ -64,6 +64,17 @@ export function useLibrary(engine: EngineContextValue) {
     }
   }, [])
 
+  /** Keeps one game the student entered by hand. False when it is already there. */
+  const addGame = useCallback((g: LibraryGame): boolean => {
+    const prev = gamesRef.current
+    if (prev.some((x) => x.id === g.id)) return false
+    const next = mergeLibrary(prev, [g])
+    gamesRef.current = next
+    setGames(next)
+    kv.setItem(GAMES_KEY, JSON.stringify(next))
+    return true
+  }, [])
+
   const cancel = useCallback(() => {
     if (runId.current === 0 && !progress) return
     runId.current++
@@ -131,6 +142,7 @@ export function useLibrary(engine: EngineContextValue) {
     account,
     importing,
     progress,
+    addGame,
     pending: games.length - analysed.length,
     analysed,
     profile,

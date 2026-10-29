@@ -2798,6 +2798,35 @@ ul.notes li::marker {
   pointer-events: none;
 }
 
+/* ---------- narrated game ---------- */
+
+.narration {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.narration-entry {
+  padding: 10px 12px;
+  border-radius: var(--radius-inner);
+  background: var(--raised);
+}
+
+.narration-entry.coach {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.narration-entry.system {
+  background: var(--accent-soft);
+}
+
+.narration-entry .mono {
+  font-family: var(--mono);
+}
+
 /* ---------- why not this move ---------- */
 
 .compare {

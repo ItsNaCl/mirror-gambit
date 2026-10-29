@@ -55,6 +55,10 @@ export interface PlannerInput {
   pendingGames: number
   /** Positions ready for Why not this move (the student's own mistakes with a better move). */
   whyNotPositions?: number
+  /** Whether model games for Guess the move are available. */
+  modelGames?: boolean
+  /** Cards left in the Woodpecker pass under way, or in the next one. 0 when there is no set. */
+  woodpeckerLeft?: number
   puzzleRating: number | null
   weeklyMinutes: number
   /** Minutes the student has today, or null to let the coach size it. */
@@ -69,6 +73,8 @@ export const MIN_SESSION = 20
 export const MAX_SESSION = 60
 export const GAME_MINUTES = 40
 export const REVIEW_MINUTES = 10
+/** A narrated game stands in for a slow game when the session is too short for one. */
+export const NARRATED_MINUTES = 15
 export const TRAINING_DAYS = 5
 /** Own mistakes needed before the planner schedules Why not this move. */
 export const WHY_NOT_MIN = 3
@@ -126,14 +132,17 @@ export function streak(log: SessionRecord[], today: string): number {
 
 function doneThisWeek(log: SessionRecord[], today: string): Record<Activity, number> {
   const week = new Set(weekOf(today))
-  const done: Record<Activity, number> = { tactics: 0, play: 0, review: 0, endgames: 0, strategy: 0, openings: 0, cards: 0, whynot: 0 }
+  const done: Record<Activity, number> = { tactics: 0, play: 0, review: 0, endgames: 0, strategy: 0, openings: 0, cards: 0, whynot: 0, guess: 0, narrated: 0 }
   for (const r of log)
     if (week.has(r.date))
       for (const b of r.blocks) {
         if (!(b.activity in done)) continue
         done[b.activity] += b.minutes
-        // Why not this move is tactics time spent on the student's own games.
+        // Why not this move is tactics time spent on the student's own games; guessing a model game is opening study.
         if (b.activity === 'whynot') done.tactics += b.minutes
+        if (b.activity === 'guess') done.openings += b.minutes
+        // Watching the coach play and predicting its moves is play time, not study.
+        if (b.activity === 'narrated') done.play += b.minutes
       }
   return done
 }
@@ -172,6 +181,8 @@ export function buildPlan(input: PlannerInput): SessionPlan {
     openings: input.weeklyMinutes * band.split.openings,
     cards: 0,
     whynot: 0,
+    guess: 0,
+    narrated: 0,
   }
   const deficit = (a: Activity) => Math.max(0, target[a] - done[a])
 
@@ -179,9 +190,15 @@ export function buildPlan(input: PlannerInput): SessionPlan {
   let left = minutes
   const m = input.metrics
 
-  if (input.dueCards > 0) {
-    const mins = Math.min(10, Math.max(5, Math.ceil(input.dueCards / 2)))
-    blocks.push({ activity: 'cards', minutes: mins, reason: `${input.dueCards} of your own mistakes are due. Positions you have already got wrong once are the cheapest rating points there are.` })
+  const wood = input.woodpeckerLeft ?? 0
+  if (input.dueCards > 0 || wood > 0) {
+    // The due cards set the pace; a Woodpecker pass adds a few minutes so the set gets through in days, not weeks.
+    let mins = input.dueCards > 0 ? Math.min(10, Math.max(5, Math.ceil(input.dueCards / 2))) : 0
+    if (wood > 0) mins = Math.min(15, mins + Math.max(5, Math.min(10, Math.ceil(wood / 3))))
+    const reasons: string[] = []
+    if (input.dueCards > 0) reasons.push(`${input.dueCards} of your own mistakes are due. Positions you have already got wrong once are the cheapest rating points there are.`)
+    if (wood > 0) reasons.push(`${wood} cards left in your Woodpecker pass. Same set, faster each time.`)
+    blocks.push({ activity: 'cards', minutes: mins, reason: reasons.join(' ') })
     left -= mins
   }
 
@@ -196,6 +213,10 @@ export function buildPlan(input: PlannerInput): SessionPlan {
   if (wantsGame) {
     blocks.push({ activity: 'play', minutes: GAME_MINUTES, reason: `One ${formatTimeControl(band.timeControl)} game with the habit of the day in mind.${slowWarning}` })
     left -= GAME_MINUTES
+  } else if (deficit('play') > 0 && left >= NARRATED_MINUTES + 5) {
+    // Too short for a game of the student's own: the coach plays one and the student predicts its moves.
+    blocks.push({ activity: 'narrated', minutes: NARRATED_MINUTES, reason: 'No room for a full slow game today. Watch the coach play one, predict its moves, and hear why it chose them.' })
+    left -= NARRATED_MINUTES
   }
 
   // The rest is study, filled by how far behind the week is on each kind.
@@ -232,9 +253,21 @@ export function buildPlan(input: PlannerInput): SessionPlan {
     })
   }
 
+  // Half of an openings block goes to guessing a model game in the repertoire: plans, not lines.
+  const openings = blocks.findIndex((b) => b.activity === 'openings')
+  if (openings >= 0 && blocks[openings].minutes >= 10 && input.modelGames) {
+    const mins = round5(blocks[openings].minutes / 2)
+    blocks[openings] = { ...blocks[openings], minutes: blocks[openings].minutes - mins }
+    blocks.splice(openings + 1, 0, {
+      activity: 'guess',
+      minutes: mins,
+      reason: "A strong player's game in your opening. Guess their moves from move 6 and see where your plan differs from theirs.",
+    })
+  }
+
   const weekRemaining: Partial<Record<Activity, number>> = {}
   for (const a of study.concat('play', 'review')) {
-    const counts = (b: SessionBlock) => b.activity === a || (a === 'tactics' && b.activity === 'whynot')
+    const counts = (b: SessionBlock) => b.activity === a || (a === 'tactics' && b.activity === 'whynot') || (a === 'openings' && b.activity === 'guess') || (a === 'play' && b.activity === 'narrated')
     const after = deficit(a) - blocks.filter(counts).reduce((s, b) => s + b.minutes, 0)
     if (after > 0) weekRemaining[a] = Math.round(after)
   }

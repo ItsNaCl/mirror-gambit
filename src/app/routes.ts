@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'whynot' | 'cards' | 'progress' | 'badges' | 'settings'
+export type RouteId = 'coach' | 'play' | 'narrated' | 'otb' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'whynot' | 'guess' | 'cards' | 'progress' | 'badges' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -19,6 +19,8 @@ export interface NavGroup {
 export const ROUTES: Record<RouteId, RouteDef> = {
   coach: { id: 'coach', label: 'Coach', description: "Today's session, picked from your games, with the habit to practise", keywords: 'home plan session today train streak' },
   play: { id: 'play', label: 'Play the computer', description: 'A game against Stockfish at your level, with a coach if you want one', keywords: 'bot ai vs game opponent' },
+  narrated: { id: 'narrated', label: 'Narrated game', description: 'The coach plays the computer and says what it is thinking; you predict its moves first', keywords: 'speedrun commentary watch predict coach voice' },
+  otb: { id: 'otb', label: 'Enter a game', description: 'Type in a game you played over the board, move by move, and review it', keywords: 'otb scoresheet notation club tournament real board import' },
   board: { id: 'board', label: 'Board', description: 'Play both sides with the engine watching', keywords: 'analysis play game pgn fen engine' },
   review: { id: 'review', label: 'Game review', description: 'Every move of this game rated, with the turning points', keywords: 'analyse accuracy mistakes blunders' },
   games: { id: 'games', label: 'My games', description: 'Import your Lichess or chess.com games and see where your points go', keywords: 'import lichess chesscom profile weaknesses stats' },
@@ -27,6 +29,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
   openings: { id: 'openings', label: 'Openings', description: 'Learn opening lines move by move and drill them', keywords: 'trainer drill repertoire lines traps' },
   puzzles: { id: 'puzzles', label: 'Puzzles', description: 'Forks, pins, mates and endgames', keywords: 'tactics' },
   whynot: { id: 'whynot', label: 'Why not this move', description: 'Play your idea in a position from your own game, then see what it allowed and the better move', keywords: 'compare mistake refute own games idea lines' },
+  guess: { id: 'guess', label: 'Guess the move', description: "Play a strong player's side of a game in your opening, one guess per move, and see how close you get", keywords: 'model game master predict solitaire chess openings' },
   cards: { id: 'cards', label: 'Mistake cards', description: 'Your own mistakes, brought back on a schedule', keywords: 'srs spaced repetition review deck' },
   progress: { id: 'progress', label: 'Progress', description: 'Accuracy over time and practice stats', keywords: 'stats history' },
   badges: { id: 'badges', label: 'Badges', description: 'Your rank, the XP to the next one, and every badge you can earn', keywords: 'rank xp level rewards achievements' },
@@ -35,8 +38,8 @@ export const ROUTES: Record<RouteId, RouteDef> = {
 
 export const NAV: NavGroup[] = [
   { label: 'Coach', routes: ['coach'] },
-  { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
-  { label: 'Train', routes: ['repertoire', 'puzzles', 'whynot', 'openings', 'cards'] },
+  { label: 'Play', routes: ['play', 'narrated', 'otb', 'board', 'review', 'games'] },
+  { label: 'Train', routes: ['repertoire', 'puzzles', 'whynot', 'guess', 'openings', 'cards'] },
   { label: 'Learn', routes: ['courses'] },
   { label: 'You', routes: ['progress', 'badges', 'settings'] },
 ]

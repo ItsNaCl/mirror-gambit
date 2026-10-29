@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, RotateCcw, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import type { SrsApi } from '../hooks/useSrs'
 import type { SrsCard } from '../lib/srs/srs'
@@ -61,6 +61,74 @@ function Deck({ srs, notify }: SrsPanelProps) {
         the best move with as many tries as you need; the card comes back after 4 hours, then 1 day, 3 days, 1 week,
         2 weeks and a month. Giving up or needing the bigger hints sends it back to 4 hours.
       </p>
+
+      {srs.groups.length > 1 && (
+        <>
+          <div className="section-title">By pattern</div>
+          <div className="lines">
+            {srs.groups.map((g) => (
+              <div className="line" key={g.key}>
+                <span className="pv small-text">
+                  {g.label}: <span className="tabular">{g.cards.length}</span> card{g.cards.length === 1 ? '' : 's'}
+                  {g.due ? `, ${g.due} due` : ''}
+                </span>
+                <button className="btn small" onClick={() => srs.startGroup(g.key)}>
+                  Drill
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="section-title">Woodpecker</div>
+      <p className="small-text muted">
+        One fixed set of your own mistakes, solved from first to last several times over. Each pass should be faster and
+        cleaner than the one before. The set does not change until you rebuild it.
+      </p>
+      {srs.woodpecker ? (
+        <>
+          <p className="small-text">
+            Set of <span className="tabular">{srs.woodpecker.size}</span> cards.{' '}
+            {srs.woodpecker.complete ? (
+              'All four passes done. Rebuild for a fresh set.'
+            ) : (
+              <>
+                Pass <span className="tabular">{srs.woodpecker.inProgress ? srs.woodpecker.pass : srs.woodpecker.pass + 1}</span>
+                {srs.woodpecker.inProgress ? `, ${srs.woodpecker.left} left` : ' is next'}.
+              </>
+            )}
+            {srs.woodpecker.trend ? ` ${srs.woodpecker.trend}` : ''}
+          </p>
+          {srs.woodpecker.cycles.length > 0 && (
+            <div className="lines">
+              {srs.woodpecker.cycles.map((c) => (
+                <div className="line" key={c.cycle}>
+                  <span className="pv small-text">
+                    Pass {c.cycle}: {c.clean} clean, {c.assisted} assisted, {c.failed} failed
+                    {c.finished ? '' : ' so far'}
+                  </span>
+                  <span className="depth tabular">{Math.round(c.seconds / 60)} min</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="row">
+            {!srs.woodpecker.complete && (
+              <button className="btn small primary" onClick={srs.startWoodpecker}>
+                {srs.woodpecker.inProgress ? 'Continue the pass' : 'Start the next pass'}
+              </button>
+            )}
+            <button className="btn small ghost" onClick={srs.resetWoodpecker} title="Throw the set away and build a new one from your newest mistakes">
+              <RotateCcw /> Rebuild
+            </button>
+          </div>
+        </>
+      ) : (
+        <button className="btn small" onClick={srs.startWoodpecker} disabled={!srs.canBuildWoodpecker} title={srs.canBuildWoodpecker ? '' : 'Needs at least 8 cards from your own games'}>
+          Build a set from your newest mistakes
+        </button>
+      )}
 
       <div className="section-title">
         Deck · {srs.cards.length} card{srs.cards.length === 1 ? '' : 's'}, {srs.dueCount} due
@@ -133,7 +201,9 @@ function ReviewSession({ srs }: { srs: SrsApi }) {
         <button className="btn small" onClick={srs.exit}>
           <ChevronLeft /> Deck
         </button>
-        <span className="small-text muted">{srs.dueCount} due</span>
+        <span className="small-text muted">
+          {srs.queue && srs.queue.kind !== 'due' ? `${srs.queue.label}, ${srs.queueLeft} to go` : `${srs.dueCount} due`}
+        </span>
       </div>
       <div className={'card ' + kind}>
         <h3>
@@ -148,7 +218,7 @@ function ReviewSession({ srs }: { srs: SrsApi }) {
         {done && (
           <div className="row" style={{ marginTop: 8 }}>
             <button className="btn primary" onClick={srs.nextCard}>
-              {srs.due.some((c) => c.id !== s.card.id) ? <>Next card <ChevronRight /></> : 'Finish'}
+              {(srs.queue && srs.queue.kind !== 'due' ? srs.queueLeft > 0 : srs.due.some((c) => c.id !== s.card.id)) ? <>Next card <ChevronRight /></> : 'Finish'}
             </button>
           </div>
         )}

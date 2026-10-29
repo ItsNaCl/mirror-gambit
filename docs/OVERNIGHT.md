@@ -31,10 +31,10 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - [x] HANDOFF task 3
 - [x] HANDOFF task 4
 - [x] Phase 2: why not this move
-- [ ] Phase 2: guess the move
-- [ ] Phase 2: narrated game
-- [ ] Phase 2: over the board entry
-- [ ] Phase 2: card grouping and Woodpecker cycles
+- [x] Phase 2: guess the move
+- [x] Phase 2: narrated game
+- [x] Phase 2: over the board entry
+- [x] Phase 2: card grouping and Woodpecker cycles
 - [ ] HANDOFF task 7, security audit
 - [ ] README and CLAUDE.md updated
 
@@ -44,3 +44,8 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - Board sounds key on the session game moving one ply forward, so opening a repertoire gap or switching an opening variation also clicks; the board shows a piece moving in those cases, so the click is kept.
 - The review asked for one plumbing style for XP events and a shared test factory; left as is (architecture, not a defect), the fixes went to the real bugs (import XP cap, batch review XP, slow game needs clock time, unknown stored band).
 - Why not this move: the compare view shows the engine evaluation of both lines; the Maia percentage of players who find each move needs the phase 3 server and is left for then. Source positions are the students own mistakes and blunders with a known better move; model games join as a source once guess the move ships its game set. The planner carves a why-not block out of a tactics block of 15 minutes or more once three such positions exist.
+- Model games: the Lichess user games API now answers anonymous requests with 404, so the set is built from one month of the Lichess Elite Database (CC0, database.nikonoel.fr, 2020-10) filtered by the repertoire openings and checked with Stockfish; the curated public domain classics are left out rather than typed from memory. A first build was stopped by mistake just before it wrote its file; the rebuild ships in its own commit once it finishes.
+- Guess the move evaluates a guess at the depth the game set was built at (9), so the master move and the guess are measured the same way; the Maia findability figures wait for the phase 3 server.
+- The narrated game plays the coach as full strength Stockfish (depth 14, three candidates) against the existing play levels; Maia replaces the opponent in phase 3.
+- Over the board entry has no planner block: a real game is entered when it happens, not scheduled. The Today screen opens the narrated game screen without starting one, since the colour and level are chosen there.
+- The four phase 2 modes were reviewed together in one code review pass and committed one mode per commit, with the shared wiring (routes, sessions, planner, App) in the last of them, so each earlier commit still type-checks on its own.
