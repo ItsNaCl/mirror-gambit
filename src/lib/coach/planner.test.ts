@@ -60,6 +60,12 @@ describe('metrics', () => {
     expect(describeMetrics(m)[0]).toMatch(/hanging/)
   })
 
+  it('compares hung pieces in the newer half of the games with the older half', () => {
+    const games = [...Array.from({ length: 3 }, (_, i) => game(i)), ...Array.from({ length: 3 }, (_, i) => game(10 + i, { mistakes: [] }))]
+    expect(buildMetrics(games)!.hungTrend).toBe(-1)
+    expect(buildMetrics(games.slice(0, 5))!.hungTrend).toBeNull()
+  })
+
   it('takes the rating from the newest rapid game first', () => {
     const games = [game(5, { timeClass: 'blitz', rating: 900 }), game(2, { timeClass: 'rapid', rating: 750 })]
     expect(buildMetrics(games)).toMatchObject({ rating: 750, ratingClass: 'rapid' })

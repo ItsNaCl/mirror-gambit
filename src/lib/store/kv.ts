@@ -108,6 +108,16 @@ export function getItem(key: string): string | null {
   return cache.get(key) ?? null
 }
 
+/** Parses a stored JSON value, or returns the fallback when the key is empty or unreadable. */
+export function readJson<T>(key: string, fallback: T): T {
+  try {
+    const raw = getItem(key)
+    return raw ? (JSON.parse(raw) as T) : fallback
+  } catch {
+    return fallback
+  }
+}
+
 export function setItem(key: string, value: string): void {
   cache.set(key, value)
   if (MIRRORED.has(key) || !db) {

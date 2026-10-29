@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
 import { isProblem } from '../lib/analysis/classify'
@@ -52,9 +52,18 @@ function bestUci(card: SrsCard): string | null {
   }
 }
 
-export function useSrs(gameApi: GameApi) {
+export interface SrsOptions {
+  /** Called with the SM-2 grade (0 to 5) each time a card is finished. */
+  onGrade?: (grade: number, card: SrsCard) => void
+}
+
+export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
   const { setGame } = gameApi
   const attempt = useAttempt()
+  const onGrade = useRef(options.onGrade)
+  useEffect(() => {
+    onGrade.current = options.onGrade
+  }, [options.onGrade])
   const [cards, setCards] = useState<SrsCard[]>(loadCards)
   const [session, setSession] = useState<ReviewSession | null>(null)
   const [now, setNow] = useState(() => Date.now())
@@ -163,6 +172,7 @@ export function useSrs(gameApi: GameApi) {
       const grade = srsGrade(rec)
       const outcome = outcomeOf(rec)
       setCards((list) => list.map((c) => (c.id === session.card.id ? sm2Update(c, grade) : c)))
+      onGrade.current?.(grade, session.card)
       if (gaveUp) setGame((g) => playSan(g, session.card.bestMove) ?? g)
       const comesBack = grade < 3 ? 'It comes back in 4 hours.' : 'It moves to a longer interval.'
       setSession({

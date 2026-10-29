@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { buildMetrics } from '../lib/coach/metrics'
 import { buildPlan, dayKey, exitProgress, streak, type SessionBlock, type SessionPlan, type SessionRecord } from '../lib/coach/planner'
 import type { AnalysedGame } from '../lib/games/profile'
@@ -7,15 +7,6 @@ import * as kv from '../lib/store/kv'
 export const SESSIONS_KEY = 'mirror-gambit.sessions.v1'
 const ACTIVE_KEY = 'mirror-gambit.coach-session.v1'
 const MAX_LOG = 400
-
-function load<T>(key: string, fallback: T): T {
-  try {
-    const raw = kv.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
-}
 
 /** A session in progress: which block is running and when it started, kept across reloads. */
 export interface ActiveSession {
@@ -28,6 +19,16 @@ export interface ActiveSession {
   credited: number[]
 }
 
+/** What a finished block tells the game layer. */
+export interface BlockDone {
+  block: SessionBlock
+  minutes: number
+  /** The first block finished today, which is what keeps the streak alive. */
+  firstToday: boolean
+  /** The streak in days with today counted. */
+  streak: number
+}
+
 export interface CoachInput {
   analysed: AnalysedGame[]
   dueCards: number
@@ -35,13 +36,19 @@ export interface CoachInput {
   puzzleRating: number | null
   weeklyHours: number
   ratingOverride: number | null
+  onBlockDone?: (done: BlockDone) => void
 }
 
 /** The coach: today's plan, the session in progress, the log and the streak. */
 export function useCoach(input: CoachInput) {
-  const { analysed, dueCards, pendingGames, puzzleRating, weeklyHours, ratingOverride } = input
-  const [log, setLog] = useState<SessionRecord[]>(() => load(SESSIONS_KEY, []))
-  const [active, setActive] = useState<ActiveSession | null>(() => load(ACTIVE_KEY, null))
+  const { analysed, dueCards, pendingGames, puzzleRating, weeklyHours, ratingOverride, onBlockDone } = input
+  // Kept in a ref so a new callback identity does not change `complete`.
+  const blockDone = useRef(onBlockDone)
+  useEffect(() => {
+    blockDone.current = onBlockDone
+  }, [onBlockDone])
+  const [log, setLog] = useState<SessionRecord[]>(() => kv.readJson(SESSIONS_KEY, []))
+  const [active, setActive] = useState<ActiveSession | null>(() => kv.readJson(ACTIVE_KEY, null))
   const [budget, setBudget] = useState<number | null>(null)
   const [today, setToday] = useState(() => dayKey(new Date()))
 
@@ -85,7 +92,9 @@ export function useCoach(input: CoachInput) {
       if (minutes <= 0) return
       const rec = log.find((r) => r.date === today) ?? { date: today, blocks: [] }
       const rest = log.filter((r) => r.date !== today)
-      saveLog([...rest, { ...rec, blocks: [...rec.blocks, { activity: block.activity, minutes }] }])
+      const next = [...rest, { ...rec, blocks: [...rec.blocks, { activity: block.activity, minutes }] }]
+      saveLog(next)
+      blockDone.current?.({ block, minutes, firstToday: rec.blocks.length === 0, streak: streak(next, today) })
     },
     [log, today, saveLog],
   )

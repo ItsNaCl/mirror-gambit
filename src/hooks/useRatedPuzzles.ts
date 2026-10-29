@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { newRating, parseRated, pickRated, PROVISIONAL_GAMES, toPuzzle, updateRating, type PuzzleRating, type RatedEntry, type RatedPuzzle, type ThemeFilter } from '../lib/puzzles/rated'
+import type { Outcome } from '../lib/practice/practice'
 import * as kv from '../lib/store/kv'
 import type { PuzzlesApi } from './usePuzzles'
 
@@ -7,13 +8,16 @@ const RATING_KEY = 'mirror-gambit.puzzle-rating.v1'
 const SEEN_KEY = 'mirror-gambit.puzzle-rated-seen.v1'
 const MAX_SEEN = 2000
 
-function load<T>(key: string, fallback: T): T {
-  try {
-    const raw = kv.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
+export interface RatedResult {
+  outcome: Outcome
+  /** The puzzle's rating, not the student's. */
+  rating: number
+  delta: number
+}
+
+export interface RatedOptions {
+  /** Called once per puzzle when it ends. */
+  onResult?: (result: RatedResult) => void
 }
 
 /**
@@ -21,11 +25,16 @@ function load<T>(key: string, fallback: T): T {
  * puzzle is picked near the student's rating, and the result updates the rating once the puzzle
  * ends. Solving itself runs through the normal puzzle hook.
  */
-export function useRatedPuzzles(puzzles: PuzzlesApi) {
+export function useRatedPuzzles(puzzles: PuzzlesApi, options: RatedOptions = {}) {
+  // A ref, so the scoring effect does not depend on the callback's identity.
+  const onResult = useRef(options.onResult)
+  useEffect(() => {
+    onResult.current = options.onResult
+  }, [options.onResult])
   const [pool, setPool] = useState<RatedPuzzle[] | null>(null)
   const [loading, setLoading] = useState(false)
-  const [rating, setRating] = useState<PuzzleRating>(() => load(RATING_KEY, newRating()))
-  const [seen, setSeen] = useState<string[]>(() => load(SEEN_KEY, []))
+  const [rating, setRating] = useState<PuzzleRating>(() => kv.readJson(RATING_KEY, newRating()))
+  const [seen, setSeen] = useState<string[]>(() => kv.readJson(SEEN_KEY, []))
   const [theme, setTheme] = useState<ThemeFilter>('any')
   const [current, setCurrent] = useState<RatedPuzzle | null>(null)
   const [lastDelta, setLastDelta] = useState<number | null>(null)
@@ -65,7 +74,8 @@ export function useRatedPuzzles(puzzles: PuzzlesApi) {
   useEffect(() => {
     if (!finished || !current || scored.current === current.id) return
     scored.current = current.id
-    const score = puzzles.status === 'revealing' ? 0 : puzzles.outcome === 'clean' ? 1 : 0.5
+    const outcome: Outcome = puzzles.status === 'revealing' ? 'failed' : puzzles.outcome === 'clean' ? 'clean' : 'assisted'
+    const score = outcome === 'failed' ? 0 : outcome === 'clean' ? 1 : 0.5
     const { next: updated, delta } = updateRating(rating, current.rating, score)
     setRating(updated)
     kv.setItem(RATING_KEY, JSON.stringify(updated))
@@ -73,6 +83,7 @@ export function useRatedPuzzles(puzzles: PuzzlesApi) {
     setSeen(nextSeen)
     kv.setItem(SEEN_KEY, JSON.stringify(nextSeen))
     setLastDelta(delta)
+    onResult.current?.({ outcome, rating: current.rating, delta })
   }, [finished, current, puzzles.status, puzzles.outcome, rating, seen])
 
   const recent = useMemo(() => rating.history.slice(-30), [rating.history])

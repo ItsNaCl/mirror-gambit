@@ -240,6 +240,7 @@ export function usePlay(gameApi: GameApi, engine: EngineContextValue) {
     thinking,
     userToMove,
     result,
+    resigned,
     error,
     savedGames,
     canTakeBack,

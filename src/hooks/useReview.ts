@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { Chess } from 'chess.js'
 import type { GameState } from '../lib/chess/game'
-import { appendHistory, recordFromReview } from '../lib/progress/history'
+import { appendHistory, loadHistory, recordFromReview } from '../lib/progress/history'
 import { buildReview, REVIEW_DEPTH, type PositionEval, type ReviewResult } from '../lib/review/review'
 import type { EngineContextValue } from './useEngine'
 import type { GameApi } from './useGame'
@@ -38,6 +38,8 @@ export function useReview(gameApi: GameApi, engine: EngineContextValue) {
   const runId = useRef(0)
   // Bumps whenever a review is stored in the progress history.
   const [historyVersion, setHistoryVersion] = useState(0)
+  // Bumps only when the reviewed game was not in the history yet: reviewing a game again is not a new review.
+  const [newReviews, setNewReviews] = useState(0)
 
   const cancel = useCallback(() => {
     runId.current++
@@ -82,8 +84,11 @@ export function useReview(gameApi: GameApi, engine: EngineContextValue) {
       const result = buildReview(game, evals)
       setState({ status: 'done', progress: 1, current: fens.length, total: fens.length, result, reviewedKey: key, error: null })
       if (game.moves.length >= 10) {
-        appendHistory(recordFromReview(result, key))
+        const record = recordFromReview(result, key)
+        const fresh = !loadHistory().some((r) => r.id === record.id)
+        appendHistory(record)
         setHistoryVersion((v) => v + 1)
+        if (fresh) setNewReviews((n) => n + 1)
       }
     } catch (e) {
       if (runId.current !== id) return
@@ -95,7 +100,7 @@ export function useReview(gameApi: GameApi, engine: EngineContextValue) {
 
   const matchesCurrentGame = state.reviewedKey !== null && state.reviewedKey === gameKey(gameApi.game)
 
-  return { state, start, cancel, matchesCurrentGame, historyVersion }
+  return { state, start, cancel, matchesCurrentGame, historyVersion, newReviews }
 }
 
 export type ReviewApi = ReturnType<typeof useReview>

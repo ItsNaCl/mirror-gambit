@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Arrow } from 'react-chessboard'
 import {
   ArrowLeft,
@@ -20,7 +20,8 @@ import { ROUTE_ICONS, Sidebar, TopBar } from './app/Shell'
 import { NAV, ROUTES, useRoute, type RouteId } from './app/routes'
 import { AnalysisPanel } from './components/AnalysisPanel'
 import { CoachHome } from './components/CoachHome'
-import { useCoach } from './hooks/useCoach'
+import { useCoach, type BlockDone } from './hooks/useCoach'
+import { useProgression } from './hooks/useProgression'
 import type { SessionBlock } from './lib/coach/planner'
 import type { ThemeFilter } from './lib/puzzles/rated'
 import type { BoardPreview } from './components/CoachPanel'
@@ -54,22 +55,25 @@ import { usePlay, type PlayApi } from './hooks/usePlay'
 import { usePuzzles, type PuzzlesApi } from './hooks/usePuzzles'
 import { useReview } from './hooks/useReview'
 import { useSettings } from './hooks/useSettings'
-import { useSrs, type SrsApi } from './hooks/useSrs'
+import { useSrs, type SrsApi, type SrsOptions } from './hooks/useSrs'
 import { useTips, type MoveAlert } from './hooks/useTips'
 import { useTrainer, type TrainerApi } from './hooks/useTrainer'
 import { useUpdates } from './hooks/useUpdates'
 import { useClaudeCoach } from './hooks/useClaudeCoach'
 import { useLibrary } from './hooks/useLibrary'
 import { useRepertoire } from './hooks/useRepertoire'
-import { useRatedPuzzles } from './hooks/useRatedPuzzles'
+import { useRatedPuzzles, type RatedOptions } from './hooks/useRatedPuzzles'
 import { useCourse } from './hooks/useCourse'
 import { CLASS_LABEL, CLASS_SYMBOL, isProblem } from './lib/analysis/classify'
 import { fenAt, isAtEnd, lastMoveAt, playUci, turnOf, uciToSan } from './lib/chess/game'
 import { exportPgn, importPgn } from './lib/chess/pgn'
 import { cleanError, fetchChessComJson } from './lib/desktop'
 import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
-import type { SavedGame } from './lib/play/savedGames'
+import { countsAsSlowGame, outcomeFor, type SavedGame } from './lib/play/savedGames'
 import { libraryGameState, type LibraryGame } from './lib/games/sources'
+import { outcome } from './lib/games/profile'
+import { SLOW } from './lib/coach/metrics'
+import type { XpEvent } from './lib/game/xp'
 import { motifGuide, PUZZLE_SETS } from './lib/puzzles/puzzles'
 import { reviewComment } from './lib/review/review'
 import { explainMove } from './lib/coach/explain'
@@ -78,6 +82,8 @@ import { ANSWER_ARROW } from './lib/ui/boardColors'
 import { openings } from './openings'
 import { courseSession, freeSession, playSession, puzzleSession, repertoireSession, sessionFor, srsSession, trainerSession, type BoardSession, type SessionId } from './sessions/sessions'
 
+/** On a first import, slow games from the last week count. */
+const RECENT_IMPORT_MS = 7 * 86_400_000
 
 export default function App() {
   const [route, navigate] = useRoute()
@@ -114,14 +120,28 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const engine = useEngine()
   const trainer = useTrainer(games.trainer)
   const puzzles = usePuzzles(games.puzzle, engine)
-  const srs = useSrs(games.srs)
+  const progression = useProgression()
+  const { award } = progression
+  // XP events from the hooks below reach the progression through this ref, because the streak
+  // they are credited with comes from the coach, which is built after them.
+  const earnRef = useRef<(e: XpEvent) => void>(() => {})
+  const srsOptions = useMemo<SrsOptions>(() => ({ onGrade: (grade) => earnRef.current({ type: 'card', grade }) }), [])
+  const srs = useSrs(games.srs, srsOptions)
   const play = usePlay(games.play, engine)
-  const rated = useRatedPuzzles(puzzles)
+  const ratedOptions = useMemo<RatedOptions>(() => ({ onResult: (r) => earnRef.current({ type: 'solve', outcome: r.outcome, rating: r.rating }) }), [])
+  const rated = useRatedPuzzles(puzzles, ratedOptions)
   const course = useCourse(games.course)
   const updates = useUpdates()
   const claude = useClaudeCoach(settings.claudeMonthlyCap)
   const library = useLibrary(engine)
   const repertoire = useRepertoire(games.rep, engine, library.games)
+  const onBlockDone = useCallback(
+    (d: BlockDone) => {
+      award({ type: 'block', minutes: d.minutes }, d.streak)
+      if (d.firstToday) award({ type: 'streak', days: d.streak }, d.streak)
+    },
+    [award],
+  )
   const coach = useCoach({
     analysed: library.analysed,
     dueCards: srs.dueCount,
@@ -129,7 +149,50 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     puzzleRating: rated.games > 0 ? rated.rating : null,
     weeklyHours: settings.weeklyHours,
     ratingOverride: settings.ratingOverride,
+    onBlockDone,
   })
+  const earn = useCallback((e: XpEvent) => award(e, coach.streak), [award, coach.streak])
+  useEffect(() => {
+    earnRef.current = earn
+  }, [earn])
+
+  // A finished game against the computer counts as a slow game once it was long enough, once per game.
+  const playAwarded = useRef<number | null>(null)
+  const playGame = games.play
+  useEffect(() => {
+    if (!play.active || !play.result || playAwarded.current === playGame.gameId) return
+    if (!countsAsSlowGame(playGame.game.moves.length, play.resigned)) return
+    playAwarded.current = playGame.gameId
+    earn({ type: 'slowGame', result: outcomeFor(play.result.result, play.userColor) })
+  }, [play.active, play.result, play.resigned, play.userColor, playGame.game.moves.length, playGame.gameId, earn])
+
+  // Imported slow games count when they are new to the library and were played after every game
+  // seen so far, so importing a history does not pay for old games, and clearing the library and
+  // importing again does not pay twice. Games there at start-up only seed what is known.
+  const knownGames = useRef<{ ids: Set<string>; newest: number } | null>(null)
+  useEffect(() => {
+    const stamp = (g: LibraryGame) => Date.parse(g.date) || 0
+    const known = knownGames.current
+    if (!known) {
+      knownGames.current = { ids: new Set(library.games.map((g) => g.id)), newest: library.games.reduce((t, g) => Math.max(t, stamp(g)), 0) }
+      return
+    }
+    const since = known.newest || Date.now() - RECENT_IMPORT_MS
+    const fresh = library.games.filter((g) => !known.ids.has(g.id))
+    for (const g of fresh) {
+      known.ids.add(g.id)
+      known.newest = Math.max(known.newest, stamp(g))
+      if (SLOW.has(g.timeClass) && stamp(g) > since) earn({ type: 'slowGame', result: outcome(g) })
+    }
+  }, [library.games, earn])
+
+  // Moving up a band pays once the band is known from a real rating.
+  const bandId = coach.plan.band.id
+  const ratingKnown = (coach.metrics?.rating ?? settings.ratingOverride) !== null
+  const trackBand = progression.trackBand
+  useEffect(() => {
+    if (ratingKnown) trackBand(bandId)
+  }, [ratingKnown, bandId, trackBand])
   // The engine runs one search at a time, so the batch review only runs while My games is open.
   const stopBatch = library.cancel
   const batchRunning = !!library.progress
@@ -153,6 +216,15 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const review = useReview(free, engine)
+  // A game reviewed for the first time is a reviewed game. Paid once per count, whatever else re-runs the effect.
+  const reviewsPaid = useRef(0)
+  const newReviews = review.newReviews
+  useEffect(() => {
+    if (newReviews <= reviewsPaid.current) return
+    reviewsPaid.current = newReviews
+    earn({ type: 'review' })
+  }, [newReviews, earn])
+
   const [includeClassifications, setIncludeClassifications] = useState(true)
   const reviewResult = review.matchesCurrentGame ? review.state.result : null
 

@@ -17,6 +17,13 @@ export type PlayerOutcome = 'win' | 'loss' | 'draw'
 const KEY = 'mirror-gambit.play-games.v1'
 export const MAX_SAVED_GAMES = 50
 
+/** The length a game against the computer needs to count as a slow game for the coach. */
+export const SLOW_GAME_PLIES = 40
+/** 20 moves each counts; a shorter game counts only when it was played out rather than resigned. */
+export function countsAsSlowGame(plies: number, resigned: boolean): boolean {
+  return plies >= SLOW_GAME_PLIES || (!resigned && plies >= SLOW_GAME_PLIES / 2)
+}
+
 export function outcomeFor(result: SavedGame['result'], userColor: 'w' | 'b'): PlayerOutcome {
   if (result === '1/2-1/2') return 'draw'
   return (result === '1-0') === (userColor === 'w') ? 'win' : 'loss'

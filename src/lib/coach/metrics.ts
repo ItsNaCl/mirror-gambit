@@ -11,6 +11,8 @@ import { outcome, TAG_LABEL, type AnalysedGame, type MistakeTag, type Phase } fr
 export const RECENT_GAMES = 20
 export const REPEAT_WINDOW = 10
 export const REPEAT_THRESHOLD = 3
+/** Games needed before the hung pieces trend compares the newer half with the older half. */
+export const TREND_MIN_GAMES = 6
 
 export interface RepeatMistake {
   tag: MistakeTag
@@ -28,6 +30,11 @@ export interface Metrics {
   ratingClass: string | null
   /** Pieces left hanging (and free pieces missed) per game. */
   hungPerGame: number
+  /**
+   * Hung per game in the newer half of the recent games minus the older half, so below zero
+   * is improvement. Null until there are enough games to split.
+   */
+  hungTrend: number | null
   blundersPerGame: number
   /** Share of recent games played at rapid or slower. */
   slowShare: number
@@ -39,7 +46,8 @@ export interface Metrics {
   score: number
 }
 
-const SLOW = new Set(['rapid', 'classical', 'daily', 'correspondence'])
+/** Time classes the coach counts as slow games. */
+export const SLOW = new Set(['rapid', 'classical', 'daily', 'correspondence'])
 const round1 = (x: number) => Math.round(x * 10) / 10
 
 /** Newest games first, whatever order the library is in. */
@@ -60,8 +68,12 @@ export function buildMetrics(analysed: AnalysedGame[]): Metrics | null {
   if (n === 0) return null
 
   const mistakes = recent.flatMap((a) => a.analysis.mistakes)
-  const hung = mistakes.filter((m) => m.tags.includes('hung-piece') || m.tags.includes('missed-free-piece')).length
+  const isHung = (m: { tags: MistakeTag[] }) => m.tags.includes('hung-piece') || m.tags.includes('missed-free-piece')
+  const hung = mistakes.filter(isHung).length
   const blunders = mistakes.filter((m) => m.cls === 'blunder').length
+  const hungRate = (games: AnalysedGame[]) => games.flatMap((a) => a.analysis.mistakes).filter(isHung).length / games.length
+  const half = Math.floor(n / 2)
+  const hungTrend = n >= TREND_MIN_GAMES ? round1(hungRate(recent.slice(0, half)) - hungRate(recent.slice(half, half * 2))) : null
 
   const lossPhase: Record<Phase, number> = { opening: 0, middlegame: 0, endgame: 0 }
   for (const a of recent) {
@@ -84,6 +96,7 @@ export function buildMetrics(analysed: AnalysedGame[]): Metrics | null {
     games: n,
     ...ratingFrom(recent),
     hungPerGame: round1(hung / n),
+    hungTrend,
     blundersPerGame: round1(blunders / n),
     slowShare: round1(recent.filter((a) => SLOW.has(a.game.timeClass)).length / n),
     lossPhase,
