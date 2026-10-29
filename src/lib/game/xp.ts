@@ -85,6 +85,11 @@ export function rankFor(xp: number): Rank {
   return r
 }
 
+/** 1 for the first rank, up to RANKS.length. */
+export function rankPlace(rank: Rank): number {
+  return RANKS.findIndex((r) => r.id === rank.id) + 1
+}
+
 export function nextRank(rank: Rank): Rank | null {
   const i = RANKS.findIndex((r) => r.id === rank.id)
   return i < RANKS.length - 1 ? RANKS[i + 1] : null
@@ -103,21 +108,29 @@ export interface Badge {
   label: string
   /** One line on how it is earned. */
   how: string
-  earned: (p: Progression, streak: number) => boolean
+  /** How far along it is: the badge is earned once value reaches target. */
+  progress: (p: Progression, streak: number) => { value: number; target: number }
 }
 
+const count = (target: number, value: (p: Progression, streak: number) => number) => (p: Progression, streak: number) => ({ value: value(p, streak), target })
+
 export const BADGES: Badge[] = [
-  { id: 'first-session', label: 'First session', how: 'Finish a session block', earned: (p) => p.blocks >= 1 },
-  { id: 'clean-10', label: 'Clean ten', how: 'Solve 10 puzzles clean', earned: (p) => p.cleanSolves >= 10 },
-  { id: 'clean-100', label: 'Clean hundred', how: 'Solve 100 puzzles clean', earned: (p) => p.cleanSolves >= 100 },
-  { id: 'reviewed-25', label: 'Honest player', how: 'Review 25 of your games', earned: (p) => p.reviews >= 25 },
-  { id: 'cards-50', label: 'Card sharp', how: 'Clear 50 mistake cards', earned: (p) => p.cardsDone >= 50 },
-  { id: 'slow-1', label: 'Clock time', how: 'Play a slow game', earned: (p) => p.slowGames >= 1 },
-  { id: 'slow-win', label: 'Earned it', how: 'Win a slow game', earned: (p) => p.slowWins >= 1 },
-  { id: 'streak-7', label: 'Week straight', how: 'Train 7 days in a row', earned: (_p, s) => s >= 7 },
-  { id: 'streak-30', label: 'Month straight', how: 'Train 30 days in a row', earned: (_p, s) => s >= 30 },
-  { id: 'band-up', label: 'Moving up', how: 'Leave a rating band', earned: (p) => p.promotions >= 1 },
+  { id: 'first-session', label: 'First session', how: 'Finish a session block', progress: count(1, (p) => p.blocks) },
+  { id: 'clean-10', label: 'Clean ten', how: 'Solve 10 puzzles clean', progress: count(10, (p) => p.cleanSolves) },
+  { id: 'clean-100', label: 'Clean hundred', how: 'Solve 100 puzzles clean', progress: count(100, (p) => p.cleanSolves) },
+  { id: 'reviewed-25', label: 'Honest player', how: 'Review 25 of your games', progress: count(25, (p) => p.reviews) },
+  { id: 'cards-50', label: 'Card sharp', how: 'Clear 50 mistake cards', progress: count(50, (p) => p.cardsDone) },
+  { id: 'slow-1', label: 'Clock time', how: 'Play a slow game', progress: count(1, (p) => p.slowGames) },
+  { id: 'slow-win', label: 'Earned it', how: 'Win a slow game', progress: count(1, (p) => p.slowWins) },
+  { id: 'streak-7', label: 'Week straight', how: 'Train 7 days in a row', progress: count(7, (p, s) => Math.max(s, p.bestStreak)) },
+  { id: 'streak-30', label: 'Month straight', how: 'Train 30 days in a row', progress: count(30, (p, s) => Math.max(s, p.bestStreak)) },
+  { id: 'band-up', label: 'Moving up', how: 'Leave a rating band', progress: count(1, (p) => p.promotions) },
 ]
+
+export function badgeEarned(b: Badge, p: Progression, streak: number): boolean {
+  const { value, target } = b.progress(p, streak)
+  return value >= target
+}
 
 export interface Award {
   next: Progression
@@ -158,7 +171,7 @@ export function award(p: Progression, e: XpEvent, streak: number, nowIso: string
   }
   const before = rankFor(p.xp)
   const after = rankFor(next.xp)
-  const newBadges = BADGES.filter((b) => !next.badges[b.id] && b.earned(next, days))
+  const newBadges = BADGES.filter((b) => !next.badges[b.id] && badgeEarned(b, next, days))
   for (const b of newBadges) next.badges[b.id] = nowIso
   return { next, gained, newRank: after.id !== before.id ? after : null, newBadges }
 }

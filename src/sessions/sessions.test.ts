@@ -24,6 +24,7 @@ describe('sessionFor', () => {
     expect(sessionFor('puzzles', noPuzzle)).toBe('puzzle')
     expect(sessionFor('cards', noPuzzle)).toBe('srs')
     expect(sessionFor('progress', noPuzzle)).toBeNull()
+    expect(sessionFor('badges', noPuzzle)).toBeNull()
     expect(sessionFor('settings', noPuzzle)).toBeNull()
   })
 })

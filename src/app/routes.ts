@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'settings'
+export type RouteId = 'coach' | 'play' | 'board' | 'review' | 'games' | 'repertoire' | 'courses' | 'openings' | 'puzzles' | 'cards' | 'progress' | 'badges' | 'settings'
 
 export interface RouteDef {
   id: RouteId
@@ -28,6 +28,7 @@ export const ROUTES: Record<RouteId, RouteDef> = {
   puzzles: { id: 'puzzles', label: 'Puzzles', description: 'Forks, pins, mates and endgames', keywords: 'tactics' },
   cards: { id: 'cards', label: 'Mistake cards', description: 'Your own mistakes, brought back on a schedule', keywords: 'srs spaced repetition review deck' },
   progress: { id: 'progress', label: 'Progress', description: 'Accuracy over time and practice stats', keywords: 'stats history' },
+  badges: { id: 'badges', label: 'Badges', description: 'Your rank, the XP to the next one, and every badge you can earn', keywords: 'rank xp level rewards achievements' },
   settings: { id: 'settings', label: 'Settings', description: 'Engine, tips and hints', keywords: 'preferences options' },
 }
 
@@ -36,7 +37,7 @@ export const NAV: NavGroup[] = [
   { label: 'Play', routes: ['play', 'board', 'review', 'games'] },
   { label: 'Train', routes: ['repertoire', 'puzzles', 'openings', 'cards'] },
   { label: 'Learn', routes: ['courses'] },
-  { label: 'You', routes: ['progress', 'settings'] },
+  { label: 'You', routes: ['progress', 'badges', 'settings'] },
 ]
 
 export const DEFAULT_ROUTE: RouteId = 'coach'

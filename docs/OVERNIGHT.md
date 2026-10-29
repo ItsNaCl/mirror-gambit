@@ -26,9 +26,9 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 - Stay in this repository. Do not touch files outside it.
 
 ## Progress
-- [ ] HANDOFF task 1
-- [ ] HANDOFF task 2
-- [ ] HANDOFF task 3
+- [x] HANDOFF task 1
+- [x] HANDOFF task 2
+- [x] HANDOFF task 3
 - [ ] HANDOFF task 4
 - [ ] Phase 2: why not this move
 - [ ] Phase 2: guess the move
@@ -40,3 +40,4 @@ Read "Progress" below first and continue from the first task not marked done. Ne
 
 ## Decisions
 (append one line per decision taken without Daniel)
+- Tasks 1 and 2 were already committed (2287baa, 00ac015) but unchecked here; verified the code is in place and marked them done instead of redoing them.

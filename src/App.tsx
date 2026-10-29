@@ -19,6 +19,7 @@ import {
 import { ROUTE_ICONS, Sidebar, TopBar } from './app/Shell'
 import { NAV, ROUTES, useRoute, type RouteId } from './app/routes'
 import { AnalysisPanel } from './components/AnalysisPanel'
+import { BadgesPanel } from './components/BadgesPanel'
 import { CoachHome } from './components/CoachHome'
 import { LevelUp } from './components/LevelUp'
 import { useCoach, type BlockDone } from './hooks/useCoach'
@@ -631,6 +632,7 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
         engine={engineState}
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
+        rank={progression}
       />
       <div className="main">
         <TopBar title={title} sub={sub} onOpenPalette={() => setPaletteOpen(true)} onOpenMenu={() => setMenuOpen(true)} />
@@ -649,6 +651,8 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
               historyVersion={review.historyVersion}
               onNavigate={go}
             />
+          ) : route === 'badges' ? (
+            <BadgesPanel progression={progression} streak={coach.streak} />
           ) : route === 'settings' ? (
             <SettingsPanel engineInfo={engine.buildInfo} updates={updates} claude={claude} />
           ) : setupMode && route === 'board' ? (

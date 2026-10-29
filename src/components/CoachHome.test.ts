@@ -110,7 +110,7 @@ describe('CoachHome', () => {
 
   it('shows earned badges', () => {
     const p = progression({
-      badges: [{ id: 'first-session', label: 'First session', how: 'Finish a session block', earned: () => true, earnedAt: '2026-10-29T10:00:00Z' }],
+      badges: [{ id: 'first-session', label: 'First session', how: 'Finish a session block', progress: () => ({ value: 1, target: 1 }), earnedAt: '2026-10-29T10:00:00Z' }],
     })
     render(createElement(CoachHome, { coach: api(), progression: p, onOpenBlock: vi.fn(), onNavigate: vi.fn() }))
     expect(screen.getByText('First session')).toBeTruthy()

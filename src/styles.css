@@ -1797,8 +1797,23 @@ abbr.gloss {
   .sidebar .nav-label,
   .sidebar .nav-item .count,
   .sidebar .nav-group-toggle,
+  .sidebar .rank-text,
+  .sidebar .rank-xp,
   .sidebar-foot .engine-text {
     display: none;
+  }
+  .sidebar .rank-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 6px;
+    margin: 10px 10px 0;
+    padding: 8px 6px;
+  }
+  .sidebar .rank-piece {
+    grid-row: auto;
+  }
+  .sidebar .rank-card .rank-bar {
+    width: 100%;
   }
   .sidebar .nav-items[hidden] {
     display: grid;
@@ -1903,8 +1918,27 @@ abbr.gloss {
   .sidebar .nav-label,
   .sidebar .nav-item .count,
   .sidebar .nav-group-toggle,
+  .sidebar .rank-text,
+  .sidebar .rank-xp,
   .sidebar-foot .engine-text {
     display: revert;
+  }
+  .sidebar .rank-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 2px 10px;
+    margin: 12px 12px 0;
+    padding: 10px 12px;
+  }
+  .sidebar .rank-piece {
+    grid-row: span 2;
+  }
+  /* revert gave the text its inline default; it is a column of two lines. */
+  .sidebar .rank-text {
+    display: flex;
+  }
+  .sidebar .rank-card .rank-bar {
+    grid-column: 1 / -1;
   }
   .sidebar .nav-group-toggle {
     display: flex;
@@ -2762,6 +2796,245 @@ ul.notes li::marker {
   inset: 0;
   z-index: 70;
   pointer-events: none;
+}
+
+/* ---------- rank card (sidebar) and the badges screen ---------- */
+
+.rank-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  align-items: center;
+  margin: 12px 12px 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-inner);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-hover) ease;
+}
+
+.rank-card:hover {
+  background: var(--raised);
+}
+
+.rank-card[aria-current='page'] {
+  background: var(--raised);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.rank-piece {
+  display: flex;
+  grid-row: span 2;
+  color: var(--accent);
+}
+
+.rank-piece svg {
+  display: block;
+}
+
+.rank-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rank-card .rank-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rank-place {
+  color: var(--faint);
+  font-size: var(--fs-small);
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.rank-bar {
+  display: block;
+  grid-column: 1 / -1;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 3px;
+  background: var(--raised-2);
+  overflow: hidden;
+}
+
+.rank-bar.large {
+  height: 8px;
+  margin: 10px 0 6px;
+}
+
+.rank-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--reward);
+  transition: width 600ms var(--ease-out);
+}
+
+[data-motion='reduced'] .rank-bar-fill {
+  transition: none;
+}
+
+.rank-xp {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 16px;
+  margin-top: 4px;
+}
+
+.rank-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rank-hero-piece {
+  display: flex;
+  flex: none;
+  width: 84px;
+  height: 84px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.rank-hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-hero-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+}
+
+.rank-ladder {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rank-step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto 18px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: var(--radius-chip);
+  color: var(--muted);
+}
+
+.rank-step.reached {
+  color: var(--text);
+}
+
+.rank-step.current {
+  background: var(--raised);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.rank-step-piece {
+  display: flex;
+  color: var(--faint);
+}
+
+.rank-step.reached .rank-step-piece,
+.rank-step.current .rank-step-piece {
+  color: var(--accent);
+}
+
+.rank-step-mark {
+  display: flex;
+  justify-content: center;
+  color: var(--positive);
+}
+
+.rank-step-mark svg {
+  width: 14px;
+  height: 14px;
+}
+
+.badge-grid {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.badge-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: var(--radius-inner);
+  background: var(--raised);
+  color: var(--muted);
+}
+
+.badge-card.earned {
+  color: var(--text);
+}
+
+.badge-icon {
+  display: flex;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--raised-2);
+  color: var(--faint);
+}
+
+.badge-card.earned .badge-icon {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.badge-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.badge-text {
+  min-width: 0;
+}
+
+.badge-text strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+@media (max-width: 720px) {
+  .rank-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .badge-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 720px) {

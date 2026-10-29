@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { BookOpen, ChartLine, ChevronDown, Compass, GitBranch, GraduationCap, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
+import { Award, BookOpen, ChartLine, ChevronDown, Compass, GitBranch, GraduationCap, Grid3x3, Library, Swords, Layers, Menu, Puzzle, Search, Settings, TrendingUp, X, type LucideIcon } from 'lucide-react'
+import { PieceMark } from '../components/PieceMark'
+import type { ProgressionApi } from '../hooks/useProgression'
+import { rankPlace, RANKS } from '../lib/game/xp'
 import { NAV, ROUTES, type RouteId } from './routes'
 
 export const ROUTE_ICONS: Record<RouteId, LucideIcon> = {
@@ -14,6 +17,7 @@ export const ROUTE_ICONS: Record<RouteId, LucideIcon> = {
   puzzles: Puzzle,
   cards: Layers,
   progress: TrendingUp,
+  badges: Award,
   settings: Settings,
 }
 
@@ -29,6 +33,9 @@ export function BrandMark({ size = 20 }: { size?: number }) {
   )
 }
 
+/** What the rank card shows: the rank held, the next one and how far along the student is. */
+export type SidebarRank = Pick<ProgressionApi, 'rank' | 'next' | 'progress' | 'xp'>
+
 export interface SidebarProps {
   route: RouteId
   onNavigate: (id: RouteId) => void
@@ -36,6 +43,7 @@ export interface SidebarProps {
   engine: { state: 'loading' | 'ready' | 'error'; text: string }
   open: boolean
   onClose: () => void
+  rank?: SidebarRank
 }
 
 const COLLAPSED_KEY = 'mirror-gambit.nav-collapsed'
@@ -48,7 +56,7 @@ function loadCollapsed(): string[] {
   }
 }
 
-export function Sidebar({ route, onNavigate, counts, engine, open, onClose }: SidebarProps) {
+export function Sidebar({ route, onNavigate, counts, engine, open, onClose, rank }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<string[]>(loadCollapsed)
   const navRef = useRef<HTMLElement | null>(null)
 
@@ -84,6 +92,7 @@ export function Sidebar({ route, onNavigate, counts, engine, open, onClose }: Si
           <X />
         </button>
       </div>
+      {rank && <RankCard rank={rank} current={route === 'badges'} onOpen={() => onNavigate('badges')} />}
       <nav className="nav" ref={navRef} onKeyDown={onKeyDown}>
         {NAV.map((group) => {
           const isCollapsed = collapsed.includes(group.label) && !group.routes.includes(route)
@@ -117,6 +126,37 @@ export function Sidebar({ route, onNavigate, counts, engine, open, onClose }: Si
         </span>
       </div>
     </aside>
+  )
+}
+
+/** The rank at the top of the sidebar: name, place on the ladder and the XP bar. Opens the Badges screen. */
+export function RankCard({ rank, current, onOpen }: { rank: SidebarRank; current: boolean; onOpen: () => void }) {
+  const place = rankPlace(rank.rank)
+  const pct = Math.round(rank.progress * 100)
+  const xpText = rank.next ? `${rank.xp} / ${rank.next.xp} XP` : `${rank.xp} XP`
+  return (
+    <button
+      type="button"
+      className="rank-card"
+      onClick={onOpen}
+      aria-current={current ? 'page' : undefined}
+      aria-label={`${rank.rank.label}, rank ${place} of ${RANKS.length}, ${xpText}. Open badges`}
+      title={rank.next ? `${rank.next.xp - rank.xp} XP to ${rank.next.label}` : 'The top rank'}
+    >
+      <span className="rank-piece">
+        <PieceMark piece={rank.rank.id} size={28} />
+      </span>
+      <span className="rank-text">
+        <span className="rank-name">{rank.rank.label}</span>
+        <span className="rank-place">
+          Rank {place} of {RANKS.length}
+        </span>
+      </span>
+      <span className="rank-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Progress to the next rank">
+        <span className="rank-bar-fill" style={{ width: `${pct}%` }} />
+      </span>
+      <span className="rank-xp tabular">{xpText}</span>
+    </button>
   )
 }
 
