@@ -61,4 +61,19 @@ describe('useProgression', () => {
     act(() => result.current.trackBand('b3'))
     expect(result.current.xp).toBe(1000)
   })
+
+  it('pays slow game XP for two games a day and no more', () => {
+    const { result } = renderHook(() => useProgression())
+    act(() => {
+      result.current.award({ type: 'slowGame', result: 'win' })
+      result.current.award({ type: 'slowGame', result: 'loss' })
+      result.current.award({ type: 'slowGame', result: 'win' })
+    })
+    expect(result.current.progression.slowGames).toBe(2)
+    const xp = result.current.xp
+    act(() => {
+      result.current.award({ type: 'review' })
+    })
+    expect(result.current.xp).toBeGreaterThan(xp)
+  })
 })

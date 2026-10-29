@@ -11,6 +11,7 @@ import {
   hasDuplicate,
   mergeCards,
   parseCardsJson,
+  paysXp,
   sm2Update,
   type NewCardInput,
   type SrsCard,
@@ -77,8 +78,8 @@ function bestUci(card: SrsCard): string | null {
 }
 
 export interface SrsOptions {
-  /** Called with the SM-2 grade (0 to 5) each time a card is finished. */
-  onGrade?: (grade: number, card: SrsCard) => void
+  /** Called with the SM-2 grade (0 to 5) each time a card is finished; `pays` is whether the grade earns XP. */
+  onGrade?: (grade: number, card: SrsCard, pays: boolean) => void
 }
 
 export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
@@ -253,7 +254,9 @@ export function useSrs(gameApi: GameApi, options: SrsOptions = {}) {
       const grade = srsGrade(rec)
       const outcome = outcomeOf(rec)
       setCards((list) => list.map((c) => (c.id === session.card.id ? sm2Update(c, grade) : c)))
-      onGrade.current?.(grade, session.card)
+      const cycle = woodpecker ? currentCycle(woodpecker) : null
+      const gradedInPass = !!cycle && cycle.results[session.card.id] !== undefined
+      onGrade.current?.(grade, session.card, paysXp(session.card, queue?.kind ?? null, gradedInPass))
       if (queue?.kind === 'woodpecker' && woodpecker) {
         const seconds = Math.min(600, Math.max(0, Math.round((Date.now() - shownAt.current) / 1000)))
         saveWoodpecker(recordWoodpecker(woodpecker, cards, session.card.id, outcome, seconds))

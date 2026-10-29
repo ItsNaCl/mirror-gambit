@@ -9,15 +9,17 @@ export const PROGRESSION_KEY = 'mirror-gambit.progression.v1'
 const META_KEY = 'mirror-gambit.progression-meta.v1'
 const GAIN_MS = 3000
 const LEVEL_UP_MS = 6000
+/** Slow game XP stops after this many a day, so a day of long games is not a rank jump. */
+export const MAX_SLOW_PAY_PER_DAY = 2
 
 interface Meta {
-  day: { date: string; xp: number }
+  day: { date: string; xp: number; slow: number }
   bandId: string | null
 }
 
 function normaliseMeta(raw: unknown, today: string): Meta {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Partial<Meta>
-  const day = r.day && typeof r.day === 'object' && r.day.date === today ? { date: today, xp: Math.max(0, Number(r.day.xp) || 0) } : { date: today, xp: 0 }
+  const day = r.day && typeof r.day === 'object' && r.day.date === today ? { date: today, xp: Math.max(0, Number(r.day.xp) || 0), slow: Math.max(0, Math.floor(Number(r.day.slow) || 0)) } : { date: today, xp: 0, slow: 0 }
   // A band id this version does not know is forgotten, so it cannot read as a promotion later.
   const bandId = typeof r.bandId === 'string' && BANDS.some((b) => b.id === r.bandId) ? r.bandId : null
   return { day, bandId }
@@ -60,10 +62,14 @@ export function useProgression() {
   /** Credits one event. `streak` is the training streak in days, for the streak badges. */
   const award = useCallback(
     (event: XpEvent, streak = 0) => {
-      const a = awardXp(latest.current.progression, event, streak)
       const today = dayKey(new Date())
       const m = latest.current.meta
-      const day = m.day.date === today ? { date: today, xp: m.day.xp + a.gained } : { date: today, xp: a.gained }
+      const base = m.day.date === today ? m.day : { date: today, xp: 0, slow: 0 }
+      if (event.type === 'slowGame' && base.slow >= MAX_SLOW_PAY_PER_DAY) {
+        return { next: latest.current.progression, gained: 0, newRank: null, newBadges: [] as Badge[] }
+      }
+      const a = awardXp(latest.current.progression, event, streak)
+      const day = { date: today, xp: base.xp + a.gained, slow: base.slow + (event.type === 'slowGame' ? 1 : 0) }
       save(a.next, { ...m, day })
       setLastGain({ seq: ++seq.current, xp: a.gained, event, badges: a.newBadges })
       if (a.newRank) setLevelUp(a.newRank)

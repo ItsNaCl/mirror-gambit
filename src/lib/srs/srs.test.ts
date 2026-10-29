@@ -8,6 +8,7 @@ import {
   mergeCards,
   MIN_EASE_FACTOR,
   parseCardsJson,
+  paysXp,
   sm2Update,
   type SrsCard,
 } from './srs'
@@ -131,5 +132,21 @@ describe('deck helpers', () => {
     expect(merged.cards).toHaveLength(2)
     expect(() => parseCardsJson('nope')).toThrow(/JSON/)
     expect(() => parseCardsJson('[{"fen":"x"}]')).toThrow(/best move/)
+  })
+})
+
+describe('card XP', () => {
+  const card = (nextReview: string) => ({ nextReview }) as SrsCard
+  const now = Date.parse('2026-10-29T12:00:00Z')
+
+  it('pays for due cards only, outside a Woodpecker pass', () => {
+    expect(paysXp(card('2026-10-29T11:00:00Z'), 'due', false, now)).toBe(true)
+    expect(paysXp(card('2026-11-02T11:00:00Z'), 'group', false, now)).toBe(false)
+    expect(paysXp(card('2026-11-02T11:00:00Z'), 'due', false, now)).toBe(false)
+  })
+
+  it('pays a Woodpecker card on its first grade in the pass, due or not', () => {
+    expect(paysXp(card('2026-11-02T11:00:00Z'), 'woodpecker', false, now)).toBe(true)
+    expect(paysXp(card('2026-10-29T11:00:00Z'), 'woodpecker', true, now)).toBe(false)
   })
 })

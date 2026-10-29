@@ -52,3 +52,11 @@ No critical or high finding in the code. The one high item was a dependency advi
 | Anthropic SDK still reads `ANTHROPIC_AUTH_TOKEN` from the environment when no `authToken` is passed. | Left: same user environment; the SDK treats `apiKey` and `authToken` as exclusive, so forcing one is not worth the risk of a client error. |
 | The Vite dev proxy `/chesscom` forwards any sub path to `www.chess.com/callback`. | Dev server only. |
 | Scripts parse operator supplied files without line length caps. | Operator only, repository paths only. |
+
+## Second pass: IPC review (October 29 2026)
+
+Fixed: a failed key, model or key removal write no longer returns the profile path to the page; the updater error shown to the page is a plain line (the detail goes to the console and log); the log keeps single lines of at most 500 characters and rotates at 1 MB; game site bodies are counted while they stream and the months of one import share one cap; links opened in the browser must be https on lichess.org, chess.com or github.com; the Claude coach takes one request at a time.
+
+| Note | Decision |
+|---|---|
+| `games:fetch` has no call rate limit. | Left: it only reaches two fixed public hosts with a validated username; a looping page would earn a 429 for itself. |

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { AnalysedGame, TaggedMistake } from '../games/profile'
-import { BANDS, bandFor, nextBand } from './curriculum'
+import { BANDS, bandFor, nextBand, promotionBand } from './curriculum'
 import { buildMetrics, describeMetrics, worstPhase } from './metrics'
 import { buildPlan, exitProgress, sessionMinutes, streak, weekOf, type PlannerInput, type SessionRecord } from './planner'
 
@@ -218,5 +218,12 @@ describe('planner', () => {
     expect(rows.find((r) => r.id === 'rating')).toMatchObject({ value: 1050, met: false })
     expect(rows.find((r) => r.id === 'hung')).toMatchObject({ value: 0, met: true })
     expect(rows.find((r) => r.id === 'puzzles')).toMatchObject({ value: 1250, met: false })
+  })
+})
+
+describe('promotion band', () => {
+  it('comes only from an imported rating, never from the Settings override', () => {
+    expect(promotionBand(null)).toBeNull()
+    expect(promotionBand(1250)?.id).toBe(bandFor(1250).id)
   })
 })

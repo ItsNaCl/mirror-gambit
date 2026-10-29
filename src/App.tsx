@@ -59,7 +59,7 @@ import { EngineProvider, useEngine } from './hooks/useEngine'
 import { useGame, type GameApi } from './hooks/useGame'
 import { usePlay, type PlayApi } from './hooks/usePlay'
 import { usePuzzles, type PuzzlesApi } from './hooks/usePuzzles'
-import { useReview } from './hooks/useReview'
+import { gameKey, useReview } from './hooks/useReview'
 import { useSettings } from './hooks/useSettings'
 import { useSfx } from './hooks/useSfx'
 import { useSrs, type SrsApi, type SrsOptions } from './hooks/useSrs'
@@ -83,7 +83,8 @@ import { gameFromChessComJson, parseChessComUrl } from './lib/import/chesscom'
 import { countsAsSlowGame, outcomeFor, type SavedGame } from './lib/play/savedGames'
 import { libraryGameState, type LibraryGame } from './lib/games/sources'
 import { outcome } from './lib/games/profile'
-import { SLOW } from './lib/coach/metrics'
+import { promotionBand } from './lib/coach/curriculum'
+import { createPaidStore, paysSlowGame } from './lib/game/paid'
 import { whyNotItems } from './lib/modes/whyNot'
 import { soundForMove } from './lib/sound/sfx'
 import type { XpEvent } from './lib/game/xp'
@@ -145,7 +146,10 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   // XP events from the hooks below reach the progression through this ref, because the streak
   // they are credited with comes from the coach, which is built after them.
   const earnRef = useRef<(e: XpEvent) => void>(() => {})
-  const srsOptions = useMemo<SrsOptions>(() => ({ onGrade: (grade) => earnRef.current({ type: 'card', grade }) }), [])
+  const srsOptions = useMemo<SrsOptions>(() => ({ onGrade: (grade, _card, pays) => {
+        if (pays) earnRef.current({ type: 'card', grade })
+      },
+    }), [])
   const srs = useSrs(games.srs, srsOptions)
   const play = usePlay(games.play, engine)
   const ratedOptions = useMemo<RatedOptions>(() => ({ onResult: (r) => earnRef.current({ type: 'solve', outcome: r.outcome, rating: r.rating }) }), [])
@@ -165,6 +169,14 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   useEffect(() => {
     pauseNarrated(route !== 'narrated')
   }, [route, pauseNarrated])
+  // A search another screen replaces never settles, so a screen left while its engine question is
+  // open drops it, and its hold on live analysis goes with it.
+  const { exit: exitWhyNot, stage: whyNotStage } = whyNot
+  const { exit: exitGuess, stage: guessStage } = guess
+  useEffect(() => {
+    if (route !== 'whynot' && whyNotStage === 'thinking') exitWhyNot()
+    if (route !== 'guess' && guessStage === 'thinking') exitGuess()
+  }, [route, whyNotStage, guessStage, exitWhyNot, exitGuess])
   const onBlockDone = useCallback(
     (d: BlockDone) => {
       award({ type: 'block', minutes: d.minutes }, d.streak)
@@ -216,43 +228,49 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
     for (const g of fresh) {
       known.ids.add(g.id)
       known.newest = Math.max(known.newest, stamp(g))
-      if (SLOW.has(g.timeClass) && stamp(g) > since && paid < MAX_IMPORT_PAY) {
+      if (paysSlowGame(g) && stamp(g) > since && paid < MAX_IMPORT_PAY) {
         paid++
         earn({ type: 'slowGame', result: outcome(g) })
       }
     }
   }, [library.games, earn])
 
-  // Moving up a band pays once the band is known from a real rating.
-  const bandId = coach.plan.band.id
-  const ratingKnown = (coach.metrics?.rating ?? settings.ratingOverride) !== null
+  // Moving up a band pays once the band is known from a rating in the imported games. The
+  // Settings override steers the plan but never counts here, or typing a number would pay.
+  const importedBandId = promotionBand(coach.metrics?.rating ?? null)?.id ?? null
   const trackBand = progression.trackBand
   useEffect(() => {
-    if (ratingKnown) trackBand(bandId)
-  }, [ratingKnown, bandId, trackBand])
+    if (importedBandId) trackBand(importedBandId)
+  }, [importedBandId, trackBand])
   // The engine runs one search at a time, so the batch review only runs while My games is open.
   const stopBatch = library.cancel
   const batchRunning = !!library.progress
   useEffect(() => {
     if (route !== 'games' && batchRunning) stopBatch()
   }, [route, batchRunning, stopBatch])
-  // Games the batch review analyses are reviewed games too, a few per run. Games analysed before start-up only seed the count.
-  const analysedCount = library.analysed.length
-  const batchPaid = useRef<{ seen: number; paid: number } | null>(null)
+  // Review XP is paid once per game id in My games, and the paid ids are saved, so a reload or a
+  // second review of the same game cannot pay again. The first time this version runs, the games
+  // already analysed are marked paid without paying, and a batch run pays at most MAX_BATCH_PAY.
+  const [paid] = useState(createPaidStore)
+  const batchPaid = useRef<{ known: Set<string>; paid: number } | null>(null)
   useEffect(() => {
+    const ids = library.analysed.map((a) => a.game.id)
     const s = batchPaid.current
     if (!s) {
-      batchPaid.current = { seen: analysedCount, paid: 0 }
+      batchPaid.current = { known: new Set(ids), paid: 0 }
+      if (!paid.existed) paid.seed(ids)
       return
     }
     if (!batchRunning) s.paid = 0
-    const fresh = Math.max(0, analysedCount - s.seen)
-    s.seen = analysedCount
-    for (let i = 0; i < fresh && s.paid < MAX_BATCH_PAY; i++) {
-      s.paid++
-      earn({ type: 'review' })
+    for (const id of ids) {
+      if (s.known.has(id)) continue
+      s.known.add(id)
+      if (s.paid < MAX_BATCH_PAY && paid.claim(id)) {
+        s.paid++
+        earn({ type: 'review' })
+      }
     }
-  }, [analysedCount, batchRunning, earn])
+  }, [library.analysed, batchRunning, earn, paid])
   const sessionId = sessionFor(route, puzzles)
   const free = games.free
   const { game, fen, gameOver } = free
@@ -270,14 +288,17 @@ function Workspace({ route, navigate, games, onBoardFen }: WorkspaceProps) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const review = useReview(free, engine)
-  // A game reviewed for the first time is a reviewed game. Paid once per count, whatever else re-runs the effect.
+  // A game from My games reviewed on the board is a reviewed game, once per game id. A game that is
+  // only on the board (typed in, from a puzzle, a position pasted) is not in My games and pays nothing.
   const reviewsPaid = useRef(0)
   const newReviews = review.newReviews
+  const reviewedKey = review.state.reviewedKey
   useEffect(() => {
     if (newReviews <= reviewsPaid.current) return
     reviewsPaid.current = newReviews
-    earn({ type: 'review' })
-  }, [newReviews, earn])
+    const g = library.games.find((x) => gameKey(libraryGameState(x)) === reviewedKey)
+    if (g && paid.claim(g.id)) earn({ type: 'review' })
+  }, [newReviews, reviewedKey, library.games, paid, earn])
 
   const [includeClassifications, setIncludeClassifications] = useState(true)
   const reviewResult = review.matchesCurrentGame ? review.state.result : null

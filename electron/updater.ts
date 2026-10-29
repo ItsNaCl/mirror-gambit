@@ -107,5 +107,7 @@ function friendlyError(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e)
   if (/ENOTFOUND|ECONNREFUSED|ETIMEDOUT|net::ERR_/i.test(msg)) return 'Could not reach GitHub. Check your internet connection and try again.'
   if (/404|Cannot find latest/i.test(msg)) return 'No published release was found on GitHub yet.'
-  return msg.split('\n')[0].slice(0, 200)
+  // The raw message can carry local paths, so the page gets a plain line and the log keeps the detail.
+  console.error(`[updater] ${msg.split('\n')[0].slice(0, 200)}`)
+  return 'The update failed. The details are in the log file.'
 }

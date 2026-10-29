@@ -93,10 +93,12 @@ export function useGuess(gameApi: GameApi, engine: EngineContextValue) {
 
   const start = useCallback(
     async (bucket: string | 'any') => {
-      runId.current++
+      const id = ++runId.current
       setStage('loading')
       setError(null)
       const s = set ?? (await load())
+      // Exit, or a second start, while the games were loading: this call is stale.
+      if (id !== runId.current) return
       if (!s) {
         setStage('idle')
         return

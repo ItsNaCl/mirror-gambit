@@ -141,6 +141,14 @@ export function bandFor(rating: number | null): Band {
   return BANDS.find((b) => b.to === null || rating < b.to) ?? BANDS[BANDS.length - 1]
 }
 
+/**
+ * The band that can pay a promotion: only the rating that came from imported games counts.
+ * The Settings override changes the plan but never earns XP, so typing a higher number is not a promotion.
+ */
+export function promotionBand(importedRating: number | null): Band | null {
+  return importedRating === null ? null : bandFor(importedRating)
+}
+
 export function nextBand(band: Band): Band | null {
   const i = BANDS.findIndex((b) => b.id === band.id)
   return i >= 0 && i < BANDS.length - 1 ? BANDS[i + 1] : null

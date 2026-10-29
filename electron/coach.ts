@@ -182,14 +182,25 @@ export function setupCoach(log: (line: string) => void, fromApp: (e: IpcMainInvo
     guard(e)
     if (typeof key !== 'string' || !/^sk-ant-[A-Za-z0-9_-]{20,250}$/.test(key.trim())) return { ok: false, error: 'That does not look like a Claude API key (it starts with sk-ant-).' }
     if (!safeStorage.isEncryptionAvailable()) return { ok: false, error: 'This computer cannot store the key securely.' }
-    writeFileSync(keyFile(), safeStorage.encryptString(key.trim()))
+    // A failed write must not reach the page: its message carries the profile folder path.
+    try {
+      writeFileSync(keyFile(), safeStorage.encryptString(key.trim()))
+    } catch (err) {
+      log(`[coach] could not save the key: ${err instanceof Error ? err.message : String(err)}`)
+      return { ok: false, error: 'Could not save the key. The details are in the log file.' }
+    }
     log('[coach] API key saved')
     return { ok: true }
   })
 
   ipcMain.handle('coach:clearKey', (e) => {
     guard(e)
-    rmSync(keyFile(), { force: true })
+    try {
+      rmSync(keyFile(), { force: true })
+    } catch (err) {
+      log(`[coach] could not remove the key: ${err instanceof Error ? err.message : String(err)}`)
+      return { ok: false }
+    }
     log('[coach] API key removed')
     return { ok: true }
   })
@@ -197,13 +208,27 @@ export function setupCoach(log: (line: string) => void, fromApp: (e: IpcMainInvo
   ipcMain.handle('coach:setModel', (e, model: unknown) => {
     guard(e)
     if (!COACH_MODELS.includes(model as CoachModel)) return { ok: false, error: 'Unknown model.' }
-    writeFileSync(configFile(), JSON.stringify({ model }))
+    try {
+      writeFileSync(configFile(), JSON.stringify({ model }))
+    } catch (err) {
+      log(`[coach] could not save the model: ${err instanceof Error ? err.message : String(err)}`)
+      return { ok: false, error: 'Could not save the setting. The details are in the log file.' }
+    }
     return { ok: true }
   })
 
+  // One paid request at a time: a page looping on this call cannot run up the bill in parallel.
+  let asking = false
   ipcMain.handle('coach:ask', async (e, raw: unknown) => {
     guard(e)
-    const answer = await ask(raw)
+    if (asking) return { ok: false, error: 'The coach is still answering the last question.' }
+    asking = true
+    let answer: Awaited<ReturnType<typeof ask>>
+    try {
+      answer = await ask(raw)
+    } finally {
+      asking = false
+    }
     log(answer.ok ? `[coach] ${answer.model} in=${answer.usage.input} out=${answer.usage.output} cacheRead=${answer.usage.cacheRead}` : `[coach] failed: ${answer.error}`)
     return answer
   })

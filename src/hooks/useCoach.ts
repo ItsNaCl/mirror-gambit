@@ -135,14 +135,21 @@ export function useCoach(input: CoachInput) {
     [active, saveActive],
   )
 
-  /** Marks the current block done. The minutes actually spent are credited, capped at double the plan. */
+  /**
+   * Marks the current block done. Only the minutes actually spent are credited, capped at double
+   * the plan, so a block pressed Done at once pays nothing. A block already credited (Redo, then
+   * Done) moves on without paying its minutes or XP a second time.
+   */
   const complete = useCallback(() => {
     if (!active || active.index >= active.blocks.length) return
     const block = active.blocks[active.index]
-    const spent = Math.round((Date.now() - active.startedAt) / 60_000)
-    const minutes = Math.max(1, Math.min(spent || block.minutes, block.minutes * 2))
-    credit(block, minutes)
     const credited = [...active.credited]
+    let minutes = credited[active.index] ?? 0
+    if (minutes === 0) {
+      const spent = Math.round((Date.now() - active.startedAt) / 60_000)
+      minutes = Math.max(0, Math.min(spent, block.minutes * 2))
+      credit(block, minutes)
+    }
     credited[active.index] = minutes
     saveActive({ ...active, index: active.index + 1, startedAt: Date.now(), credited })
   }, [active, credit, saveActive])

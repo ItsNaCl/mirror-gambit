@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, net, protocol, screen, session, shell, type IpcMainInvokeEvent } from 'electron'
-import { appendFileSync, createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { appendFileSync, createReadStream, existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 import { setupCoach } from './coach'
@@ -42,11 +42,18 @@ function logFile(): string {
   return path.join(app.getPath('userData'), 'mirror-gambit.log')
 }
 
+const MAX_LOG_BYTES = 1024 * 1024
+const MAX_LOG_LINE = 500
+
 function log(line: string) {
-  const text = `${new Date().toISOString()} ${line}`
+  // One line per call, whatever the page sent: no forged entries and no oversized ones.
+  const text = `${new Date().toISOString()} ${line.replace(/[\r\n]+/g, ' ').slice(0, MAX_LOG_LINE)}`
   console.log(text)
   try {
-    appendFileSync(logFile(), text + '\n')
+    const file = logFile()
+    // The log keeps one older copy, so it cannot grow without bound.
+    if (existsSync(file) && statSync(file).size > MAX_LOG_BYTES) renameSync(file, file + '.old')
+    appendFileSync(file, text + '\n')
   } catch {
     /* ignore */
   }
@@ -196,17 +203,46 @@ const MAX_RESPONSE_BYTES = 20 * 1024 * 1024
 /** Games read from one chess.com month. */
 const MAX_MONTH_GAMES = 500
 
-/** Reads a response body, refusing one that is too large to hold. */
-async function readBody(res: Response): Promise<string> {
+/**
+ * Reads a response body, refusing one that is too large to hold. The size is counted while the
+ * body streams in, so an answer without a length is cut off at the cap instead of buffered whole.
+ */
+async function readBody(res: Response, limit = MAX_RESPONSE_BYTES): Promise<string> {
+  const tooLarge = () => new Error('The answer was too large to read.')
   const declared = Number(res.headers.get('content-length'))
-  if (Number.isFinite(declared) && declared > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
-  const text = await res.text()
-  if (text.length > MAX_RESPONSE_BYTES) throw new Error('The answer was too large to read.')
-  return text
+  if (Number.isFinite(declared) && declared > limit) throw tooLarge()
+  if (!res.body) return ''
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let received = 0
+  let text = ''
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    received += value.byteLength
+    if (received > limit) {
+      void reader.cancel().catch(() => {})
+      throw tooLarge()
+    }
+    text += decoder.decode(value, { stream: true })
+  }
+  return text + decoder.decode()
+}
+
+/** Links the page may open in the browser: https pages on the sites the app points to. */
+const EXTERNAL_HOSTS = new Set(['lichess.org', 'www.chess.com', 'chess.com', 'github.com'])
+
+function isAllowedExternal(url: string): boolean {
+  try {
+    const u = new URL(url)
+    return u.protocol === 'https:' && EXTERNAL_HOSTS.has(u.hostname)
+  } catch {
+    return false
+  }
 }
 
 function openExternal(url: string) {
-  if (/^https?:\/\//i.test(url)) void shell.openExternal(url)
+  if (isAllowedExternal(url)) void shell.openExternal(url)
 }
 
 function createWindow() {
@@ -336,11 +372,15 @@ function setupGameImport() {
     const archives = (JSON.parse(await readBody(list)) as { archives?: unknown }).archives
     const months = Array.isArray(archives) ? archives.filter((u): u is string => typeof u === 'string' && u.startsWith('https://api.chess.com/pub/player/')) : []
     let games: unknown[] = []
+    // The months together stay under one cap as well, not one cap each.
+    let budget = MAX_RESPONSE_BYTES
     // Newest month first, until there are enough games (at most six months back).
     for (const url of months.reverse().slice(0, 6)) {
       const res = await net.fetch(url, { headers: API_HEADERS, redirect: 'error' })
       if (!res.ok) continue
-      const monthGames = (JSON.parse(await readBody(res)) as { games?: unknown }).games
+      const body = await readBody(res, budget)
+      budget -= body.length
+      const monthGames = (JSON.parse(body) as { games?: unknown }).games
       if (!Array.isArray(monthGames)) continue
       games = monthGames.slice(0, MAX_MONTH_GAMES).concat(games)
       if (games.length >= max) break

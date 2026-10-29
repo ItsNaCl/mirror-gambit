@@ -110,6 +110,15 @@ export function isDue(card: SrsCard, nowMs: number = Date.now()): boolean {
   return Date.parse(card.nextReview) <= nowMs
 }
 
+/**
+ * Whether grading a card pays XP. A due card pays; a card drilled early (a pattern group) does not.
+ * In a Woodpecker pass only the first grade of a card in that pass pays, whether or not it is due.
+ */
+export function paysXp(card: SrsCard, kind: 'due' | 'group' | 'woodpecker' | null, gradedInPass: boolean, nowMs: number = Date.now()): boolean {
+  if (kind === 'woodpecker') return !gradedInPass
+  return isDue(card, nowMs)
+}
+
 export function dueCards(cards: SrsCard[], nowMs: number = Date.now()): SrsCard[] {
   return cards.filter((c) => isDue(c, nowMs)).sort((a, b) => Date.parse(a.nextReview) - Date.parse(b.nextReview))
 }

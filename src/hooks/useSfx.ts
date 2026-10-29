@@ -14,6 +14,30 @@ export function useSfx() {
   const latest = useLatest(settings)
   const ctx = useRef<AudioContext | null>(null)
 
+  // iOS only lets audio start inside a touch or key event. The first one of either creates the
+  // context and resumes it there, so the sounds that follow (a move made by the computer, a
+  // timer) are not blocked. The listeners remove themselves after that.
+  useEffect(() => {
+    const unlock = () => {
+      window.removeEventListener('pointerdown', unlock, true)
+      window.removeEventListener('keydown', unlock, true)
+      try {
+        const Ctor = (globalThis as { AudioContext?: typeof AudioContext }).AudioContext
+        if (!Ctor) return
+        if (!ctx.current) ctx.current = new Ctor()
+        void ctx.current.resume().catch(() => {})
+      } catch {
+        // No audio device: nothing to unlock.
+      }
+    }
+    window.addEventListener('pointerdown', unlock, true)
+    window.addEventListener('keydown', unlock, true)
+    return () => {
+      window.removeEventListener('pointerdown', unlock, true)
+      window.removeEventListener('keydown', unlock, true)
+    }
+  }, [])
+
   useEffect(
     () => () => {
       void ctx.current?.close().catch(() => {})

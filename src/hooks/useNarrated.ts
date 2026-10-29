@@ -1,3 +1,4 @@
+import { withTimeout } from '../lib/engine/timeout'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Chess, type Square } from 'chess.js'
 import type { Arrow } from 'react-chessboard'
@@ -34,6 +35,8 @@ const COACH_CANDIDATES = 3
 /** Time to read the coach's note before the computer answers. */
 const OPPONENT_DELAY_MS = 2600
 const COACH_DELAY_MS = 500
+/** A search another screen replaced never settles; after this the move is asked for again. */
+const THINK_TIMEOUT_MS = 120_000
 
 /**
  * The narrated game: the coach plays a full game against one of the computer levels and says
@@ -56,6 +59,8 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
   const [stats, setStats] = useState<PredictionStats>({ asked: 0, exact: 0, close: 0 })
   const [error, setError] = useState<string | null>(null)
   const requestId = useRef(0)
+  // Bumped when a search timed out, so the effect that asked for the move runs again.
+  const [retry, setRetry] = useState(0)
 
   const active = running && playGameId === gameId
   const coachToMove = turnOf(fen) === coachSide
@@ -67,6 +72,11 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
     setLiveSuspended(active && !over && !paused, OWNER)
   }, [active, over, paused, setLiveSuspended])
   useEffect(() => () => setLiveSuspended(false, OWNER), [setLiveSuspended])
+
+  // Makes any search still running stale. A function so effect cleanups can call it.
+  const invalidate = useCallback(() => {
+    requestId.current++
+  }, [])
 
   const say = useCallback((who: NarrationEntry['who'], narration: Narration, ply: number) => setLog((l) => [{ ply, who, narration }, ...l]), [])
 
@@ -131,10 +141,13 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
     const predicted = prediction
     const t = window.setTimeout(async () => {
       try {
-        const r = await evaluate(fenNow, COACH_DEPTH, COACH_CANDIDATES)
+        const r = await withTimeout(evaluate(fenNow, COACH_DEPTH, COACH_CANDIDATES), THINK_TIMEOUT_MS)
         if (requestId.current !== id) return
         const uci = r.bestMove ?? r.lines[0]?.pv[0]
-        if (!uci) return
+        if (!uci) {
+          setError('The engine gave no move.')
+          return
+        }
         let pred: { uci: string; lossCp: number } | null = null
         if (predicted) {
           let loss = predictionLoss(r.lines, predicted, coachSide)
@@ -143,7 +156,7 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
             const after = playUci(game, predicted)
             const best = r.lines[0]?.score
             if (after && best) {
-              const a = await evaluate(after.moves[after.moves.length - 1].after, COACH_DEPTH, 1)
+              const a = await withTimeout(evaluate(after.moves[after.moves.length - 1].after, COACH_DEPTH, 1), THINK_TIMEOUT_MS)
               if (requestId.current !== id) return
               const sign = coachSide === 'w' ? 1 : -1
               loss = a.lines[0] ? Math.max(0, sign * (scoreToCp(best) - scoreToCp(a.lines[0].score))) : 0
@@ -157,11 +170,18 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
         setPredictDecided(false)
         setGame((g) => (g.ply === ply && isAtEnd(g) ? (playUci(g, uci) ?? g) : g))
       } catch (e) {
-        if (requestId.current === id) setError(e instanceof Error ? e.message : String(e))
+        if (requestId.current !== id) return
+        // A timeout means the search was replaced: ask again. Anything else is shown.
+        if (e instanceof Error && /did not answer/.test(e.message)) setRetry((n) => n + 1)
+        else setError(e instanceof Error ? e.message : String(e))
       }
     }, COACH_DELAY_MS)
-    return () => clearTimeout(t)
-  }, [active, paused, stage, coachToMove, gameOver, game, fen, engine.status, evaluate, prediction, coachSide, voice, say, setGame])
+    // Pausing or leaving makes the answer stale: it must not move a game that is meant to wait.
+    return () => {
+      clearTimeout(t)
+      invalidate()
+    }
+  }, [active, paused, stage, coachToMove, gameOver, game, fen, engine.status, evaluate, prediction, coachSide, voice, say, setGame, retry, invalidate])
 
   // The computer's reply at its level, after a pause to read the coach.
   useEffect(() => {
@@ -171,19 +191,27 @@ export function useNarrated(gameApi: GameApi, engine: EngineContextValue, voice:
     const ply = game.ply
     const t = window.setTimeout(async () => {
       try {
-        const r = await evaluate(fenNow, level.depth, level.candidates)
+        const r = await withTimeout(evaluate(fenNow, level.depth, level.candidates), THINK_TIMEOUT_MS)
         if (requestId.current !== id) return
         const legal = new Chess(fenNow).moves({ verbose: true }).map((m) => m.from + m.to + (m.promotion ?? ''))
         const uci = pickMove(r.lines, turnOf(fenNow), level, legal)
-        if (!uci) return
+        if (!uci) {
+          setError('The engine gave no move.')
+          return
+        }
         say('opponent', narrateOpponentMove(fenNow, uci, voice), ply + 1)
         setGame((g) => (g.ply === ply && isAtEnd(g) ? (playUci(g, uci) ?? g) : g))
       } catch (e) {
-        if (requestId.current === id) setError(e instanceof Error ? e.message : String(e))
+        if (requestId.current !== id) return
+        if (e instanceof Error && /did not answer/.test(e.message)) setRetry((n) => n + 1)
+        else setError(e instanceof Error ? e.message : String(e))
       }
     }, ply === 0 ? COACH_DELAY_MS : OPPONENT_DELAY_MS)
-    return () => clearTimeout(t)
-  }, [active, paused, stage, coachToMove, gameOver, game, fen, engine.status, evaluate, level, voice, say, setGame])
+    return () => {
+      clearTimeout(t)
+      invalidate()
+    }
+  }, [active, paused, stage, coachToMove, gameOver, game, fen, engine.status, evaluate, level, voice, say, setGame, retry, invalidate])
 
   // The prediction stays on the board as an arrow until the coach has moved.
   const arrows: Arrow[] = useMemo(() => {
